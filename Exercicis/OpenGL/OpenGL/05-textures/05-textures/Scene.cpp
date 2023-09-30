@@ -67,9 +67,9 @@ void Scene::render()
 
 
 	// ESTRELLA:
-	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(128.f, 304.f, 0.f));
-	modelview = glm::translate(modelview, glm::vec3(64.f, 64.f, 0.f));
-	// modelview = glm::rotate(modelview, currentTime / 1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
+	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(70.f, 330.f, 0.f));
+	modelview = glm::translate(modelview, glm::vec3(64.f, -64.f, 0.f));
+	modelview = glm::rotate(modelview, currentTime / 1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
 	modelview = glm::translate(modelview, glm::vec3(-64.f, -64.f, 0.f));
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texQuad[1]->render(texs[0]);
