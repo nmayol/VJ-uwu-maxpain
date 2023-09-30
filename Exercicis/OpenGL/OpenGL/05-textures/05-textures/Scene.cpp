@@ -26,7 +26,7 @@ void Scene::init()
 
 	initShaders();
 	quad = Quad::createQuad(0.f, 0.f, 128.f, 128.f, simpleProgram);
-	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(20.f, 20.f);
+	texCoords[0] = glm::vec2(0.f, 0.f); texCoords[1] = glm::vec2(10.f, 10.f);
 	texQuad[0] = TexturedQuad::createTexturedQuad(geom, texCoords, texProgram);
 	texCoords[0] = glm::vec2(0.5f, 0.5f); texCoords[1] = glm::vec2(1.f, 1.f);
 	texQuad[1] = TexturedQuad::createTexturedQuad(geom, texCoords, texProgram);
@@ -56,33 +56,39 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 
-	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(320.f, 600.f, 0.f));
+	// MAONS:
+	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 320.f, 0.f));
+	modelview = glm::translate(modelview, glm::vec3(320.f, 320.f, 0.f));
 	modelview = glm::scale(modelview, glm::vec3(5.f, 5.f, 0.f));
 	modelview = glm::translate(modelview, glm::vec3(-64.f, -64.f, 0.f));
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texQuad[0]->render(texs[2]); //BRICKS
 
 
-	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(384.f, 48.f, 0.f));
-	modelview = glm::translate(modelview, glm::vec3(64.f, 64.f, 0.f));
-	modelview = glm::rotate(modelview, currentTime / 1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
-	modelview = glm::translate(modelview, glm::vec3(-64.f, -64.f, 0.f));
-	texProgram.setUniformMatrix4f("modelview", modelview);
-	texQuad[3]->render(texs[0]);
 
+	// ESTRELLA:
 	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(128.f, 304.f, 0.f));
 	modelview = glm::translate(modelview, glm::vec3(64.f, 64.f, 0.f));
-	modelview = glm::rotate(modelview, currentTime / 1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
+	// modelview = glm::rotate(modelview, currentTime / 1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
 	modelview = glm::translate(modelview, glm::vec3(-64.f, -64.f, 0.f));
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texQuad[1]->render(texs[0]);
 
+	// PEDRA:
 	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(384.f, 304.f, 0.f));
-	modelview = glm::translate(modelview, glm::vec3(64.f, 64.f, 0.f));
-	modelview = glm::rotate(modelview, -currentTime / 1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
-	modelview = glm::translate(modelview, glm::vec3(-64.f, -64.f, 0.f));
+	modelview = glm::translate(modelview, glm::vec3(128.f, 128.f, 0.f));
+	//modelview = glm::rotate(modelview, -currentTime / 1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
+	modelview = glm::translate(modelview, glm::vec3(-128.f, -128.f, 0.f));
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texQuad[2]->render(texs[1]);
+
+	// MARIO:
+	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(160,329,0));
+	modelview = glm::translate(modelview, glm::vec3(64.f, -64.f, 0.f));
+	//modelview = glm::rotate(modelview, -currentTime / 1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
+	modelview = glm::translate(modelview, glm::vec3(-64.f, -64.f, 0.f));
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texQuad[3]->render(texs[0]);
 }
 
 void Scene::initShaders()
