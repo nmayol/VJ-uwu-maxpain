@@ -62,9 +62,7 @@ void Scene::render()
 	modelview = glm::scale(modelview, glm::vec3(5.f, 5.f, 0.f));
 	modelview = glm::translate(modelview, glm::vec3(-64.f, -64.f, 0.f));
 	texProgram.setUniformMatrix4f("modelview", modelview);
-	texQuad[0]->render(texs[2]); //BRICKS
-
-
+	texQuad[0]->render(texs[2]);
 
 	// ESTRELLA:
 	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(70.f, 330.f, 0.f));
@@ -75,10 +73,8 @@ void Scene::render()
 	texQuad[1]->render(texs[0]);
 
 	// PEDRA:
-	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(384.f, 304.f, 0.f));
-	modelview = glm::translate(modelview, glm::vec3(128.f, 128.f, 0.f));
-	//modelview = glm::rotate(modelview, -currentTime / 1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
-	modelview = glm::translate(modelview, glm::vec3(-128.f, -128.f, 0.f));
+	modelview = glm::translate(glm::mat4(1.0f), glm::vec3(400.f, 320.f, 0.f));
+	modelview = glm::translate(modelview, glm::vec3(0.f, -128.f, 0.f));
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texQuad[2]->render(texs[1]);
 
