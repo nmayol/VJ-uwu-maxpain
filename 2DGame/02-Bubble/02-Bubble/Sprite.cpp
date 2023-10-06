@@ -31,6 +31,7 @@ Sprite::Sprite(const glm::vec2 &quadSize, const glm::vec2 &sizeInSpritesheet, Te
 	texture = spritesheet;
 	shaderProgram = program;
 	currentAnimation = -1;
+	facingLeft = false;
 	position = glm::vec2(0.f);
 }
 
@@ -51,6 +52,11 @@ void Sprite::update(int deltaTime)
 void Sprite::render() const
 {
 	glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.f));
+	if (facingLeft) {
+		modelview = glm::translate(modelview, glm::vec3(32.f, 0.f, 0.f));
+		modelview = glm::rotate(modelview, glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));  // Flip vertically
+	}
+
 	shaderProgram->setUniformMatrix4f("modelview", modelview);
 	shaderProgram->setUniform2f("texCoordDispl", texCoordDispl.x, texCoordDispl.y);
 	glEnable(GL_TEXTURE_2D);
@@ -96,9 +102,20 @@ void Sprite::changeAnimation(int animId)
 	}
 }
 
+// Change direction where the sprite is facing
+void Sprite::changeDirection(int directionId)
+{
+	facingLeft = (directionId == 0);
+}
+
 int Sprite::animation() const
 {
 	return currentAnimation;
+}
+
+bool Sprite::isFacingLeft() const
+{
+	return facingLeft;
 }
 
 void Sprite::setPosition(const glm::vec2 &pos)

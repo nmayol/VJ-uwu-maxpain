@@ -31,7 +31,9 @@ public:
 	void setAnimationSpeed(int animId, int keyframesPerSec);
 	void addKeyframe(int animId, const glm::vec2 &frame);
 	void changeAnimation(int animId);
+	void changeDirection(int directionId);
 	int animation() const;
+	bool isFacingLeft() const;
 	
 	void setPosition(const glm::vec2 &pos);
 
@@ -42,6 +44,7 @@ private:
 	GLuint vbo;
 	GLint posLocation, texCoordLocation;
 	glm::vec2 position;
+	bool facingLeft;
 	int currentAnimation, currentKeyframe;
 	float timeAnimation;
 	glm::vec2 texCoordDispl;

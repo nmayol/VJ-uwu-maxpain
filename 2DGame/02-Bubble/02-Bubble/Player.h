@@ -23,11 +23,13 @@ public:
 	
 private:
 	bool bJumping;
+	bool facingLeft;
 	glm::ivec2 tileMapDispl, posPlayer;
 	int jumpAngle, startY;
 	Texture spritesheet;
 	Sprite *sprite;
 	TileMap *map;
+	glm::ivec2 collision_box_size;
 
 };
 
