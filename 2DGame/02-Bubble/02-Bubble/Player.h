@@ -22,9 +22,15 @@ public:
 	void setPosition(const glm::vec2 &pos);
 	
 private:
+
+	float actual_speed;
 	bool bJumping;
-	bool facingLeft;
-	glm::ivec2 tileMapDispl, posPlayer;
+	float facingDirection;
+
+	int framesUntilSlowdown;
+
+	glm::ivec2 tileMapDispl;
+	glm::vec2 posPlayer;
 	int jumpAngle, startY;
 	Texture spritesheet;
 	Sprite *sprite;
