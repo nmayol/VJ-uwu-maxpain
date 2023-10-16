@@ -38,7 +38,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {	
 	bJumping = false;
 	framesUntilSlowdown = 0;
-	facingDirection = -1.f;
+	facingDirection = 1.f;
 	actual_speed = 0.f;
 	spritesheet.loadFromFile("images/mario-small.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(SPRITE_OFFSET, 1.f), &spritesheet, &shaderProgram);
@@ -69,13 +69,17 @@ void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
 	
+	//Save inputs and prevents bugs by only allowing left or right (not both)
 	bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 	bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
-
+	if (leftKeyPressed && rightKeyPressed) {
+		leftKeyPressed = (facingDirection == -1.f);
+		rightKeyPressed = !leftKeyPressed;
+	}
 	
 
 	//Detect turn around and apply. If SKIDDING is necesary, apply that ANIMATION
-	if ((leftKeyPressed && facingDirection != -1.f) || (rightKeyPressed && facingDirection != 1.f)) {
+	if (sprite->animation() != SKIDDING && ((leftKeyPressed && facingDirection != -1.f) || (rightKeyPressed && facingDirection != 1.f))) {
 		if (facingDirection == 1.f) sprite->changeDirection(FACING_LEFT);
 		else sprite->changeDirection(FACING_RIGHT);
 		facingDirection *= -1.f;
@@ -88,8 +92,15 @@ void Player::update(int deltaTime)
 	if (sprite->animation() == SKIDDING) {
 		actual_speed -= SKID_DECELERATION;
 
+		// if player decides to stop skidding an resume running previous direction)
+		if ((leftKeyPressed && facingDirection == 1.f) || (rightKeyPressed && facingDirection == -1.f)) {
+			if (facingDirection == 1.f) sprite->changeDirection(FACING_LEFT);
+			else sprite->changeDirection(FACING_RIGHT);
+			facingDirection *= -1.f;
+			sprite->changeAnimation(RUNNING);
+		}
 		// if under threshold for turning around while SKIDDING, turn around
-		if (actual_speed <= SKID_TURNAROUND_SPEED && ((leftKeyPressed && facingDirection == -1.f) || (rightKeyPressed && facingDirection == 1.f))) {
+		else if (actual_speed <= SKID_TURNAROUND_SPEED && ((leftKeyPressed && facingDirection == -1.f) || (rightKeyPressed && facingDirection == 1.f))) {
 			sprite->changeAnimation(RUNNING);
 		}
 		// SLOWED DOWN until STOPPING
