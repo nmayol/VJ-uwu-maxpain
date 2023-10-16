@@ -72,15 +72,16 @@ void Player::update(int deltaTime)
 	bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 	bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
 
+	
+
 	//Detect turn around and apply. If SKIDDING is necesary, apply that ANIMATION
 	if ((leftKeyPressed && facingDirection != -1.f) || (rightKeyPressed && facingDirection != 1.f)) {
+		if (facingDirection == 1.f) sprite->changeDirection(FACING_LEFT);
+		else sprite->changeDirection(FACING_RIGHT);
+		facingDirection *= -1.f;
+
 		if (actual_speed > SKID_TURNAROUND_SPEED) sprite->changeAnimation(SKIDDING);
-		else {
-			if (facingDirection == 1.f) sprite->changeDirection(FACING_LEFT);
-			else sprite->changeDirection(FACING_RIGHT);
-			facingDirection *= -1.f;
-			actual_speed = MIN_WALK_SPEED;
-		}
+		else actual_speed = MIN_WALK_SPEED;
 	}
 
 	//APPLY SKIDDING ANIMATION and move speed reduction
@@ -88,11 +89,7 @@ void Player::update(int deltaTime)
 		actual_speed -= SKID_DECELERATION;
 
 		// if under threshold for turning around while SKIDDING, turn around
-		if (actual_speed <= SKID_TURNAROUND_SPEED && (leftKeyPressed && facingDirection == -1.f) || (rightKeyPressed && facingDirection == 1.f)) {
-			if (facingDirection == 1.f) sprite->changeDirection(FACING_LEFT);
-			else sprite->changeDirection(FACING_RIGHT);
-			facingDirection *= -1.f;
-
+		if (actual_speed <= SKID_TURNAROUND_SPEED && ((leftKeyPressed && facingDirection == -1.f) || (rightKeyPressed && facingDirection == 1.f))) {
 			sprite->changeAnimation(RUNNING);
 		}
 		// SLOWED DOWN until STOPPING
@@ -100,7 +97,7 @@ void Player::update(int deltaTime)
 			sprite->changeAnimation(STANDING);
 			actual_speed = 0.f;
 		}
-		else posPlayer.x += facingDirection * actual_speed;
+		else posPlayer.x += facingDirection * actual_speed * -1.f;
 	}
 
 	// APPLY RUN/WALK Movement LEFT or RIGHT
