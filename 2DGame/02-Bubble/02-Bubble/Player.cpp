@@ -68,10 +68,14 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
-	
-	//Save inputs and prevents bugs by only allowing left or right (not both)
+
+	//load parameters early for better eficiency
+	int actualAnimation = sprite->animation();
+	bool facingLeft = (facingDirection == -1.f);
 	bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 	bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
+
+	//Save inputs and prevents bugs by only allowing left or right (not both)
 	if (leftKeyPressed && rightKeyPressed) {
 		leftKeyPressed = (facingDirection == -1.f);
 		rightKeyPressed = !leftKeyPressed;
@@ -79,44 +83,42 @@ void Player::update(int deltaTime)
 	
 
 	//Detect turn around and apply. If SKIDDING is necesary, apply that ANIMATION
-	if (sprite->animation() != SKIDDING && ((leftKeyPressed && facingDirection != -1.f) || (rightKeyPressed && facingDirection != 1.f))) {
-		if (facingDirection == 1.f) sprite->changeDirection(FACING_LEFT);
-		else sprite->changeDirection(FACING_RIGHT);
+	if ((leftKeyPressed && !facingLeft) || (rightKeyPressed && facingLeft)) {
+		if (facingLeft) sprite->changeDirection(FACING_RIGHT);
+		else sprite->changeDirection(FACING_LEFT);
 		facingDirection *= -1.f;
+		facingLeft = !facingLeft;
 
-		if (actual_speed > SKID_TURNAROUND_SPEED) sprite->changeAnimation(SKIDDING);
+		// if player is already skidding and wants to re-change direction || Player not skidd decides to change direction -> skidd || changes direction but not enouch speed to skid
+		if (actualAnimation == SKIDDING) actualAnimation = RUNNING;
+		else if (actual_speed > SKID_TURNAROUND_SPEED) actualAnimation = SKIDDING;
 		else actual_speed = MIN_WALK_SPEED;
 	}
 
+
 	//APPLY SKIDDING ANIMATION and move speed reduction
-	if (sprite->animation() == SKIDDING) {
+	if (actualAnimation == SKIDDING) {
 		actual_speed -= SKID_DECELERATION;
 
-		// if player decides to stop skidding an resume running previous direction)
-		if ((leftKeyPressed && facingDirection == 1.f) || (rightKeyPressed && facingDirection == -1.f)) {
-			if (facingDirection == 1.f) sprite->changeDirection(FACING_LEFT);
-			else sprite->changeDirection(FACING_RIGHT);
-			facingDirection *= -1.f;
-			sprite->changeAnimation(RUNNING);
-		}
 		// if under threshold for turning around while SKIDDING, turn around
-		else if (actual_speed <= SKID_TURNAROUND_SPEED && ((leftKeyPressed && facingDirection == -1.f) || (rightKeyPressed && facingDirection == 1.f))) {
-			sprite->changeAnimation(RUNNING);
+		if (actual_speed <= SKID_TURNAROUND_SPEED && ((leftKeyPressed && facingLeft) || (rightKeyPressed && !facingLeft))) {
+			actualAnimation = RUNNING;
 		}
 		// SLOWED DOWN until STOPPING
 		else if (actual_speed <= 0) {
-			sprite->changeAnimation(STANDING);
+			actualAnimation = STANDING;
 			actual_speed = 0.f;
 		}
 		else posPlayer.x += facingDirection * actual_speed * -1.f;
 	}
 
+
 	// APPLY RUN/WALK Movement LEFT or RIGHT
 	else if((leftKeyPressed || rightKeyPressed)) {
 
 		// if NOT RUNNING, START RUNNING
-		if (sprite->animation() != RUNNING) {
-			sprite->changeAnimation(RUNNING);
+		if (actualAnimation != RUNNING) {
+			actualAnimation = RUNNING;
 			actual_speed = MIN_WALK_SPEED;
 		}
 
@@ -150,7 +152,8 @@ void Player::update(int deltaTime)
 			}
 			else {
 				actual_speed = std::max(0.f, actual_speed - DECELERATION);
-				if (actual_speed == 0.f) sprite->changeAnimation(STANDING);
+				actualAnimation = STANDING;
+				if (actual_speed == 0.f) actualAnimation = STANDING;
 				else posPlayer.x += actual_speed * facingDirection;
 			}
 	}
@@ -188,6 +191,7 @@ void Player::update(int deltaTime)
 		}
 	}
 	
+	if (sprite->animation() != actualAnimation) sprite->changeAnimation(actualAnimation);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
