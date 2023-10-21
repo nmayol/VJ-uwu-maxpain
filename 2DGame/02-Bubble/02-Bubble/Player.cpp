@@ -113,8 +113,9 @@ void Player::update(int deltaTime)
 
 		// if player is already skidding and wants to re-change direction || Player not skidd decides to change direction -> skidd || changes direction but not enouch speed to skid
 		if (actualAnimation == SKIDDING) actualAnimation = RUNNING;
-		else if (actual_speed > SKID_TURNAROUND_SPEED) actualAnimation = SKIDDING;
+		else if (actual_speed >= SKID_TURNAROUND_SPEED) actualAnimation = SKIDDING;
 		else actual_speed = MIN_WALK_SPEED;
+
 	}
 
 
@@ -136,7 +137,7 @@ void Player::update(int deltaTime)
 
 
 	// APPLY RUN/WALK Movement LEFT or RIGHT
-	if(actualAnimation != SKIDDING &&(leftKeyPressed || rightKeyPressed)) {
+	if(actualAnimation != SKIDDING && (leftKeyPressed || rightKeyPressed)) {
 
 		// if NOT RUNNING, START RUNNING
 		if (actualAnimation != RUNNING) {
@@ -257,6 +258,9 @@ void Player::update(int deltaTime)
 	}
 	
 	if (sprite->animation() != actualAnimation && !bJumping) sprite->changeAnimation(actualAnimation);
+
+
+
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
