@@ -164,21 +164,18 @@ void Player::update(int deltaTime)
 			sprite->changeAnimation(STANDING);
 		}
 	}
-	else {	
-		// NOT pressing any key -> Deacelerating until STANDING
-		if (sprite->animation() == RUNNING)
-
-			//IF at MAX SPEED, wait 10 frames then deacelerate
-			if (framesUntilSlowdown > 0) {
-				framesUntilSlowdown -= 1;
-				posPlayer.x += actual_speed * facingDirection;
-			}
-			else {
-				actual_speed = std::max(0.f, actual_speed - DECELERATION);
-				actualAnimation = STANDING;
-				if (actual_speed == 0.f) actualAnimation = STANDING;
-				else posPlayer.x += actual_speed * facingDirection;
-			}
+	// NOT pressing any key -> Deacelerating until STANDING
+	else if (actualAnimation == RUNNING) {
+		//IF at MAX SPEED, wait 10 frames then deacelerate
+		if (framesUntilSlowdown > 0) {
+			framesUntilSlowdown -= 1;
+			posPlayer.x += actual_speed * facingDirection;
+		}
+		else {
+			actual_speed = std::max(0.f, actual_speed - DECELERATION);
+			if (actual_speed == 0.f) actualAnimation = STANDING;
+			else posPlayer.x += actual_speed * facingDirection;
+		}
 	}
 
 	// STARTED JUMPING THIS FRAME
@@ -258,9 +255,6 @@ void Player::update(int deltaTime)
 	}
 	
 	if (sprite->animation() != actualAnimation && !bJumping) sprite->changeAnimation(actualAnimation);
-
-
-
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
