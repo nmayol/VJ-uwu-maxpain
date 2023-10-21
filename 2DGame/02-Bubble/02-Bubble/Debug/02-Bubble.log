@@ -1,15 +1,5 @@
 ﻿  Player.cpp
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Player.cpp(169,18): warning C4244: '=': conversión de 'int' a 'T'; posible pérdida de datos
-          with
-          [
-              T=float
-          ]
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Player.cpp(173,21): warning C4244: '=': conversión de 'int' a 'T'; posible pérdida de datos
-          with
-          [
-              T=float
-          ]
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Player.cpp(187,23): warning C4244: '=': conversión de 'T' a 'int'; posible pérdida de datos
+C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Player.cpp(254,23): warning C4244: '=': conversión de 'T' a 'int'; posible pérdida de datos
           with
           [
               T=float

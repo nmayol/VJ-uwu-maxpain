@@ -11,7 +11,7 @@
 #define JUMP_HEIGHT 96
 #define FALL_STEP 4
 
-// Physics Values
+// <- and -> Physics Values from ORIGINAL GAME
 #define MIN_WALK_SPEED 0.07421875f * 2
 #define MAX_WALK_SPEED 1.5625f * 2
 #define WALK_ACCELERATION 0.037109375f * 2
@@ -20,6 +20,27 @@
 #define DECELERATION 0.05078125f * 2
 #define SKID_DECELERATION 0.1015625f * 2
 #define SKID_TURNAROUND_SPEED 0.5625f * 2
+
+// Mid-Air Momentum Physics
+#define MIN_AIR_MOMENTUM_THRESHOLD 1.5625f * 2
+#define MAX_AIR_MOMENTUM_THRESHOLD 1.8125f * 2
+#define SLOW_AIR_MOMENTUM 0.037109375f * 2
+#define NORMAL_AIR_MOMENTUM 0.05078125f * 2
+#define FAST_AIR_MOMENTUM 0.0556640625f * 2
+
+
+// Jumping Physics Vales from ORIGINAL GAME
+#define MIN_XSPEED_NORM_JUMP 1.f * 2
+#define MIN_XSPEED_FAST_JUMP 2.3125f * 2
+#define INITIAL_JUMP_YSPEED 4.f * 2
+#define INITIAL_FAST_JUMP_YSPEED 5. * 2
+#define SLOW_HOLDING_GRAVITY 0.125f * 2
+#define NORMAL_HOLDING_GRAVITY 0.1171875f * 2
+#define FAST_HOLDING_GRAVITY 0.15625f * 2
+#define SLOW_GRAVITY 0.4375f * 2
+#define NORMAL_GRAVITY 0.375f * 2
+#define FAST_GRAVITY 0.15625f * 2
+#define MAX_FALL_SPEED -4.53515625f * 2
 
 #define SPRITE_OFFSET (1.f / 14.f)
 
@@ -74,6 +95,7 @@ void Player::update(int deltaTime)
 	bool facingLeft = (facingDirection == -1.f);
 	bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 	bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
+	bool upKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_UP);
 
 	//Save inputs and prevents bugs by only allowing left or right (not both)
 	if (leftKeyPressed && rightKeyPressed) {
@@ -114,7 +136,7 @@ void Player::update(int deltaTime)
 
 
 	// APPLY RUN/WALK Movement LEFT or RIGHT
-	else if((leftKeyPressed || rightKeyPressed)) {
+	if(actualAnimation != SKIDDING &&(leftKeyPressed || rightKeyPressed)) {
 
 		// if NOT RUNNING, START RUNNING
 		if (actualAnimation != RUNNING) {
@@ -157,25 +179,68 @@ void Player::update(int deltaTime)
 				else posPlayer.x += actual_speed * facingDirection;
 			}
 	}
-	
-	if(bJumping)
-	{
-		if (sprite->animation() != JUMPING)
-			sprite->changeAnimation(JUMPING);
 
-		jumpAngle += JUMP_ANGLE_STEP;
-		if(jumpAngle == 180)
-		{
-			bJumping = false;
-			sprite->changeAnimation(STANDING);
-			posPlayer.y = startY;
+	// STARTED JUMPING THIS FRAME
+	if (!bJumping && upKeyPressed) {
+
+		//if initial XSPEED was SLOW or FAST -> Jump has different behaviours
+		if (actual_speed < MIN_XSPEED_FAST_JUMP) vertical_speed = INITIAL_JUMP_YSPEED;
+		else vertical_speed = INITIAL_FAST_JUMP_YSPEED;
+
+		initial_jump_xspeed = actual_speed;
+		sprite->changeAnimation(JUMPING);
+		bJumping = true;
+		if (actualAnimation == SKIDDING) {
+			if (facingLeft) sprite->changeDirection(FACING_RIGHT);
+			else sprite->changeDirection(FACING_LEFT);
+			facingDirection *= -1.f;
+			facingLeft = !facingLeft;
 		}
-		else
+		if (Game::instance().getKey('z') || Game::instance().getKey('Z')) max_xspeed_allowed_jumping = MAX_RUN_SPEED;
+		else max_xspeed_allowed_jumping = MAX_WALK_SPEED;
+
+		posPlayer.y -= vertical_speed;
+	}
+
+	// MID JUMP
+	else if(bJumping)
+	{
+
+		// VERTICAL MOVEMENT
+		if (vertical_speed < MAX_FALL_SPEED) vertical_speed = MAX_FALL_SPEED;
+		else if (initial_jump_xspeed < MIN_XSPEED_NORM_JUMP) 
 		{
-			posPlayer.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
-			if(jumpAngle > 90)
-				bJumping = !map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y);
+			if (upKeyPressed) vertical_speed -= SLOW_HOLDING_GRAVITY;
+			else vertical_speed -= SLOW_GRAVITY;
 		}
+		else if (initial_jump_xspeed >= MIN_XSPEED_FAST_JUMP) 
+		{
+			if (upKeyPressed) vertical_speed -= FAST_HOLDING_GRAVITY;
+			else vertical_speed -= FAST_GRAVITY;
+		}
+		else //if (MIN_XSPEED_NORM_JUMP <= initial_jump_xspeed && initial_jump_xspeed < MIN_XSPEED_FAST_JUMP) {
+		{
+			if (upKeyPressed) vertical_speed -= NORMAL_HOLDING_GRAVITY;
+			else vertical_speed -= NORMAL_GRAVITY;
+		}
+
+		// HORIZONTAL MOVEMENT
+		if (leftKeyPressed && facingLeft || rightKeyPressed && !facingLeft) 
+		{
+			//Moving Forward
+			if (actual_speed < MIN_AIR_MOMENTUM_THRESHOLD) actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed += SLOW_AIR_MOMENTUM);
+			else actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed += FAST_AIR_MOMENTUM);
+			actualAnimation = RUNNING;
+		}
+		else if (leftKeyPressed && !facingLeft || rightKeyPressed && facingLeft)
+		{
+			//Moving Backward
+			if (actual_speed > MIN_AIR_MOMENTUM_THRESHOLD ) actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed -= FAST_AIR_MOMENTUM);
+			else if (initial_jump_xspeed < MAX_AIR_MOMENTUM_THRESHOLD) actual_speed  = std::min(max_xspeed_allowed_jumping, actual_speed -= SLOW_AIR_MOMENTUM);
+			else actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed -= NORMAL_AIR_MOMENTUM);
+		}
+
+		posPlayer.y -= vertical_speed;
 	}      
 	else
 	{
@@ -191,7 +256,7 @@ void Player::update(int deltaTime)
 		}
 	}
 	
-	if (sprite->animation() != actualAnimation) sprite->changeAnimation(actualAnimation);
+	if (sprite->animation() != actualAnimation && !bJumping) sprite->changeAnimation(actualAnimation);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
