@@ -39,7 +39,7 @@
 #define FAST_HOLDING_GRAVITY 0.15625f * 2
 #define SLOW_GRAVITY 0.4375f * 2
 #define NORMAL_GRAVITY 0.375f * 2
-#define FAST_GRAVITY 0.15625f * 2
+#define FAST_GRAVITY 0.5625f * 2
 #define MAX_FALL_SPEED -4.53515625f * 2
 
 #define SPRITE_OFFSET (1.f / 14.f)
@@ -58,6 +58,7 @@ enum PlayerDirection
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {	
 	bJumping = false;
+	JumpedAndReleased = true;
 	framesUntilSlowdown = 0;
 	facingDirection = 1.f;
 	actual_speed = 0.f;
@@ -96,7 +97,10 @@ void Player::update(int deltaTime)
 	bool facingLeft = (facingDirection == -1.f);
 	bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 	bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
-	bool upKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_UP);
+	bool runKeyPressed = Game::instance().getKey('z') || Game::instance().getKey('Z');
+	bool upKeyPressed = false;
+	if (Game::instance().getSpecialKey(GLUT_KEY_UP) || Game::instance().getKey('x') || Game::instance().getKey('X')) upKeyPressed = JumpedAndReleased;
+	else JumpedAndReleased = true;
 
 	//Save inputs and prevents bugs by only allowing left or right (not both)
 	if (leftKeyPressed && rightKeyPressed) {
@@ -105,83 +109,66 @@ void Player::update(int deltaTime)
 	}
 	
 
-	//Detect turn around and apply. If SKIDDING is necesary, apply that ANIMATION
-	if ((leftKeyPressed && !facingLeft) || (rightKeyPressed && facingLeft)) {
-		if (facingLeft) sprite->changeDirection(FACING_RIGHT);
-		else sprite->changeDirection(FACING_LEFT);
-		facingDirection *= -1.f;
-		facingLeft = !facingLeft;
+	// MARIO IS MID-JUMPING
+	if (bJumping) {
 
-		// if player is already skidding and wants to re-change direction || Player not skidd decides to change direction -> skidd || changes direction but not enouch speed to skid
-		if (actualAnimation == SKIDDING) actualAnimation = RUNNING;
-		else if (actual_speed >= SKID_TURNAROUND_SPEED) actualAnimation = SKIDDING;
-		else actual_speed = MIN_WALK_SPEED;
-
-	}
-
-
-	//APPLY SKIDDING ANIMATION and move speed reduction
-	if (actualAnimation == SKIDDING) {
-		actual_speed -= SKID_DECELERATION;
-
-		// if under threshold for turning around while SKIDDING, turn around
-		if (actual_speed <= SKID_TURNAROUND_SPEED && ((leftKeyPressed && facingLeft) || (rightKeyPressed && !facingLeft))) {
-			actualAnimation = RUNNING;
-		}
-		// SLOWED DOWN until STOPPING
-		else if (actual_speed <= 0) {
-			actualAnimation = STANDING;
-			actual_speed = 0.f;
-		}
-		else posPlayer.x += facingDirection * actual_speed * -1.f;
-	}
-
-
-	// APPLY RUN/WALK Movement LEFT or RIGHT
-	if(actualAnimation != SKIDDING && (leftKeyPressed || rightKeyPressed)) {
-
-		// if NOT RUNNING, START RUNNING
-		if (actualAnimation != RUNNING) {
-			actualAnimation = RUNNING;
-			actual_speed = MIN_WALK_SPEED;
-		}
-
-		// Pressing RUN Key, Mario is Running
-		if (Game::instance().getKey('z') || Game::instance().getKey('Z')) {
-			if (actual_speed < MAX_RUN_SPEED) actual_speed = std::min(MAX_RUN_SPEED, actual_speed + RUN_ACCELERATION);
-
-			//At MAX_SPEED, WAIT 10 Frames before slowing down
-			if (actual_speed == MAX_RUN_SPEED) framesUntilSlowdown = 10;
-		}
-		// NOT Pressing RUN Key, Mario is Walking
-		else if (actual_speed < MAX_WALK_SPEED) actual_speed = std::min(MAX_WALK_SPEED, actual_speed + WALK_ACCELERATION);
-
-		//update position acording to speed and direction facing
-		posPlayer.x += facingDirection * actual_speed;
-
-		if(map->collisionMoveLeft(posPlayer, collision_box_size))
+		// VERTICAL MOVEMENT
+		if (vertical_speed < MAX_FALL_SPEED) vertical_speed = MAX_FALL_SPEED;
+		else if (initial_jump_xspeed < MIN_XSPEED_NORM_JUMP)
 		{
-			posPlayer.x += 2;
-			sprite->changeAnimation(STANDING);
+			if (upKeyPressed) vertical_speed -= SLOW_HOLDING_GRAVITY;
+			else vertical_speed -= SLOW_GRAVITY;
 		}
-	}
-	// NOT pressing any key -> Deacelerating until STANDING
-	else if (actualAnimation == RUNNING) {
-		//IF at MAX SPEED, wait 10 frames then deacelerate
-		if (framesUntilSlowdown > 0) {
-			framesUntilSlowdown -= 1;
-			posPlayer.x += actual_speed * facingDirection;
+		else if (initial_jump_xspeed >= MIN_XSPEED_FAST_JUMP)
+		{
+			if (upKeyPressed) vertical_speed -= FAST_HOLDING_GRAVITY;
+			else vertical_speed -= FAST_GRAVITY;
 		}
-		else {
-			actual_speed = std::max(0.f, actual_speed - DECELERATION);
-			if (actual_speed == 0.f) actualAnimation = STANDING;
-			else posPlayer.x += actual_speed * facingDirection;
+		else if (MIN_XSPEED_NORM_JUMP <= initial_jump_xspeed && initial_jump_xspeed < MIN_XSPEED_FAST_JUMP)
+		{
+			if (upKeyPressed) vertical_speed -= NORMAL_HOLDING_GRAVITY;
+			else vertical_speed -= NORMAL_GRAVITY;
+		}
+
+		// HORIZONTAL MOVEMENT
+		if (leftKeyPressed && facingLeft || rightKeyPressed && !facingLeft)
+		{
+			//Moving Forward
+			if (actual_speed < MIN_AIR_MOMENTUM_THRESHOLD) actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed += SLOW_AIR_MOMENTUM);
+			else actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed += FAST_AIR_MOMENTUM);
+			actualAnimation = RUNNING;
+		}
+		else if (leftKeyPressed && !facingLeft || rightKeyPressed && facingLeft)
+		{
+			//Moving Backward
+			if (actual_speed > MIN_AIR_MOMENTUM_THRESHOLD) actual_speed = std::max(-max_xspeed_allowed_jumping, actual_speed -= FAST_AIR_MOMENTUM);
+			else if (initial_jump_xspeed < MAX_AIR_MOMENTUM_THRESHOLD) actual_speed = std::max(-max_xspeed_allowed_jumping, actual_speed -= SLOW_AIR_MOMENTUM);
+			else actual_speed = std::max(-max_xspeed_allowed_jumping, actual_speed -= NORMAL_AIR_MOMENTUM);
+		}
+
+		//APPLY MOVEMENT
+		posPlayer.x += facingDirection * actual_speed;
+		posPlayer.y -= vertical_speed;
+
+		// Check if already on floor (stop falling)
+		if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) {
+			bJumping = false;
+			JumpedAndReleased = false;
+			vertical_speed = std::max(-8.f, vertical_speed);
+
+			//Moving backwards, apply special logic
+			if (actual_speed < 0) {
+				actual_speed *= -1.f;
+				actualAnimation = SKIDDING;
+
+			}
 		}
 	}
 
-	// STARTED JUMPING THIS FRAME
-	if (!bJumping) {
+	//MARIO IS NOT JUMPING
+	else {
 
+		// MARIO WANTS TO JUMP
 		if (upKeyPressed) {
 			//if initial XSPEED was SLOW or FAST -> Jump has different behaviours
 			if (actual_speed < MIN_XSPEED_FAST_JUMP) vertical_speed = INITIAL_JUMP_YSPEED;
@@ -196,14 +183,90 @@ void Player::update(int deltaTime)
 				facingDirection *= -1.f;
 				facingLeft = !facingLeft;
 			}
-			if (Game::instance().getKey('z') || Game::instance().getKey('Z')) max_xspeed_allowed_jumping = MAX_RUN_SPEED;
+			if (runKeyPressed) max_xspeed_allowed_jumping = MAX_RUN_SPEED;
 			else max_xspeed_allowed_jumping = MAX_WALK_SPEED;
 
 			posPlayer.y -= vertical_speed;
 		}
 		// Check if Falling Down and Apply Falling Down
 		else {
-			posPlayer.y += vertical_speed;
+
+			//MARIO IS TURNING AROUND. If SKIDDING is necesary, apply that ANIMATION
+			if ((leftKeyPressed && !facingLeft) || (rightKeyPressed && facingLeft)) {
+				if (facingLeft) sprite->changeDirection(FACING_RIGHT);
+				else sprite->changeDirection(FACING_LEFT);
+				facingDirection *= -1.f;
+				facingLeft = !facingLeft;
+
+				// if player is already skidding and wants to re-change direction || Player not skidd decides to change direction -> skidd || changes direction but not enouch speed to skid
+				if (actualAnimation == SKIDDING) actualAnimation = RUNNING;
+				else if (actual_speed >= SKID_TURNAROUND_SPEED) actualAnimation = SKIDDING;
+				else actual_speed = MIN_WALK_SPEED;
+
+			}
+
+
+			//APPLY SKIDDING ANIMATION and move speed reduction
+			if (actualAnimation == SKIDDING) {
+				actual_speed -= SKID_DECELERATION;
+
+				// if under threshold for turning around while SKIDDING, turn around
+				if (actual_speed <= SKID_TURNAROUND_SPEED && ((leftKeyPressed && facingLeft) || (rightKeyPressed && !facingLeft))) {
+					actualAnimation = RUNNING;
+				}
+				// SLOWED DOWN until STOPPING
+				else if (actual_speed <= 0) {
+					actualAnimation = STANDING;
+					actual_speed = 0.f;
+				}
+				else posPlayer.x += facingDirection * actual_speed * -1.f;
+			}
+
+
+			// APPLY RUN/WALK Movement LEFT or RIGHT
+			if (actualAnimation != SKIDDING && (leftKeyPressed || rightKeyPressed)) {
+
+				// if NOT RUNNING, START RUNNING
+				if (actualAnimation != RUNNING) {
+					actualAnimation = RUNNING;
+					actual_speed = MIN_WALK_SPEED;
+				}
+
+				// Pressing RUN Key, Mario is Running
+				if (Game::instance().getKey('z') || Game::instance().getKey('Z')) {
+					if (actual_speed < MAX_RUN_SPEED) actual_speed = std::min(MAX_RUN_SPEED, actual_speed + RUN_ACCELERATION);
+
+					//At MAX_SPEED, WAIT 10 Frames before slowing down
+					if (actual_speed == MAX_RUN_SPEED) framesUntilSlowdown = 10;
+				}
+				// NOT Pressing RUN Key, Mario is Walking
+				else if (actual_speed < MAX_WALK_SPEED) actual_speed = std::min(MAX_WALK_SPEED, actual_speed + WALK_ACCELERATION);
+
+				//update position acording to speed and direction facing
+				posPlayer.x += facingDirection * actual_speed;
+
+				if (map->collisionMoveLeft(posPlayer, collision_box_size))
+				{
+					posPlayer.x += 2;
+					sprite->changeAnimation(STANDING);
+				}
+			}
+			// NOT pressing any key -> Deacelerating until STANDING
+			else if (actualAnimation == RUNNING) {
+				//IF at MAX SPEED, wait 10 frames then deacelerate
+				if (framesUntilSlowdown > 0) {
+					framesUntilSlowdown -= 1;
+					posPlayer.x += actual_speed * facingDirection;
+				}
+				else {
+					actual_speed = std::max(0.f, actual_speed - DECELERATION);
+					if (actual_speed == 0.f) actualAnimation = STANDING;
+					else posPlayer.x += actual_speed * facingDirection;
+				}
+			}
+
+			// APPLY FALLING PHYSICS
+			posPlayer.y -= vertical_speed;
 			if (!map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
 			{
 				sprite->changeAnimation(JUMPING);
@@ -214,54 +277,12 @@ void Player::update(int deltaTime)
 					facingDirection *= -1.f;
 					facingLeft = !facingLeft;
 				}
-				if (Game::instance().getKey('z') || Game::instance().getKey('Z')) max_xspeed_allowed_jumping = MAX_RUN_SPEED;
+				if (runKeyPressed) max_xspeed_allowed_jumping = MAX_RUN_SPEED;
 				else max_xspeed_allowed_jumping = MAX_WALK_SPEED;
 			}
 		}
-	}
-
-	// MID JUMP
-	else {
-
-		// VERTICAL MOVEMENT
-		if (vertical_speed < MAX_FALL_SPEED) vertical_speed = MAX_FALL_SPEED;
-		else if (initial_jump_xspeed < MIN_XSPEED_NORM_JUMP) 
-		{
-			if (upKeyPressed) vertical_speed -= SLOW_HOLDING_GRAVITY;
-			else vertical_speed -= SLOW_GRAVITY;
-		}
-		else if (initial_jump_xspeed >= MIN_XSPEED_FAST_JUMP) 
-		{
-			if (upKeyPressed) vertical_speed -= FAST_HOLDING_GRAVITY;
-			else vertical_speed -= FAST_GRAVITY;
-		}
-		else //if (MIN_XSPEED_NORM_JUMP <= initial_jump_xspeed && initial_jump_xspeed < MIN_XSPEED_FAST_JUMP) {
-		{
-			if (upKeyPressed) vertical_speed -= NORMAL_HOLDING_GRAVITY;
-			else vertical_speed -= NORMAL_GRAVITY;
-		}
-
-		// HORIZONTAL MOVEMENT
-		if (leftKeyPressed && facingLeft || rightKeyPressed && !facingLeft) 
-		{
-			//Moving Forward
-			if (actual_speed < MIN_AIR_MOMENTUM_THRESHOLD) actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed += SLOW_AIR_MOMENTUM);
-			else actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed += FAST_AIR_MOMENTUM);
-			actualAnimation = RUNNING;
-		}
-		else if (leftKeyPressed && !facingLeft || rightKeyPressed && facingLeft)
-		{
-			//Moving Backward
-			if (actual_speed > MIN_AIR_MOMENTUM_THRESHOLD ) actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed -= FAST_AIR_MOMENTUM);
-			else if (initial_jump_xspeed < MAX_AIR_MOMENTUM_THRESHOLD) actual_speed  = std::min(max_xspeed_allowed_jumping, actual_speed -= SLOW_AIR_MOMENTUM);
-			else actual_speed = std::min(max_xspeed_allowed_jumping, actual_speed -= NORMAL_AIR_MOMENTUM);
-		}
-
-		posPlayer.y -= vertical_speed;
-		// Check if already on floor (stop falling)
-		if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) bJumping = false;
-
 	}      
+
 	
 	if (sprite->animation() != actualAnimation && !bJumping) sprite->changeAnimation(actualAnimation);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
