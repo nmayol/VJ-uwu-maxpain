@@ -141,7 +141,7 @@ Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet,
 	newSprite->addKeyframe(SKIDDING, glm::vec2(BIG_SPRITE_OFFSET_X * 3.f, baseSpriteRow));
 
 	newSprite->setAnimationSpeed(CROUCHING, 8);
-	newSprite->addKeyframe(CROUCHING, glm::vec2(BIG_SPRITE_OFFSET_X * 6.f, baseSpriteRow));
+	newSprite->addKeyframe(CROUCHING, glm::vec2(BIG_SPRITE_OFFSET_X * 5.f, baseSpriteRow));
 
 	return newSprite;
 }
@@ -303,8 +303,20 @@ void Player::update(int deltaTime)
 			}
 
 
+			//APPLY CROUCHING
+			if (!leftKeyPressed && !rightKeyPressed && downKeyPressed && actualForm != SMALL) {
+				if (actualAnimation == SKIDDING) {
+					facingDirection *= -1.f;
+					facingLeft = !facingLeft;
+				}
+				framesUntilSlowdown = 0;
+				actual_speed = std::max(0.f, actual_speed - DECELERATION);
+				posPlayer.x += actual_speed * facingDirection;
+				actualAnimation = CROUCHING;
+			}
+
 			//APPLY SKIDDING ANIMATION and move speed reduction
-			if (actualAnimation == SKIDDING) {
+			else if (actualAnimation == SKIDDING) {
 				actual_speed -= SKID_DECELERATION;
 
 				// if under threshold for turning around while SKIDDING, turn around
@@ -319,9 +331,17 @@ void Player::update(int deltaTime)
 				else posPlayer.x += facingDirection * actual_speed * -1.f;
 			}
 
-
 			// APPLY RUN/WALK Movement LEFT or RIGHT
-			if (actualAnimation != SKIDDING && (leftKeyPressed || rightKeyPressed)) {
+			else if (leftKeyPressed || rightKeyPressed) {
+				if (leftKeyPressed) {
+					facingDirection = -1.f;
+					sprite->changeDirection(FACING_LEFT);
+				}
+				else {
+					facingDirection = 1.f;
+					sprite->changeDirection(FACING_RIGHT);
+				}
+
 
 				// if NOT RUNNING, START RUNNING
 				if (actualAnimation != RUNNING) {
@@ -349,10 +369,10 @@ void Player::update(int deltaTime)
 				}
 			}
 
-			
-			// NOT pressing any key -> Deacelerating until STANDING
-			else if (actualAnimation == RUNNING) {
 
+			// NOT pressing any key -> Deacelerating until STANDING
+			else if (actual_speed > 0) {
+				actualAnimation = RUNNING;
 				//IF at MAX SPEED, wait 10 frames then deacelerate
 				if (framesUntilSlowdown > 0) {
 					framesUntilSlowdown -= 1;
@@ -364,6 +384,7 @@ void Player::update(int deltaTime)
 					else posPlayer.x += actual_speed * facingDirection;
 				}
 			}
+			else actualAnimation = STANDING;
 
 			// APPLY FALLING PHYSICS
 			posPlayer.y -= vertical_speed;
