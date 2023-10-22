@@ -171,6 +171,9 @@ void Player::setMarioForm(int formId) {
 		collision_box_size = glm::ivec2(32, 64);
 		break;
 	}
+
+	if (facingDirection == -1.f) sprite->changeDirection(FACING_LEFT);
+	else sprite->changeDirection(FACING_RIGHT);
 	pressedPCount = 30;
 	pressedPandReleased = false;
 }
