@@ -42,16 +42,25 @@
 #define FAST_GRAVITY 0.5625f * 2
 #define MAX_FALL_SPEED -4.53515625f * 2
 
-#define SPRITE_OFFSET (1.f / 14.f)
+//For reading Sprite
+#define SPRITE_OFFSET_X (1.f / 14.f)
+#define BIG_SPRITE_OFFSET_X (1.f / 17.f)
+#define SPRITE_OFFSET_Y (1.f / 11.f)
 
-enum PlayerAnims
+enum playerAnims
 {
-	STANDING, RUNNING, JUMPING, SKIDDING, DYING
+	STANDING, RUNNING, JUMPING, SKIDDING, CROUCHING
 };
+
 
 enum PlayerDirection
 {
 	FACING_LEFT, FACING_RIGHT
+};
+
+enum PlayerTransformation
+{
+	SMALL, NORMAL, FIRE
 };
 
 
@@ -59,34 +68,111 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {	
 	bJumping = false;
 	JumpedAndReleased = true;
+	pressedPCount = 0;
+	pressedPandReleased = true;
 	framesUntilSlowdown = 0;
 	facingDirection = 1.f;
 	actual_speed = 0.f;
 	vertical_speed = 2.5f;
 	actualAnimation = STANDING;
-	spritesheet.loadFromFile("images/mario-small.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(SPRITE_OFFSET, 1.f), &spritesheet, &shaderProgram);
-	sprite->setNumberAnimations(5);
-	
-		sprite->setAnimationSpeed(STANDING, 8);
-		sprite->addKeyframe(STANDING, glm::vec2(SPRITE_OFFSET*6.f, 0.f));
-		
-		sprite->setAnimationSpeed(RUNNING, 8);
-		sprite->addKeyframe(RUNNING, glm::vec2(0.f, 0.f));
-		sprite->addKeyframe(RUNNING, glm::vec2(SPRITE_OFFSET * 1.f, 0.f));
-		sprite->addKeyframe(RUNNING, glm::vec2(SPRITE_OFFSET * 2.f, 0.f));
-		
-		sprite->setAnimationSpeed(JUMPING, 8);
-		sprite->addKeyframe(JUMPING, glm::vec2(SPRITE_OFFSET * 4.f, 0.f));
+	actualForm = SMALL;
 
-		sprite->setAnimationSpeed(SKIDDING, 8);
-		sprite->addKeyframe(SKIDDING, glm::vec2(SPRITE_OFFSET * 3.f, 0.f));
-		
-	sprite->changeAnimation(0);
+	//INIT SPRITES
+	smallMarioSpritesheet.loadFromFile("images/small-mario.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	smallMarioSprite = initSmallMarioSprite(&smallMarioSpritesheet, &shaderProgram);
+
+	normalMarioSpritesheet.loadFromFile("images/normal-mario.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	normalMarioSprite = initNormalMarioSprite(0.f, &normalMarioSpritesheet, &shaderProgram);
+
+	normalMarioSpritesheet.loadFromFile("images/normal-mario.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	fireMarioSprite = initNormalMarioSprite(1.f, &normalMarioSpritesheet, &shaderProgram);
+	sprite = smallMarioSprite;
+
 	tileMapDispl = tileMapPos;
-	collision_box_size = glm::ivec2(32, 32);
+	collision_box_size = glm::ivec2(28, 32);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	
+}
+
+//INIT SMALL MARIO SPRITE_SHEET
+Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shaderProgram) {
+
+	Sprite* newSprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
+
+	newSprite->setNumberAnimations(5);
+
+	newSprite->setAnimationSpeed(STANDING, 8);
+	newSprite->addKeyframe(STANDING, glm::vec2(SPRITE_OFFSET_X * 6.f, 0.f));
+
+	newSprite->setAnimationSpeed(RUNNING, 8);
+	newSprite->addKeyframe(RUNNING, glm::vec2(0.f, 0.f));
+	newSprite->addKeyframe(RUNNING, glm::vec2(SPRITE_OFFSET_X * 1.f, 0.f));
+	newSprite->addKeyframe(RUNNING, glm::vec2(SPRITE_OFFSET_X * 2.f, 0.f));
+
+	newSprite->setAnimationSpeed(JUMPING, 8);
+	newSprite->addKeyframe(JUMPING, glm::vec2(SPRITE_OFFSET_X * 4.f, 0.f));
+
+	newSprite->setAnimationSpeed(SKIDDING, 8);
+	newSprite->addKeyframe(SKIDDING, glm::vec2(SPRITE_OFFSET_X * 3.f, 0.f));
+
+	return newSprite;
+}
+
+
+//INIT NORMAL MARIO SPRITE_SHEET
+Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet, ShaderProgram* shaderProgram) {
+
+	Sprite* newSprite = Sprite::createSprite(glm::ivec2(32, 64), glm::vec2(BIG_SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
+	newSprite->setNumberAnimations(6);
+	baseSpriteRow *= SPRITE_OFFSET_Y;
+
+	newSprite->setAnimationSpeed(STANDING, 8);
+	newSprite->addKeyframe(STANDING, glm::vec2(BIG_SPRITE_OFFSET_X * 6.f, baseSpriteRow));
+
+	newSprite->setAnimationSpeed(RUNNING, 8);
+	newSprite->addKeyframe(RUNNING, glm::vec2(0.f, baseSpriteRow));
+	newSprite->addKeyframe(RUNNING, glm::vec2(BIG_SPRITE_OFFSET_X * 1.f, baseSpriteRow));
+	newSprite->addKeyframe(RUNNING, glm::vec2(BIG_SPRITE_OFFSET_X * 2.f, baseSpriteRow));
+
+	newSprite->setAnimationSpeed(JUMPING, 8);
+	newSprite->addKeyframe(JUMPING, glm::vec2(BIG_SPRITE_OFFSET_X * 4.f, baseSpriteRow));
+
+	newSprite->setAnimationSpeed(SKIDDING, 8);
+	newSprite->addKeyframe(SKIDDING, glm::vec2(BIG_SPRITE_OFFSET_X * 3.f, baseSpriteRow));
+
+	newSprite->setAnimationSpeed(CROUCHING, 8);
+	newSprite->addKeyframe(CROUCHING, glm::vec2(BIG_SPRITE_OFFSET_X * 6.f, baseSpriteRow));
+
+	return newSprite;
+}
+
+
+//CHANGE MARIO FORM
+void Player::setMarioForm(int formId) {
+
+	if (actualForm != SMALL && formId == SMALL) posPlayer.y += 32.f;
+	else if (actualForm == SMALL && formId != SMALL) posPlayer.y -= 32.f;
+
+	actualForm = formId;
+
+	switch (formId) {
+	case SMALL:
+		sprite = smallMarioSprite;
+		collision_box_size = glm::ivec2(28, 32);
+		break;
+
+	case NORMAL:
+		sprite = normalMarioSprite;
+		collision_box_size = glm::ivec2(32, 64);
+		break;
+
+	default:
+		sprite = fireMarioSprite;
+		collision_box_size = glm::ivec2(32, 64);
+		break;
+	}
+	pressedPCount = 30;
+	pressedPandReleased = false;
 }
 
 void Player::update(int deltaTime)
@@ -98,9 +184,17 @@ void Player::update(int deltaTime)
 	bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 	bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
 	bool runKeyPressed = Game::instance().getKey('z') || Game::instance().getKey('Z');
+	bool downKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_DOWN);
 	bool upKeyPressed = false;
 	if (Game::instance().getSpecialKey(GLUT_KEY_UP) || Game::instance().getKey('x') || Game::instance().getKey('X')) upKeyPressed = JumpedAndReleased;
 	else JumpedAndReleased = true;
+
+	//DEV CONTROLS
+	if ((Game::instance().getKey('p') || Game::instance().getKey('P'))) {
+		if (pressedPandReleased || pressedPCount == 0) setMarioForm((actualForm + 1) % 3);
+	}
+	else pressedPandReleased = true;
+	pressedPCount--;
 
 	//Save inputs and prevents bugs by only allowing left or right (not both)
 	if (leftKeyPressed && rightKeyPressed) {
@@ -251,8 +345,11 @@ void Player::update(int deltaTime)
 					sprite->changeAnimation(STANDING);
 				}
 			}
+
+			
 			// NOT pressing any key -> Deacelerating until STANDING
 			else if (actualAnimation == RUNNING) {
+
 				//IF at MAX SPEED, wait 10 frames then deacelerate
 				if (framesUntilSlowdown > 0) {
 					framesUntilSlowdown -= 1;
