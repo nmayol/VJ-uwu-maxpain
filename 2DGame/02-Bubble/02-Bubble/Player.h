@@ -23,8 +23,13 @@ public:
 	
 private:
 
+	int actualAnimation;
 	float actual_speed;
+	float initial_jump_xspeed;
+	float vertical_speed;
+	float max_xspeed_allowed_jumping;
 	bool bJumping;
+	bool JumpedAndReleased;
 	float facingDirection;
 
 	int framesUntilSlowdown;
