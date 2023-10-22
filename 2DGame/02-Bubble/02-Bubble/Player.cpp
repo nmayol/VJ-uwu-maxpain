@@ -89,7 +89,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite = smallMarioSprite;
 
 	tileMapDispl = tileMapPos;
-	collision_box_size = glm::ivec2(28, 32);
+	collision_box_size = glm::ivec2(26, 32);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	
 }
@@ -245,13 +245,14 @@ void Player::update(int deltaTime)
 
 		//APPLY MOVEMENT
 		posPlayer.x += facingDirection * actual_speed;
+		if ((facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (!facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) actual_speed = 0;
 		posPlayer.y -= vertical_speed;
 
 		// Check if already on floor (stop falling)
 		if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) {
 			bJumping = false;
 			JumpedAndReleased = false;
-			vertical_speed = std::max(-8.f, vertical_speed);
+			vertical_speed = std::max(-3.f, vertical_speed);
 
 			//Moving backwards, apply special logic
 			if (actual_speed < 0) {
@@ -285,7 +286,6 @@ void Player::update(int deltaTime)
 
 			posPlayer.y -= vertical_speed;
 		}
-		// Check if Falling Down and Apply Falling Down
 		else {
 
 			//MARIO IS TURNING AROUND. If SKIDDING is necesary, apply that ANIMATION
@@ -299,7 +299,6 @@ void Player::update(int deltaTime)
 				if (actualAnimation == SKIDDING) actualAnimation = RUNNING;
 				else if (actual_speed >= SKID_TURNAROUND_SPEED) actualAnimation = SKIDDING;
 				else actual_speed = MIN_WALK_SPEED;
-
 			}
 
 
@@ -312,6 +311,7 @@ void Player::update(int deltaTime)
 				framesUntilSlowdown = 0;
 				actual_speed = std::max(0.f, actual_speed - DECELERATION);
 				posPlayer.x += actual_speed * facingDirection;
+				if ((facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (!facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) actual_speed = 0;
 				actualAnimation = CROUCHING;
 			}
 
@@ -328,7 +328,13 @@ void Player::update(int deltaTime)
 					actualAnimation = STANDING;
 					actual_speed = 0.f;
 				}
-				else posPlayer.x += facingDirection * actual_speed * -1.f;
+				else {
+					posPlayer.x += facingDirection * actual_speed * -1.f;
+					if ((!facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) {
+						actualAnimation = STANDING;
+						actual_speed = 0;
+					}
+				}
 			}
 
 			// APPLY RUN/WALK Movement LEFT or RIGHT
@@ -361,12 +367,11 @@ void Player::update(int deltaTime)
 
 				//update position acording to speed and direction facing
 				posPlayer.x += facingDirection * actual_speed;
-
-				if (map->collisionMoveLeft(posPlayer, collision_box_size))
-				{
-					posPlayer.x += 2;
-					sprite->changeAnimation(STANDING);
+				if ((facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (!facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) {
+					actualAnimation = STANDING;
+					actual_speed = 0;
 				}
+
 			}
 
 
@@ -377,11 +382,24 @@ void Player::update(int deltaTime)
 				if (framesUntilSlowdown > 0) {
 					framesUntilSlowdown -= 1;
 					posPlayer.x += actual_speed * facingDirection;
+					if ((facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (!facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) {
+						actualAnimation = STANDING;
+						actual_speed = 0;
+						framesUntilSlowdown = 0;
+					}
 				}
 				else {
 					actual_speed = std::max(0.f, actual_speed - DECELERATION);
 					if (actual_speed == 0.f) actualAnimation = STANDING;
-					else posPlayer.x += actual_speed * facingDirection;
+					else {
+						posPlayer.x += actual_speed * facingDirection;
+						if ((facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (!facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) {
+							actualAnimation = STANDING;
+							actual_speed = 0;
+							framesUntilSlowdown = 0;
+						}
+					}
+
 				}
 			}
 			else actualAnimation = STANDING;
@@ -402,9 +420,8 @@ void Player::update(int deltaTime)
 				else max_xspeed_allowed_jumping = MAX_WALK_SPEED;
 			}
 		}
-	}      
+	}
 
-	
 	if (sprite->animation() != actualAnimation && !bJumping) sprite->changeAnimation(actualAnimation);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
