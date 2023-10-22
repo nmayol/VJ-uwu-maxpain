@@ -1,21 +1,4 @@
 ﻿  Player.cpp
-  TileMap.cpp
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\TileMap.cpp(192,13): warning C4244: '=': conversión de 'T' a 'int'; posible pérdida de datos
-          with
-          [
-              T=float
-          ]
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\TileMap.cpp(193,28): warning C4244: '=': conversión de 'T' a 'int'; posible pérdida de datos
-          with
-          [
-              T=float
-          ]
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\TileMap.cpp(194,27): warning C4244: '=': conversión de 'T' a 'int'; posible pérdida de datos
-          with
-          [
-              T=float
-          ]
-  Generando código...
 SOIL.lib(image_DXT.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_DXT.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(image_helper.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_helper.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(SOIL.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(SOIL.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración

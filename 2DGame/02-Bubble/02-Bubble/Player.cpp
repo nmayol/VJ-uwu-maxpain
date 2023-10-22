@@ -201,8 +201,8 @@ void Player::update(int deltaTime)
 
 			posPlayer.y -= vertical_speed;
 		}
-		// Check if Falling Down
-		else if (false) {
+		// Check if Falling Down and Apply Falling Down
+		else {
 			posPlayer.y += vertical_speed;
 			if (!map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
 			{
@@ -217,7 +217,6 @@ void Player::update(int deltaTime)
 				if (Game::instance().getKey('z') || Game::instance().getKey('Z')) max_xspeed_allowed_jumping = MAX_RUN_SPEED;
 				else max_xspeed_allowed_jumping = MAX_WALK_SPEED;
 			}
-			else posPlayer.y = ((int)(posPlayer.y - vertical_speed) / 32) * 32.f;
 		}
 	}
 
@@ -260,12 +259,8 @@ void Player::update(int deltaTime)
 
 		posPlayer.y -= vertical_speed;
 		// Check if already on floor (stop falling)
-		if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
-		{
-			posPlayer.y = ((int)(posPlayer.y + vertical_speed) / 32) * 32.f;
-			bJumping = false;
+		if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) bJumping = false;
 
-		}
 	}      
 	
 	if (sprite->animation() != actualAnimation && !bJumping) sprite->changeAnimation(actualAnimation);
