@@ -23,6 +23,7 @@ public:
 	
 private:
 
+	int actualAnimation;
 	float actual_speed;
 	float initial_jump_xspeed;
 	float vertical_speed;

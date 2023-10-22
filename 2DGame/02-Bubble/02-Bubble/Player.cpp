@@ -61,6 +61,8 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	framesUntilSlowdown = 0;
 	facingDirection = 1.f;
 	actual_speed = 0.f;
+	vertical_speed = 2.5f;
+	actualAnimation = STANDING;
 	spritesheet.loadFromFile("images/mario-small.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(SPRITE_OFFSET, 1.f), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(5);
@@ -81,7 +83,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		
 	sprite->changeAnimation(0);
 	tileMapDispl = tileMapPos;
-	collision_box_size = glm::ivec2(30, 32);
+	collision_box_size = glm::ivec2(32, 32);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	
 }
@@ -91,7 +93,6 @@ void Player::update(int deltaTime)
 	sprite->update(deltaTime);
 
 	//load parameters early for better eficiency
-	int actualAnimation = sprite->animation();
 	bool facingLeft = (facingDirection == -1.f);
 	bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 	bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
@@ -179,30 +180,49 @@ void Player::update(int deltaTime)
 	}
 
 	// STARTED JUMPING THIS FRAME
-	if (!bJumping && upKeyPressed) {
+	if (!bJumping) {
 
-		//if initial XSPEED was SLOW or FAST -> Jump has different behaviours
-		if (actual_speed < MIN_XSPEED_FAST_JUMP) vertical_speed = INITIAL_JUMP_YSPEED;
-		else vertical_speed = INITIAL_FAST_JUMP_YSPEED;
+		if (upKeyPressed) {
+			//if initial XSPEED was SLOW or FAST -> Jump has different behaviours
+			if (actual_speed < MIN_XSPEED_FAST_JUMP) vertical_speed = INITIAL_JUMP_YSPEED;
+			else vertical_speed = INITIAL_FAST_JUMP_YSPEED;
 
-		initial_jump_xspeed = actual_speed;
-		sprite->changeAnimation(JUMPING);
-		bJumping = true;
-		if (actualAnimation == SKIDDING) {
-			if (facingLeft) sprite->changeDirection(FACING_RIGHT);
-			else sprite->changeDirection(FACING_LEFT);
-			facingDirection *= -1.f;
-			facingLeft = !facingLeft;
+			initial_jump_xspeed = actual_speed;
+			sprite->changeAnimation(JUMPING);
+			bJumping = true;
+			if (actualAnimation == SKIDDING) {
+				if (facingLeft) sprite->changeDirection(FACING_RIGHT);
+				else sprite->changeDirection(FACING_LEFT);
+				facingDirection *= -1.f;
+				facingLeft = !facingLeft;
+			}
+			if (Game::instance().getKey('z') || Game::instance().getKey('Z')) max_xspeed_allowed_jumping = MAX_RUN_SPEED;
+			else max_xspeed_allowed_jumping = MAX_WALK_SPEED;
+
+			posPlayer.y -= vertical_speed;
 		}
-		if (Game::instance().getKey('z') || Game::instance().getKey('Z')) max_xspeed_allowed_jumping = MAX_RUN_SPEED;
-		else max_xspeed_allowed_jumping = MAX_WALK_SPEED;
-
-		posPlayer.y -= vertical_speed;
+		// Check if Falling Down
+		else if (false) {
+			posPlayer.y += vertical_speed;
+			if (!map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
+			{
+				sprite->changeAnimation(JUMPING);
+				bJumping = true;
+				if (actualAnimation == SKIDDING) {
+					if (facingLeft) sprite->changeDirection(FACING_RIGHT);
+					else sprite->changeDirection(FACING_LEFT);
+					facingDirection *= -1.f;
+					facingLeft = !facingLeft;
+				}
+				if (Game::instance().getKey('z') || Game::instance().getKey('Z')) max_xspeed_allowed_jumping = MAX_RUN_SPEED;
+				else max_xspeed_allowed_jumping = MAX_WALK_SPEED;
+			}
+			else posPlayer.y = ((int)(posPlayer.y - vertical_speed) / 32) * 32.f;
+		}
 	}
 
 	// MID JUMP
-	else if(bJumping)
-	{
+	else {
 
 		// VERTICAL MOVEMENT
 		if (vertical_speed < MAX_FALL_SPEED) vertical_speed = MAX_FALL_SPEED;
@@ -239,20 +259,14 @@ void Player::update(int deltaTime)
 		}
 
 		posPlayer.y -= vertical_speed;
-	}      
-	else
-	{
-		posPlayer.y += FALL_STEP;
-		if(map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
+		// Check if already on floor (stop falling)
+		if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
 		{
-			if(Game::instance().getSpecialKey(GLUT_KEY_UP))
-			{
-				bJumping = true;
-				jumpAngle = 0;
-				startY = posPlayer.y;
-			}
+			posPlayer.y = ((int)(posPlayer.y + vertical_speed) / 32) * 32.f;
+			bJumping = false;
+
 		}
-	}
+	}      
 	
 	if (sprite->animation() != actualAnimation && !bJumping) sprite->changeAnimation(actualAnimation);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
