@@ -89,7 +89,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite = smallMarioSprite;
 
 	tileMapDispl = tileMapPos;
-	collision_box_size = glm::ivec2(26, 32);
+	collision_box_size = glm::ivec2(32, 32);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	
 }
@@ -158,7 +158,7 @@ void Player::setMarioForm(int formId) {
 	switch (formId) {
 	case SMALL:
 		sprite = smallMarioSprite;
-		collision_box_size = glm::ivec2(28, 32);
+		collision_box_size = glm::ivec2(32, 32);
 		break;
 
 	case NORMAL:
@@ -242,14 +242,11 @@ void Player::update(int deltaTime)
 			else if (initial_jump_xspeed < MAX_AIR_MOMENTUM_THRESHOLD) actual_speed = std::max(-max_xspeed_allowed_jumping, actual_speed -= SLOW_AIR_MOMENTUM);
 			else actual_speed = std::max(-max_xspeed_allowed_jumping, actual_speed -= NORMAL_AIR_MOMENTUM);
 		}
-
-		//APPLY MOVEMENT
-		posPlayer.x += facingDirection * actual_speed;
-		if ((facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (!facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) actual_speed = 0;
+		
 		posPlayer.y -= vertical_speed;
-
 		// Check if already on floor (stop falling)
-		if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) {
+		if (map->collisionMoveUp(posPlayer, collision_box_size, &posPlayer.y)) vertical_speed *= -0.25f;
+		else if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) {
 			bJumping = false;
 			JumpedAndReleased = false;
 			vertical_speed = std::max(-3.f, vertical_speed);
@@ -261,6 +258,10 @@ void Player::update(int deltaTime)
 
 			}
 		}
+		//APPLY MOVEMENT
+		posPlayer.x += facingDirection * actual_speed;
+		if ((facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (!facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) actual_speed = 0;
+
 	}
 
 	//MARIO IS NOT JUMPING
