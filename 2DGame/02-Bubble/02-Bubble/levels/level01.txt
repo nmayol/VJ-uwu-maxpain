@@ -1,4 +1,3 @@
-TILEMAP
 211 28 							-- Size of tile map in tiles
 16 16 							-- Tile size & block size
 images/tileset.png 	-- Tilesheet
