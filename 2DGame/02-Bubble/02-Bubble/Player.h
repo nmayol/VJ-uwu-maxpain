@@ -14,14 +14,14 @@ class Player
 {
 
 public:
-	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram);
+	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
 	void update(int deltaTime);
 	void render();
-	
+
 	void setMarioForm(int formId);
-	void setTileMap(TileMap *tileMap);
-	void setPosition(const glm::vec2 &pos);
-	
+	void setTileMap(TileMap* tileMap);
+	void setPosition(const glm::vec2& pos);
+
 private:
 
 	//DEV
@@ -44,9 +44,9 @@ private:
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer;
 	int jumpAngle, startY;
-	Sprite *sprite;
-	
-	TileMap *map;
+	Sprite* sprite;
+
+	TileMap* map;
 	glm::ivec2 collision_box_size;
 
 	//Diferent Mario Sprites & SpriteFiles
@@ -62,5 +62,4 @@ private:
 
 
 #endif // _PLAYER_INCLUDE
-
 

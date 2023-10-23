@@ -7,40 +7,36 @@
 #include "Game.h"
 
 
-#define JUMP_ANGLE_STEP 4
-#define JUMP_HEIGHT 96
-#define FALL_STEP 4
-
 // <- and -> Physics Values from ORIGINAL GAME
-#define MIN_WALK_SPEED 0.07421875f * 2
-#define MAX_WALK_SPEED 1.5625f * 2
-#define WALK_ACCELERATION 0.037109375f * 2
-#define MAX_RUN_SPEED 2.5625f * 2
-#define RUN_ACCELERATION 0.0556640625f * 2
-#define DECELERATION 0.05078125f * 2
-#define SKID_DECELERATION 0.1015625f * 2
-#define SKID_TURNAROUND_SPEED 0.5625f * 2
+#define MIN_WALK_SPEED 0.07421875f
+#define MAX_WALK_SPEED 1.5625f
+#define WALK_ACCELERATION 0.037109375f
+#define MAX_RUN_SPEED 2.5625f
+#define RUN_ACCELERATION 0.0556640625f
+#define DECELERATION 0.05078125f
+#define SKID_DECELERATION 0.1015625f
+#define SKID_TURNAROUND_SPEED 0.5625f
 
 // Mid-Air Momentum Physics
-#define MIN_AIR_MOMENTUM_THRESHOLD 1.5625f * 2
-#define MAX_AIR_MOMENTUM_THRESHOLD 1.8125f * 2
-#define SLOW_AIR_MOMENTUM 0.037109375f * 2
-#define NORMAL_AIR_MOMENTUM 0.05078125f * 2
-#define FAST_AIR_MOMENTUM 0.0556640625f * 2
+#define MIN_AIR_MOMENTUM_THRESHOLD 1.5625f
+#define MAX_AIR_MOMENTUM_THRESHOLD 1.8125f
+#define SLOW_AIR_MOMENTUM 0.037109375f
+#define NORMAL_AIR_MOMENTUM 0.05078125f
+#define FAST_AIR_MOMENTUM 0.0556640625f
 
 
 // Jumping Physics Vales from ORIGINAL GAME
-#define MIN_XSPEED_NORM_JUMP 1.f * 2
-#define MIN_XSPEED_FAST_JUMP 2.3125f * 2
-#define INITIAL_JUMP_YSPEED 4.f * 2
-#define INITIAL_FAST_JUMP_YSPEED 5. * 2
-#define SLOW_HOLDING_GRAVITY 0.125f * 2
-#define NORMAL_HOLDING_GRAVITY 0.1171875f * 2
-#define FAST_HOLDING_GRAVITY 0.15625f * 2
-#define SLOW_GRAVITY 0.4375f * 2
-#define NORMAL_GRAVITY 0.375f * 2
-#define FAST_GRAVITY 0.5625f * 2
-#define MAX_FALL_SPEED -4.53515625f * 2
+#define MIN_XSPEED_NORM_JUMP 1.f
+#define MIN_XSPEED_FAST_JUMP 2.3125f
+#define INITIAL_JUMP_YSPEED 4.f
+#define INITIAL_FAST_JUMP_YSPEED 5.f
+#define SLOW_HOLDING_GRAVITY 0.125f
+#define NORMAL_HOLDING_GRAVITY 0.1171875f
+#define FAST_HOLDING_GRAVITY 0.15625f
+#define SLOW_GRAVITY 0.4375f
+#define NORMAL_GRAVITY 0.375f
+#define FAST_GRAVITY 0.5625f
+#define MAX_FALL_SPEED -4.53515625f
 
 //For reading Sprite
 #define SPRITE_OFFSET_X (1.f / 14.f)
@@ -64,8 +60,8 @@ enum PlayerTransformation
 };
 
 
-void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
-{	
+void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
+{
 	bJumping = false;
 	JumpedAndReleased = true;
 	pressedPCount = 0;
@@ -89,15 +85,15 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite = smallMarioSprite;
 
 	tileMapDispl = tileMapPos;
-	collision_box_size = glm::ivec2(32, 32);
+	collision_box_size = glm::ivec2(16, 16);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
-	
+
 }
 
 //INIT SMALL MARIO SPRITE_SHEET
 Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shaderProgram) {
 
-	Sprite* newSprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
+	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 16), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
 
 	newSprite->setNumberAnimations(5);
 
@@ -122,7 +118,7 @@ Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shader
 //INIT NORMAL MARIO SPRITE_SHEET
 Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet, ShaderProgram* shaderProgram) {
 
-	Sprite* newSprite = Sprite::createSprite(glm::ivec2(32, 64), glm::vec2(BIG_SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
+	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 32), glm::vec2(BIG_SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
 	newSprite->setNumberAnimations(6);
 	baseSpriteRow *= SPRITE_OFFSET_Y;
 
@@ -150,25 +146,25 @@ Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet,
 //CHANGE MARIO FORM
 void Player::setMarioForm(int formId) {
 
-	if (actualForm != SMALL && formId == SMALL) posPlayer.y += 32.f;
-	else if (actualForm == SMALL && formId != SMALL) posPlayer.y -= 32.f;
+	if (actualForm != SMALL && formId == SMALL) posPlayer.y += 16.f;
+	else if (actualForm == SMALL && formId != SMALL) posPlayer.y -= 16.f;
 
 	actualForm = formId;
 
 	switch (formId) {
 	case SMALL:
 		sprite = smallMarioSprite;
-		collision_box_size = glm::ivec2(32, 32);
+		collision_box_size = glm::ivec2(16, 16);
 		break;
 
 	case NORMAL:
 		sprite = normalMarioSprite;
-		collision_box_size = glm::ivec2(32, 64);
+		collision_box_size = glm::ivec2(16, 32);
 		break;
 
 	default:
 		sprite = fireMarioSprite;
-		collision_box_size = glm::ivec2(32, 64);
+		collision_box_size = glm::ivec2(16, 32);
 		break;
 	}
 
@@ -204,7 +200,7 @@ void Player::update(int deltaTime)
 		leftKeyPressed = (facingDirection == -1.f);
 		rightKeyPressed = !leftKeyPressed;
 	}
-	
+
 
 	// MARIO IS MID-JUMPING
 	if (bJumping) {
@@ -242,14 +238,14 @@ void Player::update(int deltaTime)
 			else if (initial_jump_xspeed < MAX_AIR_MOMENTUM_THRESHOLD) actual_speed = std::max(-max_xspeed_allowed_jumping, actual_speed -= SLOW_AIR_MOMENTUM);
 			else actual_speed = std::max(-max_xspeed_allowed_jumping, actual_speed -= NORMAL_AIR_MOMENTUM);
 		}
-		
+
 		posPlayer.y -= vertical_speed;
 		// Check if already on floor (stop falling)
 		if (map->collisionMoveUp(posPlayer, collision_box_size, &posPlayer.y)) vertical_speed *= -0.25f;
 		else if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) {
 			bJumping = false;
 			JumpedAndReleased = false;
-			vertical_speed = std::max(-3.f, vertical_speed);
+			vertical_speed = std::max(-1.5f, vertical_speed);
 
 			//Moving backwards, apply special logic
 			if (actual_speed < 0) {
@@ -432,17 +428,16 @@ void Player::render()
 	sprite->render();
 }
 
-void Player::setTileMap(TileMap *tileMap)
+void Player::setTileMap(TileMap* tileMap)
 {
 	map = tileMap;
 }
 
-void Player::setPosition(const glm::vec2 &pos)
+void Player::setPosition(const glm::vec2& pos)
 {
 	posPlayer = pos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
-
 
 
 

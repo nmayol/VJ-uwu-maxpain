@@ -53,7 +53,7 @@ void Sprite::render() const
 {
 	glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.f));
 	if (facingLeft) {
-		modelview = glm::translate(modelview, glm::vec3(32.f, 0.f, 0.f));
+		modelview = glm::translate(modelview, glm::vec3(16.f, 0.f, 0.f));
 		modelview = glm::rotate(modelview, glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));  // Flip vertically
 	}
 
