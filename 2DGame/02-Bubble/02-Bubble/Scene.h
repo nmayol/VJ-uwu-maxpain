@@ -25,6 +25,8 @@ public:
 
 private:
 	void initShaders();
+	void moveCameraifNeeded();
+	void setSceneStart(float sx);
 
 private:
 	TileMap* map;
@@ -33,6 +35,8 @@ private:
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
+	float sceneStart;
+	
 
 };
 

@@ -44,6 +44,7 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
+	moveCameraifNeeded();
 }
 
 void Scene::render()
@@ -57,6 +58,16 @@ void Scene::render()
 	map->render();
 	map_sec->render();
 	player->render();
+}
+
+void Scene::moveCameraifNeeded()
+{
+	float posPlayer = player->getPosition().x;
+	
+	// float altPlayer = player->getPosition().y;
+	sceneStart = posPlayer;
+	projection = glm::ortho(sceneStart, sceneStart + (float(SCREEN_WIDTH - 1)), float(SCREEN_HEIGHT - 1), 0.f);
+
 }
 
 void Scene::initShaders()
