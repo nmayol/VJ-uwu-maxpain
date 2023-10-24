@@ -443,5 +443,12 @@ glm::vec2 Player::getPosition() {
 	return posPlayer;
 }
 
+glm::vec2 Player::getPositioninTM() {
+	return posPlayer + glm::vec2(float(tileMapDispl.x), float(tileMapDispl.y));
+}
+
+float Player::getFacingDirection() {
+	return facingDirection;
+}
 
 

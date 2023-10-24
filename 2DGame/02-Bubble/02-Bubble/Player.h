@@ -22,6 +22,8 @@ public:
 	void setTileMap(TileMap* tileMap);
 	void setPosition(const glm::vec2& pos);
 	glm::vec2 getPosition();
+	glm::vec2 getPositioninTM();
+	float getFacingDirection();
 
 private:
 
@@ -58,6 +60,7 @@ private:
 	Sprite* fireMarioSprite;
 	Sprite* initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shaderProgram);
 	Sprite* initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet, ShaderProgram* shaderProgram);
+	
 
 };
 
