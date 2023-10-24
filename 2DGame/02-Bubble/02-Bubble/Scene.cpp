@@ -66,7 +66,10 @@ void Scene::moveCameraifNeeded()
 	float directionPlayer = player->getFacingDirection();
 	// float altPlayer = player->getPosition().y;
 	if (posPlayer < 3120 && (posPlayer - (sceneStart + float(SCREEN_WIDTH - 1)) / 3.) > 0 && (directionPlayer == 1.f)) {
-		sceneStart = posPlayer - (float(SCREEN_WIDTH - 1)) / 3.;
+		float aux = posPlayer - (float(SCREEN_WIDTH - 1)) / 3.;
+		if (aux > sceneStart) {
+			sceneStart = aux;
+		}
 	}
 
 	projection = glm::ortho(sceneStart, sceneStart + (float(SCREEN_WIDTH - 1)), float(SCREEN_HEIGHT - 1), 0.f);
