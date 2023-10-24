@@ -71,6 +71,10 @@ void Scene::moveCameraifNeeded()
 			sceneStart = aux;
 		}
 	}
+	else if (directionPlayer == -1.f && posPlayer < sceneStart) {
+		// make player unable to go back to last scene
+		player->setPosition(glm::vec2(sceneStart, player->getPosition().y));
+	}
 
 	projection = glm::ortho(sceneStart, sceneStart + (float(SCREEN_WIDTH - 1)), float(SCREEN_HEIGHT - 1), 0.f);
 
