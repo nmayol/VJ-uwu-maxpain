@@ -30,10 +30,17 @@ private:
 	void setSceneStart(float sx);
 
 private:
+	int numLevel;
 	TileMap* map;
 	TileMap* map_sec;
+
 	Player *player;
-	Brick *brick;
+	vector<vector<Brick*>> brickSet;
+	vector<vector<bool>> brickIndex;
+
+
+	void readBrickSetFromFile();
+
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;

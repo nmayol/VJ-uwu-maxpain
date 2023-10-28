@@ -1,4 +1,7 @@
+
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
@@ -10,6 +13,8 @@
 
 #define INIT_PLAYER_X_TILES 2.5
 #define INIT_PLAYER_Y_TILES 12
+
+using namespace std;
 
 
 Scene::Scene()
@@ -27,20 +32,51 @@ Scene::~Scene()
 }
 
 
+
+void Scene::readBrickSetFromFile() {
+	ifstream file("levels/level0" + to_string(numLevel) + "_bricks.txt");
+	if (file.is_open()) {
+		string line;
+		while (getline(file, line)) {
+			int x, y;
+			std::istringstream iss(line);
+			iss >> x >> y;
+			brickIndex[x][y] = true;
+
+		}
+		file.close();
+	}
+	else {
+		cerr << "Unable to open file" << endl;
+	}
+}
+
+
 void Scene::init()
 {
 	initShaders();
+	numLevel = 1;
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
-	brick = new Brick();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	brick->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
-	brick->setPosition(glm::vec2(10.* map->getTileSize(), 10.* map->getTileSize()));
-	
 	player->setTileMap(map);
-	brick->setTileMap(map);
+
+	brickSet = vector<vector<Brick*>>(211, vector<Brick*>(28, new Brick()));
+	brickIndex = vector<vector<bool>>(211, vector<bool>(28, false));
+	readBrickSetFromFile();
+	for (int i = 0; i < brickSet.size(); i++) {
+		for (int j = 0; j < brickSet[i].size(); j++) {
+			if (brickIndex[i][j]) {
+				brickSet[i][j] = new Brick();
+				brickSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+				brickSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+				brickSet[i][j]->setTileMap(map);
+			}
+		}
+	}
+	
 
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT+7), 8.f);
 	currentTime = 0.0f;
@@ -50,7 +86,14 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
-	brick->update(deltaTime);
+	int startBlock = (sceneStart / map->getTileSize());
+	for (int i = startBlock; i < startBlock + 16; i++) {
+		for (int j = 5; j < 9; j++) {
+			if (brickIndex[i][j]) {
+				brickSet[i][j]->update(deltaTime);
+			}
+		}
+	}
 	moveCameraifNeeded();
 }
 
@@ -65,7 +108,14 @@ void Scene::render()
 	map->render();
 	map_sec->render();
 	player->render();
-	brick->render();
+	for (int i = 0; i < brickSet.size(); i++) {
+		for (int j = 0; j < brickSet[i].size(); j++) {
+			if (brickIndex[i][j]) {
+				brickSet[i][j]->render();
+			}
+		}
+	}
+	
 }
 
 void Scene::moveCameraifNeeded()

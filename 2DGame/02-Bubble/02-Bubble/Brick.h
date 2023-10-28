@@ -27,9 +27,6 @@ public:
 
 private:
 
-	//DEV
-	int pressedPCount;
-	bool pressedPandReleased;
 
 	//OTHERS
 	int actualAnimation;
