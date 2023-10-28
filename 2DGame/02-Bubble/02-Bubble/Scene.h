@@ -6,6 +6,7 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Brick.h"
 
 
 // Scene contains all the entities of our game.
@@ -32,6 +33,7 @@ private:
 	TileMap* map;
 	TileMap* map_sec;
 	Player *player;
+	Brick *brick;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
