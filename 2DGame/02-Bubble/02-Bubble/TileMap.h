@@ -3,6 +3,7 @@
 
 
 #include <glm/glm.hpp>
+#include <vector>
 #include "Texture.h"
 #include "ShaderProgram.h"
 
@@ -29,10 +30,12 @@ public:
 	void free();
 	
 	int getTileSize() const { return tileSize; }
+	glm::vec2 getMapSize() const { return mapSize; }
+	vector<vector<bool>> getBrickIndex() const { return brickIndex; }
 
 	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size, float* posX) const;
 	bool collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size, float* posX) const;
-	bool collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, float *posY) const;
+	bool collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, float *posY);
 	bool collisionMoveDown(const glm::vec2 &pos, const glm::ivec2 &size, float *posY) const;
 	
 private:
@@ -44,11 +47,14 @@ private:
 	GLuint vbo;
 	GLint posLocation, texCoordLocation;
 	int nTiles;
+	
+
 	glm::ivec2 position, mapSize, tilesheetSize;
 	int tileSize, blockSize;
 	Texture tilesheet;
 	glm::vec2 tileTexSize;
 	int *map;
+	vector<vector<bool>> brickIndex;
 
 };
 
