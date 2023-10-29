@@ -3,6 +3,7 @@
 
 
 #include <glm/glm.hpp>
+#include <vector>
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
@@ -44,7 +45,9 @@ private:
 	float currentTime;
 	glm::mat4 projection;
 	float sceneStart;
-	
+
+	vector<vector<Brick*>> brickSet;
+
 
 };
 

@@ -57,6 +57,20 @@ void Scene::init()
 	initShaders();
 	numLevel = 1;
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	brickSet = vector<vector<Brick*>>(map->getMapSize().x, vector<Brick*>(map->getMapSize().y, NULL));
+	vector<vector<bool>> brickIndex = map->getBrickIndex();
+	for (int i = 0; i < map->getMapSize().x; i++) {
+		for (int j = 5; j < 10; j++) {
+			brickSet[i][j] = new Brick();
+			if (brickIndex[i][j]) {
+				brickSet[i][j] = new Brick();
+				brickSet[i][j]->init(glm::ivec2(SCREEN_X,SCREEN_Y), texProgram);
+				brickSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+			}
+		}
+	}
+
+
 	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -75,13 +89,14 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	player->update(deltaTime);
 	int startBlock = (sceneStart / map->getTileSize());
-	/*for (int i = startBlock; i < startBlock + 16; i++) {
-		for (int j = 5; j < 9; j++) {
+	vector<vector<bool>> brickIndex = map->getBrickIndex();
+	for (int i = startBlock; i < startBlock + 16; i++) {
+		for (int j = 5; j < 10; j++) {
 			if (brickIndex[i][j]) {
 				brickSet[i][j]->update(deltaTime);
 			}
 		}
-	}*/
+	}
 	moveCameraifNeeded();
 }
 
@@ -96,13 +111,15 @@ void Scene::render()
 	map->render();
 	map_sec->render();
 	player->render();
-	/*for (int i = 0; i < brickSet.size(); i++) {
-		for (int j = 0; j < brickSet[i].size(); j++) {
+	vector<vector<bool>> brickIndex = map->getBrickIndex();
+	for (int i = 0; i < brickSet.size(); i++) {
+		for (int j = 5; j < 10; j++) {
 			if (brickIndex[i][j]) {
 				brickSet[i][j]->render();
 			}
 		}
-	}*/
+	}	
+	
 	
 }
 
