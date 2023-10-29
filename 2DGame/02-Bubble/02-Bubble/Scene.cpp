@@ -63,19 +63,7 @@ void Scene::init()
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
 
-	brickSet = vector<vector<Brick*>>(211, vector<Brick*>(28, new Brick()));
-	brickIndex = vector<vector<bool>>(211, vector<bool>(28, false));
-	readBrickSetFromFile();
-	for (int i = 0; i < brickSet.size(); i++) {
-		for (int j = 0; j < brickSet[i].size(); j++) {
-			if (brickIndex[i][j]) {
-				brickSet[i][j] = new Brick();
-				brickSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-				brickSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
-				brickSet[i][j]->setTileMap(map);
-			}
-		}
-	}
+	
 	
 
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT+7), 8.f);
@@ -87,13 +75,13 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	player->update(deltaTime);
 	int startBlock = (sceneStart / map->getTileSize());
-	for (int i = startBlock; i < startBlock + 16; i++) {
+	/*for (int i = startBlock; i < startBlock + 16; i++) {
 		for (int j = 5; j < 9; j++) {
 			if (brickIndex[i][j]) {
 				brickSet[i][j]->update(deltaTime);
 			}
 		}
-	}
+	}*/
 	moveCameraifNeeded();
 }
 
@@ -108,13 +96,13 @@ void Scene::render()
 	map->render();
 	map_sec->render();
 	player->render();
-	for (int i = 0; i < brickSet.size(); i++) {
+	/*for (int i = 0; i < brickSet.size(); i++) {
 		for (int j = 0; j < brickSet[i].size(); j++) {
 			if (brickIndex[i][j]) {
 				brickSet[i][j]->render();
 			}
 		}
-	}
+	}*/
 	
 }
 
