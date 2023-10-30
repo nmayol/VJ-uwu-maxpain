@@ -137,9 +137,6 @@ void TileMap::prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program)
 				vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[1].y);
 
 				if (tile == 1292) { // brick case
-					Brick* brick = new Brick();
-					brick->init(glm::ivec2(0, 16), program);
-					brick->setPosition(glm::vec2(posTile.x, posTile.y-16));
 					
 					
 					brickIndex[i][j] = true;
