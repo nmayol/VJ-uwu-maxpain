@@ -3,6 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
+#include "Goomba.h"
+#include "Koopa.h"
 
 
 #define SCREEN_X 0
@@ -38,12 +40,30 @@ void Scene::init()
 	player->setTileMap(map);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT+7), 8.f);
 	currentTime = 0.0f;
+
+	//DEV
+	Goomba* enemy_test = new Goomba();
+	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
+	enemy_test->setTileMap(map);
+	enemies.push_back(enemy_test);
+
+	Koopa* enemy_test_a = new Koopa();
+	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
+	enemy_test_a->setTileMap(map);
+
+	enemies.push_back(enemy_test_a);
 }
 
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
+
+	//DEV
+	for (Entity* e : enemies) e->update(deltaTime);
+
 	moveCameraifNeeded();
 }
 
@@ -58,6 +78,8 @@ void Scene::render()
 	map->render();
 	map_sec->render();
 	player->render();
+
+	for (Entity* e : enemies) e->render();
 }
 
 void Scene::moveCameraifNeeded()

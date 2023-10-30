@@ -69,7 +69,7 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	framesUntilSlowdown = 0;
 	facingDirection = 1.f;
 	actual_speed = 0.f;
-	vertical_speed = 2.5f;
+	vertical_speed = -2.5f;
 	actualAnimation = STANDING;
 	actualForm = SMALL;
 

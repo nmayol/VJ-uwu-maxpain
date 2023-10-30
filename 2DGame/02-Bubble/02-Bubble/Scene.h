@@ -6,6 +6,8 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Entity.h"
+#include <list>
 
 
 // Scene contains all the entities of our game.
@@ -27,6 +29,8 @@ private:
 	void initShaders();
 	void moveCameraifNeeded();
 	void setSceneStart(float sx);
+	list<Entity*> enemies;
+
 
 private:
 	TileMap* map;
