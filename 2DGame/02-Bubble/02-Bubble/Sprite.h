@@ -34,7 +34,7 @@ public:
 	void changeDirection(int directionId);
 	int animation() const;
 	bool isFacingLeft() const;
-	
+	void renderBroken(int deltaTime) const;
 	void setPosition(const glm::vec2 &pos);
 
 private:

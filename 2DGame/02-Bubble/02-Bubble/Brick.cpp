@@ -28,20 +28,14 @@
 // Jumping Physics Vales from ORIGINAL GAME
 #define MIN_XSPEED_NORM_JUMP 1.f
 #define MIN_XSPEED_FAST_JUMP 2.3125f
-#define INITIAL_JUMP_YSPEED 4.f
-#define INITIAL_FAST_JUMP_YSPEED 5.f
-#define SLOW_HOLDING_GRAVITY 0.125f
-#define NORMAL_HOLDING_GRAVITY 0.1171875f
-#define FAST_HOLDING_GRAVITY 0.15625f
-#define SLOW_GRAVITY 0.4375f
-#define NORMAL_GRAVITY 0.375f
-#define FAST_GRAVITY 0.5625f
-#define MAX_FALL_SPEED -4.53515625f
+#define INITIAL_YSPEED 20.f
 
 //For reading Sprite
-#define SPRITE_OFFSET_X (1.f / 16.f)
-#define BIG_SPRITE_OFFSET_X (1.f / 17.f)
+#define SPRITE_OFFSET_X (1.f / 32.f)
+#define LITTLE_SPRITE_OFFSET_X (1.f / 64.f)
 #define SPRITE_OFFSET_Y (1.f / 2.f)
+#define LITTLE_SPRITE_OFFSET_Y (1.f / 4.f)
+
 
 enum BrickAnims
 {
@@ -53,25 +47,31 @@ enum BrickAnims
 void Brick::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 {
 
-	framesUntilSlowdown = 0;
-	facingDirection = 1.f;
+	
+	frames_from_breaking = -1;
 	actual_speed = 0.f;
-	vertical_speed = 2.5f;
+	
 	actualAnimation = ENTIRE;
 	actualForm = ENTIRE;
+	
 
 	//INIT SPRITES
-	entireBrickSpritesheet.loadFromFile("images/Brick.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	entireBrickSprite = initEntireBrickSprite(&entireBrickSpritesheet, &shaderProgram);
-
-	//normalBrickSpritesheet.loadFromFile("images/normal-Brick.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	//normalBrickSprite = initNormalBrickSprite(0.f, &normalBrickSpritesheet, &shaderProgram);
-
+	brickSpritesheet.loadFromFile("images/Brick.png",TEXTURE_PIXEL_FORMAT_RGBA);
+	entireBrickSprite = initEntireBrickSprite(&brickSpritesheet, &shaderProgram);
+	brokenBrickSpriteSL = initBrokenBrickSprite(&brickSpritesheet, &shaderProgram, 0, 0);
+	brokenBrickSpriteSR = initBrokenBrickSprite(&brickSpritesheet, &shaderProgram, 0, 1);
+	brokenBrickSpriteIR = initBrokenBrickSprite(&brickSpritesheet, &shaderProgram, 1, 1);
+	brokenBrickSpriteIL = initBrokenBrickSprite(&brickSpritesheet, &shaderProgram, 1, 0);
+	brokenBrickSpriteIL->changeDirection(0);
+	brokenBrickSpriteSL->changeDirection(0);
+	
 
 	sprite = entireBrickSprite;
 	tileMapDispl = tileMapPos;
 	collision_box_size = glm::ivec2(16, 16);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posBrick.x), float(tileMapDispl.y + posBrick.y)));
+	sprite->changeAnimation(actualAnimation);
+	
 
 }
 
@@ -79,73 +79,112 @@ void Brick::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 Sprite* Brick::initEntireBrickSprite(Texture* spritesheet, ShaderProgram* shaderProgram) {
 
 	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 16), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
+	newSprite->setNumberAnimations(1);
+	newSprite->setAnimationSpeed(ENTIRE, 8);
+	newSprite->addKeyframe(ENTIRE, glm::vec2(23.f*SPRITE_OFFSET_X, 0.f));
+	
 
+	return newSprite;
+}
+
+
+//INIT SMALL Brick SPRITE_SHEET
+Sprite* Brick::initBrokenBrickSprite(Texture* spritesheet, ShaderProgram* shaderProgram, int x, int y) { // x = 0 -> left, x = 1 -> right; y = 0 -> superior, y = 1 -> inferior
+	
+	Sprite* newSprite = Sprite::createSprite(glm::ivec2(8, 8), glm::vec2(LITTLE_SPRITE_OFFSET_X, LITTLE_SPRITE_OFFSET_Y), spritesheet, shaderProgram);
 	newSprite->setNumberAnimations(2);
 
-	newSprite->setAnimationSpeed(ENTIRE, 8);
-	newSprite->addKeyframe(ENTIRE, glm::vec2(0.f, 0.f));
-
 	newSprite->setAnimationSpeed(BROKEN, 8);
-	newSprite->addKeyframe(BROKEN, glm::vec2(SPRITE_OFFSET_X * 5.f, 0.f));
+	float spriteX = (50.f + float(x)) * LITTLE_SPRITE_OFFSET_X;
+	float spriteY = float(y) * LITTLE_SPRITE_OFFSET_Y;
+	// newSprite->addKeyframe(ENTIRE, glm::vec2(23.f * SPRITE_OFFSET_X, 0.f));
+	newSprite->addKeyframe(BROKEN, glm::vec2(spriteX,spriteY));
+
 
 	return newSprite;
 }
 
 
 
-//CHANGE Brick FORM
-void Brick::setBrickForm(int formId) {
 
-	if (actualForm != ENTIRE && formId == ENTIRE) posBrick.y += 8.f;
 
-	actualForm = formId;
+void Brick::update(int deltaTime, bool justBroken)
+{
+	
+	if (justBroken && frames_from_breaking == -1) {
+		actualAnimation = BROKEN;
+		brokenBrickSpriteIL->changeAnimation(actualAnimation);
+		brokenBrickSpriteIR->changeAnimation(actualAnimation);
+		brokenBrickSpriteSL->changeAnimation(actualAnimation);
+		brokenBrickSpriteSR->changeAnimation(actualAnimation);
+		frames_from_breaking = 0;
+		posBrokenBrickIL = posBrick + glm::vec2(0, 8);
+		posBrokenBrickIR = posBrick + glm::vec2(8, 8);
+		posBrokenBrickSL = posBrick + glm::vec2(0, 0);
+		posBrokenBrickSR = posBrick + glm::vec2(8, 0);
+		vys = -INITIAL_YSPEED * sin(3.14159265f / 2.2f);
+		vxs = INITIAL_YSPEED * cos(3.14159265f / 2.2f);
+		vxi = INITIAL_YSPEED * cos(3.14159265f / 2.5f);
+		vyi = -INITIAL_YSPEED * sin(3.14159265f / 2.5f);
 
-	switch (formId) {
-	case BROKEN:
-		sprite = normalBrickSprite;
-		collision_box_size = glm::ivec2(16, 16);
-		break;
+	}
+	if (frames_from_breaking >= 0) {
 
-	default:
-		sprite = entireBrickSprite;
-		collision_box_size = glm::ivec2(16, 16);
-		break;
+		brokenBrickSpriteSL->update(deltaTime);
+		brokenBrickSpriteSR->update(deltaTime);
+		brokenBrickSpriteIR->update(deltaTime);
+		brokenBrickSpriteIL->update(deltaTime);
+
+		float t = deltaTime / 100.f;
+		
+		posBrokenBrickSR = posBrokenBrickSR + glm::vec2(vxs * t, vys * t - 5 * t * t);
+		posBrokenBrickSL = posBrokenBrickSL + glm::vec2(-vxs * t, vys * t - 5 * t * t);
+		posBrokenBrickIR = posBrokenBrickIR + glm::vec2(vxi * t, vyi * t - 5 * t * t);
+		posBrokenBrickIL = posBrokenBrickIL + glm::vec2(-vxi * t, vyi*t - 5*t*t);
+		
+			
+		
+		vys += 10 * t;
+		vyi += 10 * t;
+		
+
+	
+
+		brokenBrickSpriteSL->setPosition(posBrokenBrickSL);
+		brokenBrickSpriteSR->setPosition(posBrokenBrickSR);
+		brokenBrickSpriteIR->setPosition(posBrokenBrickIR);
+		brokenBrickSpriteIL->setPosition(posBrokenBrickIL);
+
+		
+
+	
+		++frames_from_breaking;
+	}
+	else {
+		sprite->update(deltaTime);
+		if (sprite->animation() != actualAnimation) sprite->changeAnimation(actualAnimation);
+		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posBrick.x), float(tileMapDispl.y + posBrick.y)));
+
 	}
 
 }
 
-void Brick::update(int deltaTime)
+
+
+void Brick::render(int deltaTime)
 {
-	sprite->update(deltaTime);
-
-	//load parameters early for better eficiency
-	bool facingLeft = (facingDirection == -1.f);
-	bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
-	bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
-	bool runKeyPressed = Game::instance().getKey('z') || Game::instance().getKey('Z');
-	bool downKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_DOWN);
-	bool upKeyPressed = false;
-
-
-
-
-	//Save inputs and prevents bugs by only allowing left or right (not both)
-	if (leftKeyPressed && rightKeyPressed) {
-		leftKeyPressed = (facingDirection == -1.f);
-		rightKeyPressed = !leftKeyPressed;
+	if (actualAnimation == ENTIRE) {
+		sprite->render();
 	}
-
-
-	if (sprite->animation() != actualAnimation) sprite->changeAnimation(actualAnimation);
-	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posBrick.x), float(tileMapDispl.y + posBrick.y)));
+	else {
+		brokenBrickSpriteIL->renderBroken(deltaTime);
+		brokenBrickSpriteIR->renderBroken(deltaTime);
+		brokenBrickSpriteSL->renderBroken(deltaTime);
+		brokenBrickSpriteSR->renderBroken(deltaTime);
+	}
 }
 
-void Brick::render()
-{
-	sprite->render();
-}
-
-
+//  Only callable when the brick in ENTIRE
 void Brick::setPosition(const glm::vec2& pos)
 {
 	posBrick = pos;

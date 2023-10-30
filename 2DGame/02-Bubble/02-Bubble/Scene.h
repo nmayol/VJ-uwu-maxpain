@@ -30,6 +30,7 @@ private:
 	void initShaders();
 	void moveCameraifNeeded();
 	void setSceneStart(float sx);
+	bool marioJustBrokeTheBrick(int x, int y);
 
 private:
 	int numLevel;

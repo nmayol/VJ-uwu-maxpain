@@ -58,11 +58,11 @@ void Scene::init()
 	numLevel = 1;
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	brickSet = vector<vector<Brick*>>(map->getMapSize().x, vector<Brick*>(map->getMapSize().y, NULL));
-	vector<vector<bool>> brickIndex = map->getBrickIndex();
+	vector<vector<int>> brickIndex = map->getBrickIndex();
 	for (int i = 0; i < map->getMapSize().x; i++) {
 		for (int j = 5; j < 10; j++) {
 			brickSet[i][j] = new Brick();
-			if (brickIndex[i][j]) {
+			if (brickIndex[i][j] == 1) {
 				brickSet[i][j] = new Brick();
 				brickSet[i][j]->init(glm::ivec2(SCREEN_X,SCREEN_Y), texProgram);
 				brickSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
@@ -87,16 +87,19 @@ void Scene::init()
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
-	player->update(deltaTime);
+	vector<vector<int>> brickIndex = map->getBrickIndex();
+	player->update(deltaTime);	
+
 	int startBlock = (sceneStart / map->getTileSize());
-	vector<vector<bool>> brickIndex = map->getBrickIndex();
-	for (int i = startBlock; i < startBlock + 16; i++) {
+	
+	for (int i = startBlock; i < startBlock + ceil(16./3.)+1; ++i) {
 		for (int j = 5; j < 10; j++) {
-			if (brickIndex[i][j]) {
-				brickSet[i][j]->update(deltaTime);
+			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
+				brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
 			}
 		}
 	}
+	
 	moveCameraifNeeded();
 }
 
@@ -111,11 +114,12 @@ void Scene::render()
 	map->render();
 	map_sec->render();
 	player->render();
-	vector<vector<bool>> brickIndex = map->getBrickIndex();
-	for (int i = 0; i < brickSet.size(); i++) {
+	int startBlock = (sceneStart / map->getTileSize());
+	vector<vector<int>> brickIndex = map->getBrickIndex();
+	for (int i = startBlock; i < min(221,startBlock+17); i++) {
 		for (int j = 5; j < 10; j++) {
-			if (brickIndex[i][j]) {
-				brickSet[i][j]->render();
+			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
+				brickSet[i][j]->render(currentTime);
 			}
 		}
 	}	
@@ -172,6 +176,5 @@ void Scene::initShaders()
 	vShader.free();
 	fShader.free();
 }
-
 
 
