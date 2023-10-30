@@ -205,7 +205,7 @@ bool TileMap::collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, floa
 	for(int x=x0; x<=x1; x++)
 	{
 		if(map[y*mapSize.x+x] != 0){
-			if (map[y * mapSize.x + x] == 1292) {
+			if (map[y * mapSize.x + x] == 1292 && size.y > 16) {
 				brickIndex[x][y] = false;
 				map[y * mapSize.x + x] = 0;
 			}
