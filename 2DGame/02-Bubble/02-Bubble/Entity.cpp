@@ -38,6 +38,30 @@ void Entity::update(int deltaTime)
 
 }
 
+glm::ivec2 Entity::getSize()
+{
+	return collision_box_size;
+}
+
+bool Entity::detectCollision(glm::vec2* posEntity, float facingDirection, const glm::ivec2& size)
+{
+	float x0 = posEntity->x;				// left-most side
+	float x1 = posEntity->x + size.x;		// right-most side
+
+	float y0 = this->posEntity.x;								// left-most side
+	float y1 = this->posEntity.x + collision_box_size.x;		// right-most side
+
+	if (facingDirection == 1.f && x1 > y0 && x0 < y1) {
+		posEntity->x = y0 - size.x - 2.f;
+		return true;
+	}
+	else if (facingDirection != 1.f && x0 < y1 && y0 < x1){
+		posEntity->x = y1 + 2.f;
+		return true;
+	}
+	return false;
+}
+
 void Entity::render()
 {
 	sprite->render();
@@ -64,6 +88,18 @@ glm::vec2 Entity::getPositioninTM() {
 
 float Entity::getFacingDirection() {
 	return facingDirection;
+}
+
+void Entity::changeFacingDirection()
+{
+	if (facingDirection == -1.f) {
+		sprite->changeDirection(FACING_RIGHT);
+		facingDirection = 1.f;
+	}
+	else {
+		sprite->changeDirection(FACING_LEFT);
+		facingDirection = -1.f;
+	}
 }
 
 bool Entity::isEntityDead()

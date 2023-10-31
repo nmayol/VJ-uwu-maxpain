@@ -1,5 +1,5 @@
 ﻿  Scene.cpp
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(91,13): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(127,13): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
 SOIL.lib(image_DXT.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_DXT.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(image_helper.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_helper.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(SOIL.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(SOIL.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración

@@ -57,3 +57,9 @@ void Koopa::update(int deltaTime)
 {
 	Entity::update(deltaTime);
 }
+
+string Koopa::whoAmI()
+{
+
+	return "I AM KOOPA!";
+}

@@ -22,10 +22,13 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	if(map != NULL)
+	if (map != NULL)
 		delete map;
-	if(player != NULL)
+	if (player != NULL)
 		delete player;
+
+	while (!enemies_in_map.empty()) delete enemies_in_map.front(), enemies_in_map.pop_front();
+	while (!enemies_in_screen.empty()) delete enemies_in_screen.front(), enemies_in_screen.pop_front();
 }
 
 
@@ -36,33 +39,65 @@ void Scene::init()
 	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
+	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
-	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT+7), 8.f);
+	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT + 7), 8.f);
 	currentTime = 0.0f;
 
-	//DEV
+	//TODO -> FIX THIS READING FROM FILE
 	Goomba* enemy_test = new Goomba();
 	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
+	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 3 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
 	enemy_test->setTileMap(map);
-	enemies.push_back(enemy_test);
+	enemy_test->changeFacingDirection();
+	enemies_in_map.push_back(enemy_test);
 
 	Koopa* enemy_test_a = new Koopa();
 	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
+	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 3, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
+	enemy_test_a->changeFacingDirection();
 	enemy_test_a->setTileMap(map);
 
-	enemies.push_back(enemy_test_a);
+	enemies_in_map.push_back(enemy_test_a);
 }
 
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
+	glm::ivec2 posPlayer = player->getPosition();
 
-	//DEV
-	for (Entity* e : enemies) e->update(deltaTime);
+	// Go through Enemy list and check if they are in screen
+	bool stop = false;
+	std::list<Entity*>::iterator it = enemies_in_map.begin();
+	while (it != enemies_in_map.end() && !stop) {
+		glm::ivec2 posEnemy = (*it)->getPosition();
+		if ((((posPlayer.x + 192) / 64 + 2) * 64) > posEnemy.x) {
+			enemies_in_screen.push_back((*it));
+			it = enemies_in_map.erase(it);
+		}
+		else stop = true;
+	}
+
+	//update every enemy in screen
+	it = enemies_in_screen.begin();
+	while (it != enemies_in_screen.end()) {
+		glm::vec2 posEnemy = (*it)->getPosition();
+		if (posEnemy.x < posPlayer.x - 192) it = enemies_in_screen.erase(it);
+		else {
+			(*it)->update(deltaTime);
+			
+			//colision with other enemies
+			for (Entity* e2 : enemies_in_screen) {
+				if (e2 != (*it) && e2->detectCollision(&posEnemy, (*it)->getFacingDirection(), (*it)->getSize())) {
+					(*it)->changeFacingDirection();
+					(*it)->setPosition(posEnemy);
+					e2->changeFacingDirection();
+				}
+			}
+			++it;
+		}
+	}
 
 	moveCameraifNeeded();
 }
@@ -79,7 +114,7 @@ void Scene::render()
 	map_sec->render();
 	player->render();
 
-	for (Entity* e : enemies) e->render();
+	for (Entity* e : enemies_in_screen) e->render();
 }
 
 void Scene::moveCameraifNeeded()

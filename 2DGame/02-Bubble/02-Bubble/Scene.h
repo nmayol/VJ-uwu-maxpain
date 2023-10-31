@@ -29,7 +29,10 @@ private:
 	void initShaders();
 	void moveCameraifNeeded();
 	void setSceneStart(float sx);
-	list<Entity*> enemies;
+
+	//Enemy & Other Entities handling
+	list<Entity*> enemies_in_map;
+	list<Entity*> enemies_in_screen;
 
 
 private:

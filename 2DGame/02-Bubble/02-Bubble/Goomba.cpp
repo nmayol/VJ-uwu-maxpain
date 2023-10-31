@@ -68,3 +68,9 @@ void Goomba::setDeathAnimationTimer()
 {
 	frames_until_death = 10;
 }
+
+string Goomba::whoAmI()
+{
+
+	return "I AM GOOMBA!";
+}

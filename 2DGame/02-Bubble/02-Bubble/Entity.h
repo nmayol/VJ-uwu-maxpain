@@ -22,11 +22,19 @@ public:
 	void update(int deltaTime);
 	void render();
 	void setTileMap(TileMap* tileMap);
+
 	void setPosition(const glm::vec2& pos);
 	glm::vec2 getPosition();
 	glm::vec2 getPositioninTM();
+
 	float getFacingDirection();
+	void changeFacingDirection();
+
+	glm::ivec2 getSize();
+	bool detectCollision(glm::vec2* posEntity, float facingDirection, const glm::ivec2& size);
 	bool isEntityDead();
+
+	virtual string whoAmI() = 0;
 
 protected:
 	bool is_dead;
