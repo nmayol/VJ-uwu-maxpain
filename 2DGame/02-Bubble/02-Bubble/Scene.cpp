@@ -104,8 +104,10 @@ void Scene::updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
 	for (int i = startBlock; i < 210; ++i) {
 		for (int j = 7; j < 12; j++) {
-			if (qmBlockIndex[i][j] == 2 || qmBlockIndex[i][j] == 1) { // update used qm animation
+			if (qmBlockIndex[i][j] <= 3 && qmBlockIndex[i][j] >= 1) { // update used qm animation
 				qmBlockSet[i][j]->update(deltaTime, map->getQMBlockIndexPosition(i, j));
+				if (qmBlockIndex[i][j] == 2)
+					map->inactivateQMBlock(i, j);
 			}
 		}
 	}
@@ -135,7 +137,7 @@ void Scene::renderBricks() {
 			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
 				brickSet[i][j]->render(currentTime);
 			}
-			else if (qmBlockIndex[i][j] == 1)
+			else if (qmBlockIndex[i][j] >= 1 && qmBlockIndex[i][j] <= 3)
 			{
 				qmBlockSet[i][j]->render(currentTime);
 			}

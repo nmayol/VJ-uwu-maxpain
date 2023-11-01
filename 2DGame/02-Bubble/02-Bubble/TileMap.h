@@ -40,6 +40,7 @@ public:
 	// QMBlock treatment
 	vector<vector<int>> getQMBlockIndex() const { return qmBlockIndex; }
 	bool getQMBlockIndexPosition(int i, int j) const { return qmBlockIndex[i][j] == 2; }
+	void inactivateQMBlock(int i, int j) { qmBlockIndex[i][j] = 3; }
 
 	// Collision
 	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size, float* posX) const;

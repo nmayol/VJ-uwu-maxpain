@@ -21,7 +21,7 @@
 
 enum QMBlockAnims
 {
-	NORMAL, USED
+	NORMAL, USED, INACTIVE
 };
 
 
@@ -49,9 +49,10 @@ void QMBlock::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 Sprite* QMBlock::initQMBlockSprite(Texture* spritesheet, ShaderProgram* shaderProgram) {
 
 	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 16), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
-	newSprite->setNumberAnimations(2);
+	newSprite->setNumberAnimations(3);
 	newSprite->setAnimationSpeed(NORMAL, 8);
 	newSprite->setAnimationSpeed(USED, 8);
+	newSprite->setAnimationSpeed(INACTIVE, 8);
 	newSprite->addKeyframe(NORMAL, glm::vec2(0.f * SPRITE_OFFSET_X, 0.f));
 	newSprite->addKeyframe(NORMAL, glm::vec2(0.f * SPRITE_OFFSET_X, 0.f));
 	newSprite->addKeyframe(NORMAL, glm::vec2(0.f * SPRITE_OFFSET_X, 0.f));
@@ -63,6 +64,7 @@ Sprite* QMBlock::initQMBlockSprite(Texture* spritesheet, ShaderProgram* shaderPr
 
 
 	newSprite->addKeyframe(USED, glm::vec2(3.f * SPRITE_OFFSET_X, 0.f));
+	newSprite->addKeyframe(INACTIVE, glm::vec2(3.f * SPRITE_OFFSET_X, 0.f));
 
 
 	return newSprite;
@@ -75,10 +77,24 @@ Sprite* QMBlock::initQMBlockSprite(Texture* spritesheet, ShaderProgram* shaderPr
 
 void QMBlock::update(int deltaTime, bool justUsed)
 {
-	if (justUsed) actualAnimation = USED;
-	normalQMBlock->update(deltaTime);
-	if (normalQMBlock->animation() != actualAnimation) normalQMBlock->changeAnimation(actualAnimation);
+	if (justUsed)
+		actualAnimation = USED;
+	int anim = normalQMBlock->animation();
+	if (anim != actualAnimation) {
+		normalQMBlock->changeAnimation(actualAnimation);
+	}
+
+	if (actualAnimation == USED) {
+		posQMBlock = posQMBlock + glm::vec2(0,-8);
+		actualAnimation = INACTIVE;
+	}	
+	else if (actualAnimation == INACTIVE && anim == USED)
+		posQMBlock = posQMBlock + glm::vec2(0, 16);
+		
+
 	normalQMBlock->setPosition(glm::vec2(float(tileMapDispl.x + posQMBlock.x), float(tileMapDispl.y + posQMBlock.y)));
+	normalQMBlock->update(deltaTime);
+	
 }
 
 

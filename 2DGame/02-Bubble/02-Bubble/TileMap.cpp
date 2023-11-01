@@ -206,13 +206,12 @@ bool TileMap::collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, floa
 	for(int x=x0; x<=x1; x++)
 	{
 		if(map[y*mapSize.x+x] != 0){
-			if (map[y * mapSize.x + x] == 1292 && size.y > 17) { // brick case in supermario mode
+			if (map[y * mapSize.x + x] == 1292 && size.y > 17 && brickIndex[x][y] != 3) { // brick case in supermario mode
 				brickIndex[x][y] = 2;
 				map[y * mapSize.x + x] = 0;
 			}
 			else if (map[y * mapSize.x + x] == 1294) { // QMBlock case
 				qmBlockIndex[x][y] = 2;
-				map[y * mapSize.x + x] = 0;
 			}
 			*posY = tileSize * (y+1);
 			return true;
