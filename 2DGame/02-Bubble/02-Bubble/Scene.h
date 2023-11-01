@@ -30,6 +30,7 @@ private:
 	void initShaders();
 	void moveCameraifNeeded();
 	void updateBricks(vector<vector<int>>& brickIndex, int deltaTime);
+	void renderBricks();
 
 private:
 	int numLevel;

@@ -79,7 +79,7 @@ void Scene::update(int deltaTime)
 void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
 
-	for (int i = startBlock; i < startBlock + ceil(16. / 3.) + 2; ++i) {
+	for (int i = startBlock; i < min(startBlock + 8,210); ++i) {
 		for (int j = 5; j < 10; j++) {
 			if (brickIndex[i][j] == 2) { // update broken brick animation
 				brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
@@ -100,31 +100,35 @@ void Scene::render()
 	map->render();
 	map_sec->render();
 	player->render();
+	renderBricks();
+		
+}
+
+void Scene::renderBricks() {
 	int startBlock = (sceneStart / map->getTileSize());
 	vector<vector<int>> brickIndex = map->getBrickIndex();
-	for (int i = startBlock; i < min(221,startBlock+17); i++) {
+	for (int i = startBlock; i < min(210, startBlock + 17); i++) {
 		for (int j = 5; j < 10; j++) {
 			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
 				brickSet[i][j]->render(currentTime);
 			}
 		}
-	}	
-	
-	
+	}
 }
+
+
 
 void Scene::moveCameraifNeeded()
 {
-	float posPlayer = player->getPosition().x;
+	float posPlayerX = player->getPosition().x;
 	float directionPlayer = player->getFacingDirection();
-	// float altPlayer = player->getPosition().y;
-	if (posPlayer < 3120 && (posPlayer - (sceneStart + float(SCREEN_WIDTH - 1)) / 3.) > 0 && (directionPlayer == 1.f)) {
-		float aux = posPlayer - (float(SCREEN_WIDTH - 1)) / 3.;
+	if (sceneStart < 3120 && (posPlayerX - (sceneStart + float(SCREEN_WIDTH - 1)) / 3.) > 0 && (directionPlayer == 1.f)) {
+		float aux = posPlayerX - (float(SCREEN_WIDTH - 1)) / 3.;
 		if (aux > sceneStart) {
 			sceneStart = aux;
 		}
 	}
-	else if (directionPlayer == -1.f && posPlayer < sceneStart) {
+	else if (directionPlayer == -1.f && posPlayerX < sceneStart) {
 		// make player unable to go back to last scene
 		player->setPosition(glm::vec2(sceneStart, player->getPosition().y));
 	}
