@@ -40,7 +40,9 @@ void Scene::init()
 	numLevel = 1;
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	brickSet = vector<vector<Brick*>>(map->getMapSize().x, vector<Brick*>(map->getMapSize().y, NULL));
+	qmBlockSet = vector<vector<QMBlock*>>(map->getMapSize().x, vector<QMBlock*>(map->getMapSize().y, NULL));
 	vector<vector<int>> brickIndex = map->getBrickIndex();
+	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
 	for (int i = 0; i < map->getMapSize().x; i++) {
 		for (int j = 7; j < 12; j++) {
 			brickSet[i][j] = new Brick();
@@ -48,6 +50,11 @@ void Scene::init()
 				brickSet[i][j] = new Brick();
 				brickSet[i][j]->init(glm::ivec2(SCREEN_X,SCREEN_Y), texProgram);
 				brickSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+			}
+			else if (qmBlockIndex[i][j] == 1) {
+				qmBlockSet[i][j] = new QMBlock();
+				qmBlockSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+				qmBlockSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
 			}
 		}
 	}
@@ -84,6 +91,8 @@ void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 			if (brickIndex[i][j] == 2) { // update broken brick animation
 				brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
 			}
+
+
 		}
 	}
 
@@ -107,10 +116,15 @@ void Scene::render()
 void Scene::renderBricks() {
 	int startBlock = (sceneStart / map->getTileSize());
 	vector<vector<int>> brickIndex = map->getBrickIndex();
+	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
 	for (int i = startBlock; i < min(210, startBlock + 17); i++) {
 		for (int j = 7; j < 12; j++) {
 			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
 				brickSet[i][j]->render(currentTime);
+			}
+			else if (qmBlockIndex[i][j] == 1)
+			{
+				qmBlockSet[i][j]->render(currentTime);
 			}
 		}
 	}

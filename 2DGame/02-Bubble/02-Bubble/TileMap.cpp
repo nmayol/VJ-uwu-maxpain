@@ -19,7 +19,8 @@ TileMap *TileMap::createTileMap(const string &levelFile, const glm::vec2 &minCoo
 TileMap::TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program)
 {
 	loadLevel(levelFile);
-	brickIndex = vector<vector<int>>(mapSize.x, vector<int>(mapSize.y, 0));	
+	brickIndex = vector<vector<int>>(mapSize.x, vector<int>(mapSize.y, 0));
+	qmBlockIndex = vector<vector<int>>(mapSize.x, vector<int>(mapSize.y, 0));
 	prepareArrays(minCoords, program);
 }
 
@@ -139,6 +140,9 @@ void TileMap::prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program)
 				if (tile == 1292) { // brick case	
 					brickIndex[i][j] = 1;
 				}
+				else if (tile == 1294) { // QMBlock case
+					qmBlockIndex[i][j] = 1;
+				}
 			}
 		}
 	}
@@ -204,6 +208,10 @@ bool TileMap::collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, floa
 		if(map[y*mapSize.x+x] != 0){
 			if (map[y * mapSize.x + x] == 1292 && size.y > 17) { // brick case in supermario mode
 				brickIndex[x][y] = 2;
+				map[y * mapSize.x + x] = 0;
+			}
+			else if (map[y * mapSize.x + x] == 1294) { // QMBlock case
+				qmBlockIndex[x][y] = 2;
 				map[y * mapSize.x + x] = 0;
 			}
 			*posY = tileSize * (y+1);

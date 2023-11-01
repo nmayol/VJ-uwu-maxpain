@@ -31,9 +31,17 @@ public:
 	
 	int getTileSize() const { return tileSize; }
 	glm::vec2 getMapSize() const { return mapSize; }
+
+	// Brick treatment
 	vector<vector<int>> getBrickIndex() const { return brickIndex; }
 	bool getBrickIndexPosition(int i, int j) const { return brickIndex[i][j] == 2; }
 
+
+	// QMBlock treatment
+	vector<vector<int>> getQMBlockIndex() const { return qmBlockIndex; }
+	bool getQMBlockIndexPosition(int i, int j) const { return qmBlockIndex[i][j] == 2; }
+
+	// Collision
 	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size, float* posX) const;
 	bool collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size, float* posX) const;
 	bool collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, float *posY);
@@ -55,7 +63,10 @@ private:
 	Texture tilesheet;
 	glm::vec2 tileTexSize;
 	int *map;
+
+	// Special map blocks index
 	vector<vector<int>> brickIndex; // 0 = no brick, 1 = brick, 2 = breaking
+	vector<vector<int>> qmBlockIndex; // 0 = no block, 1 = unused block, 2 = used block
 
 };
 

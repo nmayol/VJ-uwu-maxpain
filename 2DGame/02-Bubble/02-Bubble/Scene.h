@@ -8,6 +8,7 @@
 #include "TileMap.h"
 #include "Player.h"
 #include "Brick.h"
+#include "QMBlock.h"
 
 
 
@@ -38,7 +39,7 @@ private:
 	TileMap* map_sec;
 
 	Player *player;
-	vector<vector<bool>> brickIndex;
+
 
 
 
@@ -48,6 +49,7 @@ private:
 	float sceneStart;
 
 	vector<vector<Brick*>> brickSet;
+	vector<vector<QMBlock*>> qmBlockSet;
 
 
 };
