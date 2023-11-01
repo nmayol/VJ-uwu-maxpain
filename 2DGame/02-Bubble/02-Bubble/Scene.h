@@ -31,6 +31,7 @@ private:
 	void initShaders();
 	void moveCameraifNeeded();
 	void updateBricks(vector<vector<int>>& brickIndex, int deltaTime);
+	void updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime);
 	void renderBricks();
 
 private:

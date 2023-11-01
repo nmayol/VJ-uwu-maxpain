@@ -77,15 +77,17 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
+	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
 	player->update(deltaTime);	
-	updateBricks(brickIndex, deltaTime);	
+	updateBricks(brickIndex, deltaTime);
+	updateQMBlocks(qmBlockIndex, deltaTime);
+
 	moveCameraifNeeded();
 }
 
 
 void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
-
 	for (int i = startBlock; i < min(startBlock + 8,210); ++i) {
 		for (int j = 7; j < 12; j++) {
 			if (brickIndex[i][j] == 2) { // update broken brick animation
@@ -96,6 +98,17 @@ void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 		}
 	}
 
+}
+
+void Scene::updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime) {
+	int startBlock = (sceneStart / map->getTileSize());
+	for (int i = startBlock; i < 210; ++i) {
+		for (int j = 7; j < 12; j++) {
+			if (qmBlockIndex[i][j] == 2 || qmBlockIndex[i][j] == 1) { // update used qm animation
+				qmBlockSet[i][j]->update(deltaTime, map->getQMBlockIndexPosition(i, j));
+			}
+		}
+	}
 }
 
 void Scene::render()

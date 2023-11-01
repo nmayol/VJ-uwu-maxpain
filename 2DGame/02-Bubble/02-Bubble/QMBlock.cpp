@@ -15,9 +15,8 @@
 
 //For reading Sprite
 #define SPRITE_OFFSET_X (1.f / 32.f)
-#define LITTLE_SPRITE_OFFSET_X (1.f / 64.f)
 #define SPRITE_OFFSET_Y (1.f / 2.f)
-#define LITTLE_SPRITE_OFFSET_Y (1.f / 4.f)
+
 
 
 enum QMBlockAnims
@@ -52,7 +51,18 @@ Sprite* QMBlock::initQMBlockSprite(Texture* spritesheet, ShaderProgram* shaderPr
 	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 16), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
 	newSprite->setNumberAnimations(2);
 	newSprite->setAnimationSpeed(NORMAL, 8);
-	newSprite->addKeyframe(NORMAL, glm::vec2(0.f, 0.f));
+	newSprite->setAnimationSpeed(USED, 8);
+	newSprite->addKeyframe(NORMAL, glm::vec2(0.f * SPRITE_OFFSET_X, 0.f));
+	newSprite->addKeyframe(NORMAL, glm::vec2(0.f * SPRITE_OFFSET_X, 0.f));
+	newSprite->addKeyframe(NORMAL, glm::vec2(0.f * SPRITE_OFFSET_X, 0.f));
+	newSprite->addKeyframe(NORMAL, glm::vec2(0.f * SPRITE_OFFSET_X, 0.f));
+	newSprite->addKeyframe(NORMAL, glm::vec2(0.f * SPRITE_OFFSET_X, 0.f));
+	newSprite->addKeyframe(NORMAL, glm::vec2(1.f * SPRITE_OFFSET_X, 0.f));
+	newSprite->addKeyframe(NORMAL, glm::vec2(2.f * SPRITE_OFFSET_X, 0.f));
+	newSprite->addKeyframe(NORMAL, glm::vec2(1.f * SPRITE_OFFSET_X, 0.f));
+
+
+	newSprite->addKeyframe(USED, glm::vec2(3.f * SPRITE_OFFSET_X, 0.f));
 
 
 	return newSprite;
@@ -63,9 +73,9 @@ Sprite* QMBlock::initQMBlockSprite(Texture* spritesheet, ShaderProgram* shaderPr
 
 
 
-void QMBlock::update(int deltaTime, bool justBroken)
+void QMBlock::update(int deltaTime, bool justUsed)
 {
-		// actualAnimation = BROKEN;
+	if (justUsed) actualAnimation = USED;
 	normalQMBlock->update(deltaTime);
 	if (normalQMBlock->animation() != actualAnimation) normalQMBlock->changeAnimation(actualAnimation);
 	normalQMBlock->setPosition(glm::vec2(float(tileMapDispl.x + posQMBlock.x), float(tileMapDispl.y + posQMBlock.y)));
@@ -79,7 +89,8 @@ void QMBlock::render(int deltaTime)
 		normalQMBlock->render();
 	}
 	else {
-		/*normalQMBlock->renderBroken(deltaTime);*/
+		// TO CHANGE
+		normalQMBlock->render();
 	}
 }
 

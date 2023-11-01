@@ -15,7 +15,7 @@ class QMBlock
 
 public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
-	void update(int deltaTime, bool justBroken);
+	void update(int deltaTime, bool justUsed);
 	void render(int deltaTime);
 	void setPosition(const glm::vec2& pos);
 	glm::vec2 getPosition();
