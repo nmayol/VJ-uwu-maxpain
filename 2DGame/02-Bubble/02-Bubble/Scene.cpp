@@ -11,8 +11,8 @@
 #define SCREEN_X 0
 #define SCREEN_Y 16
 
-#define INIT_PLAYER_X_TILES 2.5
-#define INIT_PLAYER_Y_TILES 12
+#define INIT_PLAYER_X_TILES 3
+#define INIT_PLAYER_Y_TILES 14
 
 using namespace std;
 
@@ -42,7 +42,7 @@ void Scene::init()
 	brickSet = vector<vector<Brick*>>(map->getMapSize().x, vector<Brick*>(map->getMapSize().y, NULL));
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	for (int i = 0; i < map->getMapSize().x; i++) {
-		for (int j = 5; j < 10; j++) {
+		for (int j = 7; j < 12; j++) {
 			brickSet[i][j] = new Brick();
 			if (brickIndex[i][j] == 1) {
 				brickSet[i][j] = new Brick();
@@ -62,7 +62,7 @@ void Scene::init()
 	
 	
 
-	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT+7), 8.f);
+	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT+40), 41.f);
 	currentTime = 0.0f;
 }
 
@@ -80,7 +80,7 @@ void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
 
 	for (int i = startBlock; i < min(startBlock + 8,210); ++i) {
-		for (int j = 5; j < 10; j++) {
+		for (int j = 7; j < 12; j++) {
 			if (brickIndex[i][j] == 2) { // update broken brick animation
 				brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
 			}
@@ -108,7 +108,7 @@ void Scene::renderBricks() {
 	int startBlock = (sceneStart / map->getTileSize());
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	for (int i = startBlock; i < min(210, startBlock + 17); i++) {
-		for (int j = 5; j < 10; j++) {
+		for (int j = 7; j < 12; j++) {
 			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
 				brickSet[i][j]->render(currentTime);
 			}
@@ -133,7 +133,7 @@ void Scene::moveCameraifNeeded()
 		player->setPosition(glm::vec2(sceneStart, player->getPosition().y));
 	}
 
-	projection = glm::ortho(sceneStart, sceneStart + (float(SCREEN_WIDTH - 1)), float(SCREEN_HEIGHT + 7), 8.f);
+	projection = glm::ortho(sceneStart, sceneStart + (float(SCREEN_WIDTH - 1)), float(SCREEN_HEIGHT + 40), 41.f);
 
 }
 
