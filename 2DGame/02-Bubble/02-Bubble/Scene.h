@@ -29,8 +29,7 @@ public:
 private:
 	void initShaders();
 	void moveCameraifNeeded();
-	void setSceneStart(float sx);
-	bool marioJustBrokeTheBrick(int x, int y);
+	void updateBricks(vector<vector<int>>& brickIndex, int deltaTime);
 
 private:
 	int numLevel;
@@ -41,7 +40,6 @@ private:
 	vector<vector<bool>> brickIndex;
 
 
-	void readBrickSetFromFile();
 
 	ShaderProgram texProgram;
 	float currentTime;

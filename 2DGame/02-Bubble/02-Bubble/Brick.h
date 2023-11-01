@@ -17,12 +17,8 @@ public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
 	void update(int deltaTime, bool justBroken);
 	void render(int deltaTime);
-
-	void setBrickForm(int formId);
 	void setPosition(const glm::vec2& pos);
-
 	glm::vec2 getPosition();
-	glm::vec2 getPositioninTM();
 	float getFacingDirection();
 
 private:
@@ -30,16 +26,11 @@ private:
 
 	//OTHERS
 	int actualAnimation;
-	int actualForm;
-	float actual_speed;
-	float initial_jump_xspeed;
 	float vys; float vxs;
 	float vyi; float vxi;
-	float max_xspeed_allowed_jumping;
 
 	float facingDirection;
 
-	int framesUntilSlowdown;
 	int frames_from_breaking;
 
 	glm::ivec2 tileMapDispl;
@@ -49,9 +40,6 @@ private:
 	glm::vec2 posBrokenBrickIL;
 	glm::vec2 posBrokenBrickIR;
 
-	int jumpAngle, startY;
-	Sprite* sprite;
-	glm::ivec2 collision_box_size;
 
 	//Diferent Brick Sprites & SpriteFiles
 	Texture brickSpritesheet;

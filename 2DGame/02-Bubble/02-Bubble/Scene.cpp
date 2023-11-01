@@ -33,24 +33,6 @@ Scene::~Scene()
 
 
 
-void Scene::readBrickSetFromFile() {
-	ifstream file("levels/level0" + to_string(numLevel) + "_bricks.txt");
-	if (file.is_open()) {
-		string line;
-		while (getline(file, line)) {
-			int x, y;
-			std::istringstream iss(line);
-			iss >> x >> y;
-			brickIndex[x][y] = true;
-
-		}
-		file.close();
-	}
-	else {
-		cerr << "Unable to open file" << endl;
-	}
-}
-
 
 void Scene::init()
 {
@@ -89,18 +71,22 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	player->update(deltaTime);	
+	updateBricks(brickIndex, deltaTime);	
+	moveCameraifNeeded();
+}
 
+
+void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
-	
-	for (int i = startBlock; i < startBlock + ceil(16./3.)+1; ++i) {
+
+	for (int i = startBlock; i < startBlock + ceil(16. / 3.) + 2; ++i) {
 		for (int j = 5; j < 10; j++) {
-			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
+			if (brickIndex[i][j] == 2) { // update broken brick animation
 				brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
 			}
 		}
 	}
-	
-	moveCameraifNeeded();
+
 }
 
 void Scene::render()
