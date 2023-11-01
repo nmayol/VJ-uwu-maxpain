@@ -85,11 +85,11 @@ void QMBlock::update(int deltaTime, bool justUsed)
 	}
 
 	if (actualAnimation == USED) {
-		posQMBlock = posQMBlock + glm::vec2(0,-8);
+		posQMBlock = posQMBlock + glm::vec2(0,-4);
 		actualAnimation = INACTIVE;
 	}	
 	else if (actualAnimation == INACTIVE && anim == USED)
-		posQMBlock = posQMBlock + glm::vec2(0, 16);
+		posQMBlock = posQMBlock + glm::vec2(0, 8);
 		
 
 	normalQMBlock->setPosition(glm::vec2(float(tileMapDispl.x + posQMBlock.x), float(tileMapDispl.y + posQMBlock.y)));
