@@ -15,7 +15,7 @@ class Player
 
 public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
-	void update(int deltaTime);
+	void update(int deltaTime, bool blockedPlayer, bool gameCompleted);
 	void render();
 
 	void setMarioForm(int formId);
@@ -47,7 +47,9 @@ private:
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer;
 	int jumpAngle, startY;
+
 	Sprite* sprite;
+	Sprite* playerIntoCastle;
 
 	TileMap* map;
 	glm::ivec2 collision_box_size;

@@ -33,13 +33,17 @@ private:
 	void updateBricks(vector<vector<int>>& brickIndex, int deltaTime);
 	void updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime);
 	void renderBricks();
+	void completeGameifNeeded();
 
 private:
+	bool blockedPlayer;
 	int numLevel;
+	bool overworld;
+	bool completed;
 	TileMap* map;
 	TileMap* map_sec;
-
 	Player *player;
+
 
 
 

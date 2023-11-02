@@ -38,6 +38,11 @@ void Scene::init()
 {
 	initShaders();
 	numLevel = 1;
+
+	overworld = true;
+	completed = false;
+	blockedPlayer = false;
+	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	brickSet = vector<vector<Brick*>>(map->getMapSize().x, vector<Brick*>(map->getMapSize().y, NULL));
 	qmBlockSet = vector<vector<QMBlock*>>(map->getMapSize().x, vector<QMBlock*>(map->getMapSize().y, NULL));
@@ -60,7 +65,7 @@ void Scene::init()
 	}
 
 
-	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
@@ -78,7 +83,8 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
-	player->update(deltaTime);	
+	completeGameifNeeded();
+	player->update(deltaTime, blockedPlayer, completed);	
 	updateBricks(brickIndex, deltaTime);
 	updateQMBlocks(qmBlockIndex, deltaTime);
 
@@ -121,8 +127,9 @@ void Scene::render()
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	map->render();
 	map_sec->render();
+	map->render();
+	
 	player->render();
 	renderBricks();
 		
@@ -147,6 +154,22 @@ void Scene::renderBricks() {
 
 
 
+
+
+
+
+
+void Scene::completeGameifNeeded()
+{
+	if (player->getPosition().x >= 198.f * 16.f) {
+		completed = true;
+		blockedPlayer = true;
+	}
+}
+
+
+
+
 void Scene::moveCameraifNeeded()
 {
 	float posPlayerX = player->getPosition().x;
@@ -160,11 +183,33 @@ void Scene::moveCameraifNeeded()
 	else if (directionPlayer == -1.f && posPlayerX < sceneStart) {
 		// make player unable to go back to last scene
 		player->setPosition(glm::vec2(sceneStart, player->getPosition().y));
+
 	}
 
-	projection = glm::ortho(sceneStart, sceneStart + (float(SCREEN_WIDTH - 1)), float(SCREEN_HEIGHT + 40), 41.f);
+	float down, up, left, right;
+	if (overworld) {
+		left = sceneStart;
+		right = sceneStart + (float(SCREEN_WIDTH - 1));
+		down = float(SCREEN_HEIGHT + 40.);
+		up = 41.;
+	}
+	else {
+		left = 48 * 16.f;
+		right = 48 * 16.f + (float(SCREEN_WIDTH - 1));
+		down = 16*16+float(SCREEN_HEIGHT);
+		up = 16*16+1;
+	}
+
+	
+
+	projection = glm::ortho(left, right, down, up);
 
 }
+
+
+
+
+
 
 void Scene::initShaders()
 {
