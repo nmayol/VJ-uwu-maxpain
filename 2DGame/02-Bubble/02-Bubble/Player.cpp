@@ -38,6 +38,9 @@
 #define FAST_GRAVITY 0.5625f
 #define MAX_FALL_SPEED -4.53515625f
 
+//others
+#define I_FRAMES 120
+
 //For reading Sprite
 #define SPRITE_OFFSET_X (1.f / 14.f)
 #define BIG_SPRITE_OFFSET_X (1.f / 17.f)
@@ -67,6 +70,7 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	pressedPCount = 0;
 	pressedPandReleased = true;
 	framesUntilSlowdown = 0;
+	invencibleFrames = 0;
 	facingDirection = 1.f;
 	actual_speed = 0.f;
 	vertical_speed = -2.5f;
@@ -199,6 +203,13 @@ void Player::update(int deltaTime)
 	if (leftKeyPressed && rightKeyPressed) {
 		leftKeyPressed = (facingDirection == -1.f);
 		rightKeyPressed = !leftKeyPressed;
+	}
+
+	//invencible Frames after taking damage
+	if (invencibleFrames > 0) {
+		if (invencibleFrames == I_FRAMES) setMarioForm((2 + actualForm) % 3);
+		sprite->setActivated(invencibleFrames % 4 < 2);
+		invencibleFrames--;
 	}
 
 
@@ -439,6 +450,11 @@ void Player::setPosition(const glm::vec2& pos)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
+void Player::setVerticalSpeed(const float& new_speed)
+{
+	vertical_speed = new_speed;
+}
+
 glm::vec2 Player::getPosition() {
 	return posPlayer;
 }
@@ -455,6 +471,16 @@ glm::ivec2 Player::getSize()
 bool Player::isFalling()
 {
 	return bJumping && vertical_speed < 0;
+}
+
+bool Player::isInvencible()
+{
+	return invencibleFrames > 0;
+}
+
+void Player::takeDamage()
+{
+	invencibleFrames = I_FRAMES;
 }
 
 float Player::getFacingDirection() {

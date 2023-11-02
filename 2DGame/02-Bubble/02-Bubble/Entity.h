@@ -17,7 +17,7 @@ public:
 
 	//Abstract
 	virtual void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram) = 0;
-	virtual void takesDamage() = 0;
+	virtual void takeDamage() = 0;
 	virtual string whoAmI() = 0; // for debugging
 
 	//Implemented Methods

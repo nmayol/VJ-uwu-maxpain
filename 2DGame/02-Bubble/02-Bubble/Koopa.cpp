@@ -59,7 +59,7 @@ void Koopa::update(int deltaTime)
 	Entity::update(deltaTime);
 }
 
-void Koopa::takesDamage()
+void Koopa::takeDamage()
 {
 	is_collidable = false;
 	is_dead = true;

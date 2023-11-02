@@ -32,6 +32,7 @@ Sprite::Sprite(const glm::vec2 &quadSize, const glm::vec2 &sizeInSpritesheet, Te
 	shaderProgram = program;
 	currentAnimation = -1;
 	facingLeft = false;
+	is_activated = true;
 	position = glm::vec2(0.f);
 }
 
@@ -51,21 +52,23 @@ void Sprite::update(int deltaTime)
 
 void Sprite::render() const
 {
-	glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.f));
-	if (facingLeft) {
-		modelview = glm::translate(modelview, glm::vec3(16.f, 0.f, 0.f));
-		modelview = glm::rotate(modelview, glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));  // Flip vertically
-	}
+	if (is_activated) {
+		glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.f));
+		if (facingLeft) {
+			modelview = glm::translate(modelview, glm::vec3(16.f, 0.f, 0.f));
+			modelview = glm::rotate(modelview, glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));  // Flip vertically
+		}
 
-	shaderProgram->setUniformMatrix4f("modelview", modelview);
-	shaderProgram->setUniform2f("texCoordDispl", texCoordDispl.x, texCoordDispl.y);
-	glEnable(GL_TEXTURE_2D);
-	texture->use();
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(posLocation);
-	glEnableVertexAttribArray(texCoordLocation);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glDisable(GL_TEXTURE_2D);
+		shaderProgram->setUniformMatrix4f("modelview", modelview);
+		shaderProgram->setUniform2f("texCoordDispl", texCoordDispl.x, texCoordDispl.y);
+		glEnable(GL_TEXTURE_2D);
+		texture->use();
+		glBindVertexArray(vao);
+		glEnableVertexAttribArray(posLocation);
+		glEnableVertexAttribArray(texCoordLocation);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDisable(GL_TEXTURE_2D);
+	}
 }
 
 void Sprite::free()
@@ -116,6 +119,11 @@ int Sprite::animation() const
 bool Sprite::isFacingLeft() const
 {
 	return facingLeft;
+}
+
+void Sprite::setActivated(const bool& true_or_false)
+{
+	is_activated = true_or_false;
 }
 
 void Sprite::setPosition(const glm::vec2 &pos)

@@ -21,10 +21,14 @@ public:
 	void setMarioForm(int formId);
 	void setTileMap(TileMap* tileMap);
 	void setPosition(const glm::vec2& pos);
+	void setVerticalSpeed(const float& new_speed);
+
 	glm::vec2 getPosition();
 	glm::vec2 getPositioninTM();
 	glm::ivec2 getSize();
 	bool isFalling();
+	bool isInvencible();
+	void takeDamage();
 	float getFacingDirection();
 
 private:
@@ -45,6 +49,7 @@ private:
 	float facingDirection;
 
 	int framesUntilSlowdown;
+	int invencibleFrames;
 
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer;

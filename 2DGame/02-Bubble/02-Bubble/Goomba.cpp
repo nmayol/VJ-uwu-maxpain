@@ -65,7 +65,7 @@ void Goomba::update(int deltaTime)
 	else Entity::update(deltaTime);
 }
 
-void Goomba::takesDamage()
+void Goomba::takeDamage()
 {
 	is_collidable = false;
 	sprite->changeAnimation(DYING);

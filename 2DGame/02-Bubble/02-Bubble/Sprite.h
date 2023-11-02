@@ -34,6 +34,7 @@ public:
 	void changeDirection(int directionId);
 	int animation() const;
 	bool isFacingLeft() const;
+	void setActivated(const bool& true_or_false);
 	
 	void setPosition(const glm::vec2 &pos);
 
@@ -45,6 +46,7 @@ private:
 	GLint posLocation, texCoordLocation;
 	glm::vec2 position;
 	bool facingLeft;
+	bool is_activated;
 	int currentAnimation, currentKeyframe;
 	float timeAnimation;
 	glm::vec2 texCoordDispl;

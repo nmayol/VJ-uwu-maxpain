@@ -47,6 +47,7 @@ void Scene::init()
 	player->setTileMap(map);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT + 7), 8.f);
 	currentTime = 0.0f;
+	stopFrames = 0;
 
 	//TODO -> FIX THIS READING FROM FILE
 	Goomba* enemy_test = new Goomba();
@@ -65,7 +66,7 @@ void Scene::init()
 
 	Koopa* enemy_test_a = new Koopa();
 	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 3, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
+	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 4, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
 	enemy_test_a->changeFacingDirection();
 	enemy_test_a->setTileMap(map);
 
@@ -75,6 +76,12 @@ void Scene::init()
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
+	if (stopFrames > 0)
+	{
+		stopFrames--;
+		return;
+	};
+
 	player->update(deltaTime);
 	glm::vec2 posPlayer = player->getPosition();
 	glm::ivec2 playerSize = player->getSize();
@@ -112,13 +119,17 @@ void Scene::update(int deltaTime)
 				}
 
 				//colision with player
-				int player_colision_result = (*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize);
-				if (player_colision_result == ENTITY_TAKES_DMG)
-				{
-					(*it)->takesDamage();
-				}
-				else if (player_colision_result == PLAYER_TAKES_DMG) {
-					player_colision_result = 0;
+				if (!player->isInvencible()) {
+					int player_colision_result = (*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize);
+					if (player_colision_result == ENTITY_TAKES_DMG)
+					{
+						(*it)->takeDamage();
+						player->setVerticalSpeed(4.5f);
+					}
+					else if (player_colision_result == PLAYER_TAKES_DMG) {
+						player->takeDamage();
+						stopFrames = 20;
+					}
 				}
 			}
 

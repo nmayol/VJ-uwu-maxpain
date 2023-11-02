@@ -43,6 +43,7 @@ private:
 	float currentTime;
 	glm::mat4 projection;
 	float sceneStart;
+	int stopFrames;
 	
 
 };
