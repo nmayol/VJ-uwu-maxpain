@@ -11,6 +11,11 @@ enum EntityDirection
 	FACING_LEFT, FACING_RIGHT
 };
 
+enum PlayerColisionResult
+{
+	NOTHING, PLAYER_TAKES_DMG, ENTITY_TAKES_DMG
+};
+
 // This method must be implemented by deriving classes
 // void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram) {}
 
@@ -51,7 +56,8 @@ bool Entity::detectCollision(glm::vec2* posEntity, float facingDirection, const 
 	float y0 = this->posEntity.x;								// left-most side
 	float y1 = this->posEntity.x + collision_box_size.x;		// right-most side
 
-	if (facingDirection == 1.f && x1 > y0 && x0 < y1) {
+	if (!is_collidable) return false;
+	else if (facingDirection == 1.f && x1 > y0 && x0 < y1) {
 		posEntity->x = y0 - size.x - 2.f;
 		return true;
 	}
@@ -60,6 +66,21 @@ bool Entity::detectCollision(glm::vec2* posEntity, float facingDirection, const 
 		return true;
 	}
 	return false;
+}
+
+int Entity::detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::ivec2& size)
+{
+	float x0, x1, y0, entx1;
+	y0 = (posPlayer.y + size.y);
+	x0 = posPlayer.x;
+	x1 = x0 + size.x;
+	entx1 = posEntity.x + collision_box_size.x;
+
+	if (((x0 > posEntity.x && x0 < entx1) || (x1 > posEntity.x && x1 < entx1)) && y0 >= posEntity.y && y0 <= posEntity.y + collision_box_size.y) {
+		if (y0 > (posEntity.y + collision_box_size.y * 0.25)) return PLAYER_TAKES_DMG;
+		else return ENTITY_TAKES_DMG;
+	}
+	return NOTHING;
 }
 
 void Entity::render()
@@ -84,6 +105,11 @@ glm::vec2 Entity::getPosition() {
 
 glm::vec2 Entity::getPositioninTM() {
 	return posEntity + glm::vec2(float(tileMapDispl.x), float(tileMapDispl.y));
+}
+
+bool Entity::isCollidable()
+{
+	return is_collidable;
 }
 
 float Entity::getFacingDirection() {

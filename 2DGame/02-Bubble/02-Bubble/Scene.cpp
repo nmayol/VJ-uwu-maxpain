@@ -13,6 +13,10 @@
 #define INIT_PLAYER_X_TILES 2.5
 #define INIT_PLAYER_Y_TILES 12
 
+enum PlayerColisionResult
+{
+	NOTHING, PLAYER_TAKES_DMG, ENTITY_TAKES_DMG
+};
 
 Scene::Scene()
 {
@@ -47,7 +51,14 @@ void Scene::init()
 	//TODO -> FIX THIS READING FROM FILE
 	Goomba* enemy_test = new Goomba();
 	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 3 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
+	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
+	enemy_test->setTileMap(map);
+	enemy_test->changeFacingDirection();
+	enemies_in_map.push_back(enemy_test);
+
+	enemy_test = new Goomba();
+	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 90.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
 	enemy_test->setTileMap(map);
 	enemy_test->changeFacingDirection();
 	enemies_in_map.push_back(enemy_test);
@@ -65,14 +76,16 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
-	glm::ivec2 posPlayer = player->getPosition();
+	glm::vec2 posPlayer = player->getPosition();
+	glm::ivec2 playerSize = player->getSize();
+	bool playerIsFalling = player->isFalling();
 
 	// Go through Enemy list and check if they are in screen
 	bool stop = false;
 	std::list<Entity*>::iterator it = enemies_in_map.begin();
 	while (it != enemies_in_map.end() && !stop) {
 		glm::ivec2 posEnemy = (*it)->getPosition();
-		if ((((posPlayer.x + 192) / 64 + 2) * 64) > posEnemy.x) {
+		if ((((((int) posPlayer.x) + 192) / 64 + 2) * 64) > posEnemy.x) {
 			enemies_in_screen.push_back((*it));
 			it = enemies_in_map.erase(it);
 		}
@@ -83,18 +96,32 @@ void Scene::update(int deltaTime)
 	it = enemies_in_screen.begin();
 	while (it != enemies_in_screen.end()) {
 		glm::vec2 posEnemy = (*it)->getPosition();
-		if (posEnemy.x < posPlayer.x - 192) it = enemies_in_screen.erase(it);
+		if (posEnemy.x < posPlayer.x - 192 || (*it)->isEntityDead()) it = enemies_in_screen.erase(it);
 		else {
 			(*it)->update(deltaTime);
 			
-			//colision with other enemies
-			for (Entity* e2 : enemies_in_screen) {
-				if (e2 != (*it) && e2->detectCollision(&posEnemy, (*it)->getFacingDirection(), (*it)->getSize())) {
-					(*it)->changeFacingDirection();
-					(*it)->setPosition(posEnemy);
-					e2->changeFacingDirection();
+			if ((*it)-> isCollidable()) 
+			{
+				//colision with other enemies
+				for (Entity* e2 : enemies_in_screen) {
+					if (e2 != (*it) && e2->detectCollision(&posEnemy, (*it)->getFacingDirection(), (*it)->getSize())) {
+						(*it)->changeFacingDirection();
+						(*it)->setPosition(posEnemy);
+						e2->changeFacingDirection();
+					}
+				}
+
+				//colision with player
+				int player_colision_result = (*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize);
+				if (player_colision_result == ENTITY_TAKES_DMG)
+				{
+					(*it)->takesDamage();
+				}
+				else if (player_colision_result == PLAYER_TAKES_DMG) {
+					player_colision_result = 0;
 				}
 			}
+
 			++it;
 		}
 	}
@@ -123,7 +150,7 @@ void Scene::moveCameraifNeeded()
 	float directionPlayer = player->getFacingDirection();
 	// float altPlayer = player->getPosition().y;
 	if (posPlayer < 3120 && (posPlayer - (sceneStart + float(SCREEN_WIDTH - 1)) / 3.) > 0 && (directionPlayer == 1.f)) {
-		float aux = posPlayer - (float(SCREEN_WIDTH - 1)) / 3.;
+		float aux = posPlayer - (float(SCREEN_WIDTH - 1)) / 3.f;
 		if (aux > sceneStart) {
 			sceneStart = aux;
 		}

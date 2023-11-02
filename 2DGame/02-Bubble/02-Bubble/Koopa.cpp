@@ -34,6 +34,7 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	horitzontal_speed = NORMAL_WALK_SPEED;
 	vertical_speed = NORMAL_FALL_SPEED;
 	is_dead = false;
+	is_collidable = true;
 
 	//INIT SPRITES
 	entitySpritesheet.loadFromFile("images/koopa.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -56,6 +57,12 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 void Koopa::update(int deltaTime)
 {
 	Entity::update(deltaTime);
+}
+
+void Koopa::takesDamage()
+{
+	is_collidable = false;
+	is_dead = true;
 }
 
 string Koopa::whoAmI()

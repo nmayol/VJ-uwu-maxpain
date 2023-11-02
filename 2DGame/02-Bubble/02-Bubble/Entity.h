@@ -17,9 +17,11 @@ public:
 
 	//Abstract
 	virtual void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram) = 0;
+	virtual void takesDamage() = 0;
+	virtual string whoAmI() = 0; // for debugging
 
 	//Implemented Methods
-	void update(int deltaTime);
+	virtual void update(int deltaTime);
 	void render();
 	void setTileMap(TileMap* tileMap);
 
@@ -27,16 +29,17 @@ public:
 	glm::vec2 getPosition();
 	glm::vec2 getPositioninTM();
 
+	bool isCollidable();
 	float getFacingDirection();
 	void changeFacingDirection();
 
 	glm::ivec2 getSize();
 	bool detectCollision(glm::vec2* posEntity, float facingDirection, const glm::ivec2& size);
+	int detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::ivec2& size);
 	bool isEntityDead();
 
-	virtual string whoAmI() = 0;
-
 protected:
+	bool is_collidable;
 	bool is_dead;
 	float vertical_speed;
 	float horitzontal_speed;

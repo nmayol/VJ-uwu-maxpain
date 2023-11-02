@@ -447,6 +447,16 @@ glm::vec2 Player::getPositioninTM() {
 	return posPlayer + glm::vec2(float(tileMapDispl.x), float(tileMapDispl.y));
 }
 
+glm::ivec2 Player::getSize()
+{
+	return collision_box_size;
+}
+
+bool Player::isFalling()
+{
+	return bJumping && vertical_speed < 0;
+}
+
 float Player::getFacingDirection() {
 	return facingDirection;
 }

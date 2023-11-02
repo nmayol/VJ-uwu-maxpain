@@ -34,6 +34,7 @@ void Goomba::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	horitzontal_speed = NORMAL_WALK_SPEED;
 	vertical_speed = NORMAL_FALL_SPEED;
 	is_dead = false;
+	is_collidable = true;
 	frames_until_death = -1;
 
 	//INIT SPRITES
@@ -64,9 +65,11 @@ void Goomba::update(int deltaTime)
 	else Entity::update(deltaTime);
 }
 
-void Goomba::setDeathAnimationTimer()
+void Goomba::takesDamage()
 {
-	frames_until_death = 10;
+	is_collidable = false;
+	sprite->changeAnimation(DYING);
+	frames_until_death = 45;
 }
 
 string Goomba::whoAmI()
