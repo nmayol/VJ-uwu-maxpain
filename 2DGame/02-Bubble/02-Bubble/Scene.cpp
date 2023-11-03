@@ -124,7 +124,8 @@ void Scene::update(int deltaTime)
 					if (player_colision_result == ENTITY_TAKES_DMG)
 					{
 						(*it)->takeDamage();
-						player->setVerticalSpeed(4.5f);
+						(*it)->changeFacingDirection(player->getFacingDirection()); //only relevant for koopas
+						player->applyBounce();
 					}
 					else if (player_colision_result == PLAYER_TAKES_DMG) {
 						player->takeDamage();

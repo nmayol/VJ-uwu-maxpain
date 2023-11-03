@@ -212,6 +212,7 @@ void Player::update(int deltaTime)
 		invencibleFrames--;
 	}
 
+	if (downKeyPressed) sprite->flipVertically();
 
 	// MARIO IS MID-JUMPING
 	if (bJumping) {
@@ -450,9 +451,18 @@ void Player::setPosition(const glm::vec2& pos)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
-void Player::setVerticalSpeed(const float& new_speed)
+void Player::applyBounce()
 {
-	vertical_speed = new_speed;
+	if (vertical_speed >= -3.f) {
+		if (actual_speed == 0) vertical_speed = 4.f;
+		else if (actual_speed <= MAX_WALK_SPEED) vertical_speed = 4.5f;
+		else vertical_speed = 4.25f;
+	}
+	else {
+		if (actual_speed == 0) vertical_speed = 4.5f;
+		else if (actual_speed <= MAX_WALK_SPEED) vertical_speed = 5.f;
+		else vertical_speed = 4.75f;
+	}
 }
 
 glm::vec2 Player::getPosition() {

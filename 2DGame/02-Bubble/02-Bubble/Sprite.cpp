@@ -33,6 +33,7 @@ Sprite::Sprite(const glm::vec2 &quadSize, const glm::vec2 &sizeInSpritesheet, Te
 	currentAnimation = -1;
 	facingLeft = false;
 	is_activated = true;
+	flip_vertically = false;
 	position = glm::vec2(0.f);
 }
 
@@ -54,9 +55,13 @@ void Sprite::render() const
 {
 	if (is_activated) {
 		glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.f));
+		if (flip_vertically) {
+			modelview = glm::translate(modelview, glm::vec3(0.f, 16.f, 0.f));
+			modelview = glm::rotate(modelview, glm::pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));  // Flip vertically
+		}
 		if (facingLeft) {
 			modelview = glm::translate(modelview, glm::vec3(16.f, 0.f, 0.f));
-			modelview = glm::rotate(modelview, glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));  // Flip vertically
+			modelview = glm::rotate(modelview, glm::pi<float>(), glm::vec3(0.0f, 1.0f, 0.0f));  // Flip horizontally
 		}
 
 		shaderProgram->setUniformMatrix4f("modelview", modelview);
@@ -124,6 +129,11 @@ bool Sprite::isFacingLeft() const
 void Sprite::setActivated(const bool& true_or_false)
 {
 	is_activated = true_or_false;
+}
+
+void Sprite::flipVertically()
+{
+	flip_vertically = !flip_vertically;
 }
 
 void Sprite::setPosition(const glm::vec2 &pos)

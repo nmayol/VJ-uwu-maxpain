@@ -32,10 +32,12 @@ public:
 	bool isCollidable();
 	float getFacingDirection();
 	void changeFacingDirection();
+	void changeFacingDirection(const float& new_direction);
 
 	glm::ivec2 getSize();
 	bool detectCollision(glm::vec2* posEntity, float facingDirection, const glm::ivec2& size);
-	int detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::ivec2& size);
+	virtual int detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::ivec2& size);
+	void kill();
 	bool isEntityDead();
 
 protected:

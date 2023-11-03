@@ -8,16 +8,17 @@
 
 // <- and -> Physics Values from ORIGINAL GAME
 #define NORMAL_WALK_SPEED 1.f
+#define SHELL_LAUNCH_SPEED 3.f
 #define NORMAL_FALL_SPEED -2.5f
 
 //For reading Sprite
-#define SPRITE_OFFSET_X (1.f / 2.f)
+#define SPRITE_OFFSET_X (1.f / 4.f)
 #define SPRITE_OFFSET_Y (1.f / 3.f)
 
 
 enum KoopaAnims
 {
-	WALKING
+	WALKING, SHELL, DESHELLING
 };
 
 enum KoopaDirection
@@ -33,6 +34,8 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	facingDirection = -1.f;
 	horitzontal_speed = NORMAL_WALK_SPEED;
 	vertical_speed = NORMAL_FALL_SPEED;
+	frames_until_respawn = -1;
+	shell_in_movement = false;
 	is_dead = false;
 	is_collidable = true;
 
@@ -40,12 +43,18 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	entitySpritesheet.loadFromFile("images/koopa.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(16, 27), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), &entitySpritesheet, &shaderProgram);
 
-	sprite->setNumberAnimations(2);
+	sprite->setNumberAnimations(3);
 
 	sprite->setAnimationSpeed(WALKING, 8);
 	sprite->addKeyframe(WALKING, glm::vec2(SPRITE_OFFSET_X * 1.f, 0.f));
 	sprite->addKeyframe(WALKING, glm::vec2(0.f, 0.f));
 
+	sprite->setAnimationSpeed(DESHELLING, 8);
+	sprite->addKeyframe(DESHELLING, glm::vec2(SPRITE_OFFSET_X * 2.f, 0.f));
+	sprite->addKeyframe(DESHELLING, glm::vec2(SPRITE_OFFSET_X * 3.f, 0.f));
+
+	sprite->setAnimationSpeed(SHELL, 8);
+	sprite->addKeyframe(SHELL, glm::vec2(SPRITE_OFFSET_X * 3.f, 0.f));
 
 	tileMapDispl = tileMapPos;
 	collision_box_size = glm::ivec2(16, 27);
@@ -56,13 +65,52 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 
 void Koopa::update(int deltaTime)
 {
-	Entity::update(deltaTime);
+	if (frames_until_respawn > 120) {
+		frames_until_respawn--;
+		return;
+	}
+	else if (frames_until_respawn == 120) {
+		sprite->changeAnimation(DESHELLING);
+		frames_until_respawn--;
+	}
+	else if (frames_until_respawn == 0) {
+		sprite->changeAnimation(WALKING);
+	}
+	else Entity::update(deltaTime);
+}
+
+int Koopa::detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::ivec2& size)
+{
+	if (horitzontal_speed == NORMAL_WALK_SPEED) return Entity::detectPlayerCollision(posPlayer, Falling, size);
+	else {
+		// When in shellmode, size is diferent
+		float x0, x1, y0, entx1;
+		y0 = (posPlayer.y + size.y);
+		x0 = posPlayer.x;
+		x1 = x0 + size.x;
+		entx1 = posEntity.x + collision_box_size.x;
+
+		if (((x0 > posEntity.x && x0 < entx1) || (x1 > posEntity.x && x1 < entx1)) && y0 >= 11.f + posEntity.y && y0 <= posEntity.y + collision_box_size.y) {
+			if (y0 > (19.f + posEntity.y)) return 1;
+			else return 2;
+		}
+		return 0;
+	}
 }
 
 void Koopa::takeDamage()
 {
-	is_collidable = false;
-	is_dead = true;
+	//Base koopa has base speed, shell has 0 and moving shell has shell launch speed
+	if (horitzontal_speed == 0) {
+		frames_until_respawn = -1;
+		shell_in_movement = true;
+		horitzontal_speed = SHELL_LAUNCH_SPEED;
+	}
+	else {
+		horitzontal_speed = 0;
+		frames_until_respawn = 8 * 60;
+		sprite->changeAnimation(SHELL);
+	}
 }
 
 string Koopa::whoAmI()

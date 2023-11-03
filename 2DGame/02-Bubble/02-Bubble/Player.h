@@ -21,7 +21,7 @@ public:
 	void setMarioForm(int formId);
 	void setTileMap(TileMap* tileMap);
 	void setPosition(const glm::vec2& pos);
-	void setVerticalSpeed(const float& new_speed);
+	void applyBounce();
 
 	glm::vec2 getPosition();
 	glm::vec2 getPositioninTM();

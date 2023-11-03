@@ -83,6 +83,13 @@ int Entity::detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::
 	return NOTHING;
 }
 
+void Entity::kill()
+{
+	is_collidable = false;
+	vertical_speed = 3.f;
+	sprite->flipVertically();
+}
+
 void Entity::render()
 {
 	sprite->render();
@@ -126,6 +133,15 @@ void Entity::changeFacingDirection()
 		sprite->changeDirection(FACING_LEFT);
 		facingDirection = -1.f;
 	}
+}
+
+void Entity::changeFacingDirection(const float& new_direction)
+{
+	facingDirection = new_direction;
+	if (new_direction == -1.f) {
+		sprite->changeDirection(FACING_LEFT);
+	}
+	else sprite->changeDirection(FACING_RIGHT);
 }
 
 bool Entity::isEntityDead()

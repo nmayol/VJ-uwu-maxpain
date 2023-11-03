@@ -35,6 +35,7 @@ public:
 	int animation() const;
 	bool isFacingLeft() const;
 	void setActivated(const bool& true_or_false);
+	void flipVertically();
 	
 	void setPosition(const glm::vec2 &pos);
 
@@ -47,6 +48,7 @@ private:
 	glm::vec2 position;
 	bool facingLeft;
 	bool is_activated;
+	bool flip_vertically;
 	int currentAnimation, currentKeyframe;
 	float timeAnimation;
 	glm::vec2 texCoordDispl;
