@@ -10,6 +10,8 @@
 #include "Brick.h"
 #include "QMBlock.h"
 
+#include "Entity.h"
+#include <list>
 
 
 // Scene contains all the entities of our game.
@@ -34,6 +36,10 @@ private:
 	void updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime);
 	void renderBricks();
 
+	//Enemy & Other Entities handling
+	list<Entity*> enemies_in_map;
+	list<Entity*> enemies_in_screen;
+
 private:
 	int numLevel;
 	TileMap* map;
@@ -48,6 +54,8 @@ private:
 	float currentTime;
 	glm::mat4 projection;
 	float sceneStart;
+	int stopFrames;
+	
 
 	vector<vector<Brick*>> brickSet;
 	vector<vector<QMBlock*>> qmBlockSet;
