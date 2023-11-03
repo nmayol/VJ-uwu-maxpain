@@ -23,6 +23,16 @@ void Entity::update(int deltaTime)
 {
 	sprite->update(deltaTime);
 		
+	if (kill_frames > 0) {
+		kill_frames--;
+		posEntity.x += facingDirection * horitzontal_speed;
+		posEntity.y -= vertical_speed;
+		return;
+	}
+	if (kill_frames == 0) {
+		is_dead = true;
+		return;
+	}
 	//APPLY MOVEMENT
 	posEntity.x += facingDirection * horitzontal_speed;
 	bool facingLeft = (facingDirection == -1.f);
@@ -88,6 +98,8 @@ void Entity::kill()
 	is_collidable = false;
 	vertical_speed = 3.f;
 	sprite->flipVertically();
+	kill_frames = 60;
+
 }
 
 void Entity::render()
@@ -147,4 +159,9 @@ void Entity::changeFacingDirection(const float& new_direction)
 bool Entity::isEntityDead()
 {
 	return is_dead;
+}
+
+bool Entity::canKillEnemies()
+{
+	return false;
 }

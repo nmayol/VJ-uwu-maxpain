@@ -15,7 +15,7 @@
 
 enum PlayerColisionResult
 {
-	NOTHING, PLAYER_TAKES_DMG, ENTITY_TAKES_DMG
+	NOTHING, PLAYER_TAKES_DMG, ENTITY_TAKES_DMG, LAUNCH_SHELL
 };
 
 Scene::Scene()
@@ -70,6 +70,12 @@ void Scene::init()
 	enemy_test_a->changeFacingDirection();
 	enemy_test_a->setTileMap(map);
 
+	enemy_test_a = new Koopa();
+	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 106.f, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
+	enemy_test_a->changeFacingDirection();
+	enemy_test_a->setTileMap(map);
+
 	enemies_in_map.push_back(enemy_test_a);
 }
 
@@ -112,9 +118,19 @@ void Scene::update(int deltaTime)
 				//colision with other enemies
 				for (Entity* e2 : enemies_in_screen) {
 					if (e2 != (*it) && e2->detectCollision(&posEnemy, (*it)->getFacingDirection(), (*it)->getSize())) {
-						(*it)->changeFacingDirection();
-						(*it)->setPosition(posEnemy);
-						e2->changeFacingDirection();
+						if ((*it)->canKillEnemies()) {
+							e2->changeFacingDirection((*it)->getFacingDirection());
+							e2->kill();
+						}
+						else if (e2->canKillEnemies()) {
+							(*it)->changeFacingDirection(e2->getFacingDirection());
+							(*it)->kill();
+						}
+						else {
+							(*it)->changeFacingDirection();
+							(*it)->setPosition(posEnemy);
+							e2->changeFacingDirection();
+						}
 					}
 				}
 
@@ -124,8 +140,11 @@ void Scene::update(int deltaTime)
 					if (player_colision_result == ENTITY_TAKES_DMG)
 					{
 						(*it)->takeDamage();
-						(*it)->changeFacingDirection(player->getFacingDirection()); //only relevant for koopas
 						player->applyBounce();
+					}
+					else if (player_colision_result == LAUNCH_SHELL) {
+						(*it)->takeDamage();
+						(*it)->changeFacingDirection(player->getFacingDirection());
 					}
 					else if (player_colision_result == PLAYER_TAKES_DMG) {
 						player->takeDamage();

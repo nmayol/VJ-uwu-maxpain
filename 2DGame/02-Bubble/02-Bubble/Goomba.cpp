@@ -36,6 +36,7 @@ void Goomba::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	is_dead = false;
 	is_collidable = true;
 	frames_until_death = -1;
+	kill_frames = -1;
 
 	//INIT SPRITES
 	entitySpritesheet.loadFromFile("images/goomba.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -75,5 +76,5 @@ void Goomba::takeDamage()
 string Goomba::whoAmI()
 {
 
-	return "I AM GOOMBA!";
+	return "KOOPA";
 }

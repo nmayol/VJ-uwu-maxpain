@@ -39,6 +39,7 @@ public:
 	virtual int detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::ivec2& size);
 	void kill();
 	bool isEntityDead();
+	virtual bool canKillEnemies();
 
 protected:
 	bool is_collidable;
@@ -46,6 +47,7 @@ protected:
 	float vertical_speed;
 	float horitzontal_speed;
 	float facingDirection;
+	int kill_frames;
 
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posEntity;

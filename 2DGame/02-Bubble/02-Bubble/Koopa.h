@@ -19,6 +19,7 @@ public:
 	void update(int deltaTime);
 	int detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::ivec2& size);
 	void takeDamage();
+	bool canKillEnemies();
 	string whoAmI();
 
 private:

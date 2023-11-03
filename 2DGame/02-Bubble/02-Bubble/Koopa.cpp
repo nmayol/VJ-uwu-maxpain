@@ -35,6 +35,7 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	horitzontal_speed = NORMAL_WALK_SPEED;
 	vertical_speed = NORMAL_FALL_SPEED;
 	frames_until_respawn = -1;
+	kill_frames = -1;
 	shell_in_movement = false;
 	is_dead = false;
 	is_collidable = true;
@@ -65,16 +66,14 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 
 void Koopa::update(int deltaTime)
 {
-	if (frames_until_respawn > 120) {
+	if (frames_until_respawn >= 0 && kill_frames != -1) {
+		if (frames_until_respawn == 120) sprite->changeAnimation(DESHELLING);
+		else if (frames_until_respawn == 0) {
+			sprite->changeAnimation(WALKING);
+			horitzontal_speed = NORMAL_WALK_SPEED;
+		}
 		frames_until_respawn--;
-		return;
-	}
-	else if (frames_until_respawn == 120) {
-		sprite->changeAnimation(DESHELLING);
-		frames_until_respawn--;
-	}
-	else if (frames_until_respawn == 0) {
-		sprite->changeAnimation(WALKING);
+
 	}
 	else Entity::update(deltaTime);
 }
@@ -91,7 +90,8 @@ int Koopa::detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::i
 		entx1 = posEntity.x + collision_box_size.x;
 
 		if (((x0 > posEntity.x && x0 < entx1) || (x1 > posEntity.x && x1 < entx1)) && y0 >= 11.f + posEntity.y && y0 <= posEntity.y + collision_box_size.y) {
-			if (y0 > (19.f + posEntity.y)) return 1;
+			if (horitzontal_speed == 0) return 3;
+			else if (y0 > (19.f + posEntity.y)) return 1;
 			else return 2;
 		}
 		return 0;
@@ -104,6 +104,7 @@ void Koopa::takeDamage()
 	if (horitzontal_speed == 0) {
 		frames_until_respawn = -1;
 		shell_in_movement = true;
+		sprite->changeAnimation(SHELL);
 		horitzontal_speed = SHELL_LAUNCH_SPEED;
 	}
 	else {
@@ -113,8 +114,13 @@ void Koopa::takeDamage()
 	}
 }
 
+bool Koopa::canKillEnemies()
+{
+	return horitzontal_speed == SHELL_LAUNCH_SPEED;
+}
+
 string Koopa::whoAmI()
 {
 
-	return "I AM KOOPA!";
+	return "KOOPA";
 }
