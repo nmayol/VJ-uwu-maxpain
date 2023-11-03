@@ -453,16 +453,7 @@ void Player::setPosition(const glm::vec2& pos)
 
 void Player::applyBounce()
 {
-	if (vertical_speed >= -3.f) {
-		if (actual_speed == 0) vertical_speed = 4.f;
-		else if (actual_speed <= MAX_WALK_SPEED) vertical_speed = 4.5f;
-		else vertical_speed = 4.25f;
-	}
-	else {
-		if (actual_speed == 0) vertical_speed = 4.5f;
-		else if (actual_speed <= MAX_WALK_SPEED) vertical_speed = 5.f;
-		else vertical_speed = 4.75f;
-	}
+		vertical_speed = 5.f;
 }
 
 glm::vec2 Player::getPosition() {

@@ -137,13 +137,15 @@ float Entity::getFacingDirection() {
 
 void Entity::changeFacingDirection()
 {
-	if (facingDirection == -1.f) {
-		sprite->changeDirection(FACING_RIGHT);
-		facingDirection = 1.f;
-	}
-	else {
-		sprite->changeDirection(FACING_LEFT);
-		facingDirection = -1.f;
+	if (horitzontal_speed != 0) {
+		if (facingDirection == -1.f) {
+			sprite->changeDirection(FACING_RIGHT);
+			facingDirection = 1.f;
+		}
+		else {
+			sprite->changeDirection(FACING_LEFT);
+			facingDirection = -1.f;
+		}
 	}
 }
 

@@ -40,12 +40,6 @@ private:
 	list<Entity*> enemies_in_map;
 	list<Entity*> enemies_in_screen;
 
-
-	//Enemy & Other Entities handling
-	list<Entity*> enemies_in_map;
-	list<Entity*> enemies_in_screen;
-
-
 private:
 	int numLevel;
 	TileMap* map;

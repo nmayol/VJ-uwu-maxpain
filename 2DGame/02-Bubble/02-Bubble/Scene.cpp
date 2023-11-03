@@ -115,7 +115,6 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
-	player->update(deltaTime);	
 	updateBricks(brickIndex, deltaTime);
 	updateQMBlocks(qmBlockIndex, deltaTime);
 
@@ -255,9 +254,6 @@ void Scene::renderBricks() {
 			}
 		}
 	}
-}
-
-
 
 	for (Entity* e : enemies_in_screen) e->render();
 }
