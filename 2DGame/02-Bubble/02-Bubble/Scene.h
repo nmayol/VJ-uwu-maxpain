@@ -3,9 +3,13 @@
 
 
 #include <glm/glm.hpp>
+#include <vector>
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Brick.h"
+#include "QMBlock.h"
+
 #include "Entity.h"
 #include <list>
 
@@ -28,7 +32,14 @@ public:
 private:
 	void initShaders();
 	void moveCameraifNeeded();
-	void setSceneStart(float sx);
+	void updateBricks(vector<vector<int>>& brickIndex, int deltaTime);
+	void updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime);
+	void renderBricks();
+
+	//Enemy & Other Entities handling
+	list<Entity*> enemies_in_map;
+	list<Entity*> enemies_in_screen;
+
 
 	//Enemy & Other Entities handling
 	list<Entity*> enemies_in_map;
@@ -36,15 +47,25 @@ private:
 
 
 private:
+	int numLevel;
 	TileMap* map;
 	TileMap* map_sec;
+
 	Player *player;
+
+
+
+
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
 	float sceneStart;
 	int stopFrames;
 	
+
+	vector<vector<Brick*>> brickSet;
+	vector<vector<QMBlock*>> qmBlockSet;
+
 
 };
 

@@ -25,6 +25,7 @@ public:
 
 	void update(int deltaTime);
 	void render() const;
+	void renderBroken(int deltaTime) const;
 	void free();
 
 	void setNumberAnimations(int nAnimations);

@@ -19,6 +19,8 @@ TileMap *TileMap::createTileMap(const string &levelFile, const glm::vec2 &minCoo
 TileMap::TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program)
 {
 	loadLevel(levelFile);
+	brickIndex = vector<vector<int>>(mapSize.x, vector<int>(mapSize.y, 0));
+	qmBlockIndex = vector<vector<int>>(mapSize.x, vector<int>(mapSize.y, 0));
 	prepareArrays(minCoords, program);
 }
 
@@ -37,7 +39,7 @@ void TileMap::render() const
 	glEnableVertexAttribArray(posLocation);
 	glEnableVertexAttribArray(texCoordLocation);
 	glDrawArrays(GL_TRIANGLES, 0, 6 * nTiles);
-	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);	
 }
 
 void TileMap::free()
@@ -134,6 +136,13 @@ void TileMap::prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program)
 				vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[1].y);
 				vertices.push_back(posTile.x); vertices.push_back(posTile.y + blockSize);
 				vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[1].y);
+
+				if (tile == 1292) { // brick case	
+					brickIndex[i][j] = 1;
+				}
+				else if (tile == 1294) { // QMBlock case
+					qmBlockIndex[i][j] = 1;
+				}
 			}
 		}
 	}
@@ -187,7 +196,7 @@ bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size, 
 	return false;
 }
 
-bool TileMap::collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, float *posY) const
+bool TileMap::collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, float *posY)
 {
 	int x0, x1, y;
 	
@@ -197,9 +206,16 @@ bool TileMap::collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, floa
 	for(int x=x0; x<=x1; x++)
 	{
 		if(map[y*mapSize.x+x] != 0){
+			if (map[y * mapSize.x + x] == 1292 && size.y > 17 && brickIndex[x][y] != 3) { // brick case in supermario mode
+				brickIndex[x][y] = 2;
+				map[y * mapSize.x + x] = 0;
+			}
+			else if (map[y * mapSize.x + x] == 1294) { // QMBlock case
+				qmBlockIndex[x][y] = 2;
+			}
 			*posY = tileSize * (y+1);
 			return true;
-			}
+		}
 	}
 	
 	return false;

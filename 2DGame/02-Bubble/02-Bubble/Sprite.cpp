@@ -76,6 +76,35 @@ void Sprite::render() const
 	}
 }
 
+
+
+
+void Sprite::renderBroken(int deltaTime) const
+{
+	glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.f));
+	// modelview = glm::translate(modelview, glm::vec3(16.f, 0.f, 0.f));
+	if (facingLeft) {
+		modelview = glm::rotate(modelview, glm::pi<float>() * float(deltaTime)/1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+	else {
+		modelview = glm::rotate(modelview, -glm::pi<float>() * float(deltaTime)/1000.f, glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+
+	shaderProgram->setUniformMatrix4f("modelview", modelview);
+	shaderProgram->setUniform2f("texCoordDispl", texCoordDispl.x, texCoordDispl.y);
+	glEnable(GL_TEXTURE_2D);
+	texture->use();
+	glBindVertexArray(vao);
+	glEnableVertexAttribArray(posLocation);
+	glEnableVertexAttribArray(texCoordLocation);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDisable(GL_TEXTURE_2D);
+}
+
+
+
+
+
 void Sprite::free()
 {
 	glDeleteBuffers(1, &vbo);
