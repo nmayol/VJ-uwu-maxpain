@@ -49,7 +49,7 @@
 
 enum playerAnims
 {
-	STANDING, RUNNING, JUMPING, SKIDDING, CROUCHING, NONE
+	STANDING, RUNNING, JUMPING, SKIDDING, CROUCHING, PICKING, NONE
 };
 
 
@@ -103,7 +103,7 @@ Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shader
 
 	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 16), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
 
-	newSprite->setNumberAnimations(6);
+	newSprite->setNumberAnimations(7);
 
 	newSprite->setAnimationSpeed(STANDING, 8);
 	newSprite->addKeyframe(STANDING, glm::vec2(SPRITE_OFFSET_X * 6.f, 0.f));
@@ -119,6 +119,9 @@ Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shader
 	newSprite->setAnimationSpeed(SKIDDING, 8);
 	newSprite->addKeyframe(SKIDDING, glm::vec2(SPRITE_OFFSET_X * 3.f, 0.f));
 
+	newSprite->setAnimationSpeed(PICKING, 8);
+	newSprite->addKeyframe(PICKING, glm::vec2(SPRITE_OFFSET_X * 8.f, 0.f));
+
 	newSprite->setAnimationSpeed(NONE, 8);
 	newSprite->addKeyframe(NONE, glm::vec2(SPRITE_OFFSET_X * 14.f, 0.f));
 
@@ -130,7 +133,7 @@ Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shader
 Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet, ShaderProgram* shaderProgram) {
 
 	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 32), glm::vec2(BIG_SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
-	newSprite->setNumberAnimations(7);
+	newSprite->setNumberAnimations(8);
 	baseSpriteRow *= BIG_SPRITE_OFFSET_Y;
 
 	newSprite->setAnimationSpeed(STANDING, 8);
@@ -149,6 +152,9 @@ Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet,
 
 	newSprite->setAnimationSpeed(CROUCHING, 8);
 	newSprite->addKeyframe(CROUCHING, glm::vec2(BIG_SPRITE_OFFSET_X * 5.f, baseSpriteRow));
+
+	newSprite->setAnimationSpeed(PICKING, 8);
+	newSprite->addKeyframe(PICKING, glm::vec2(BIG_SPRITE_OFFSET_X * 8.f, baseSpriteRow));
 
 	newSprite->setAnimationSpeed(NONE, 0);
 	newSprite->addKeyframe(NONE, glm::vec2(BIG_SPRITE_OFFSET_X * 17.f, baseSpriteRow));
@@ -188,7 +194,7 @@ void Player::setMarioForm(int formId) {
 	pressedPandReleased = false;
 }
 
-void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderworld, bool wantsToGoOverworld)
+void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderworld, bool wantsToGoOverworld, bool pickingFlag)
 {
 	if (gameCompleted) { // Movement to the castle
 		if (posPlayer.x <= 204.f * 16) {
@@ -208,7 +214,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		}
 		else posPlayer.y += 2.f;
 	}
-	else if (wantsToGoOverworld) { // Movement into a tube UNDERWORLD
+	else if (wantsToGoOverworld) { // Movement into a tube OVERWORLD
 		if (posPlayer.x >= 61 * 16) {
 			posPlayer.x = 163.5 * 16;
 			posPlayer.y = 8.f * 16;
@@ -216,7 +222,11 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		}	
 		else posPlayer.x += 2.f;
 	}
-
+	else if (pickingFlag) {
+		bJumping = false;
+		actualAnimation = PICKING;
+		if (posPlayer.y <= 14 * 16 && !map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) posPlayer.y += 2.f;
+	}
 	else {
 		//load parameters early for better eficiency
 		bool facingLeft = (facingDirection == -1.f);

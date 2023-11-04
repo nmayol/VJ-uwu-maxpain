@@ -50,33 +50,11 @@ void Scene::init()
 	completed = false;
 	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	brickSet = vector<vector<Brick*>>(map->getMapSize().x, vector<Brick*>(map->getMapSize().y, NULL));
-	qmBlockSet = vector<vector<QMBlock*>>(map->getMapSize().x, vector<QMBlock*>(map->getMapSize().y, NULL));
-	vector<vector<int>> brickIndex = map->getBrickIndex();
-	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
-	for (int i = 0; i < map->getMapSize().x; i++) {
-		for (int j = 7; j < 12; j++) {
-			brickSet[i][j] = new Brick();
-			if (brickIndex[i][j] == 1) {
-				brickSet[i][j] = new Brick();
-				brickSet[i][j]->init(glm::ivec2(SCREEN_X,SCREEN_Y), texProgram);
-				brickSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
-			}
-			else if (qmBlockIndex[i][j] == 1) {
-				qmBlockSet[i][j] = new QMBlock();
-				qmBlockSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-				qmBlockSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
-			}
-		}
-	}
+	
+	createBlocks();
 	createTeleportingTubes();
-	player = new Player();
-	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
-	player->setTileMap(map);
-
-	
-	
+	createPlayer();
+	createFlag();
 
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT+40), 41.f);
 	currentTime = 0.0f;
@@ -112,6 +90,43 @@ void Scene::init()
 	enemies_in_map.push_back(enemy_test_a);
 }
 
+
+void Scene::createFlag() {
+	flag = new Flag();
+	flag->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	flag->setPosition(glm::vec2(197.5f * 16.f, 5.f * 16.f));
+}
+
+
+void Scene::createPlayer() {
+	player = new Player();
+	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
+	player->setTileMap(map);
+}
+
+void Scene::createBlocks() {
+	brickSet = vector<vector<Brick*>>(map->getMapSize().x, vector<Brick*>(map->getMapSize().y, NULL));
+	qmBlockSet = vector<vector<QMBlock*>>(map->getMapSize().x, vector<QMBlock*>(map->getMapSize().y, NULL));
+	vector<vector<int>> brickIndex = map->getBrickIndex();
+	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
+	for (int i = 0; i < map->getMapSize().x; i++) {
+		for (int j = 7; j < 12; j++) {
+			brickSet[i][j] = new Brick();
+			if (brickIndex[i][j] == 1) {
+				brickSet[i][j] = new Brick();
+				brickSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+				brickSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+			}
+			else if (qmBlockIndex[i][j] == 1) {
+				qmBlockSet[i][j] = new QMBlock();
+				qmBlockSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+				qmBlockSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+			}
+		}
+	}
+}
+
 void Scene::createTeleportingTubes()
 {
 	if (numLevel == 1) {
@@ -135,17 +150,25 @@ void Scene::update(int deltaTime)
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
 	completeGameifNeeded();
-	player->update(deltaTime, completed, couldBeGoingUnderworld(), wantsToGoOverworld());
+	player->update(deltaTime, completed, couldBeGoingUnderworld(), wantsToGoOverworld(), pickingFlag());
 	updateBricks(brickIndex, deltaTime);
 	updateQMBlocks(qmBlockIndex, deltaTime);
-
+	flag->update(deltaTime,pickingFlag());
 	if (stopFrames > 0)
 	{
 		stopFrames--;
 		return;
 	};
 
-	//player->update(deltaTime); <-- PQ ACTUALITZEM DOS VEGADES EL JUGADOR A LA MATEIXA FUNCIO? (linia 120)
+	updateEnemies(deltaTime);
+	changeWorldifNeeded();
+	moveCameraifNeeded();
+}
+
+
+
+
+void Scene::updateEnemies(int deltaTime) {
 	glm::vec2 posPlayer = player->getPosition();
 	glm::ivec2 playerSize = player->getSize();
 	bool playerIsFalling = player->isFalling();
@@ -155,7 +178,7 @@ void Scene::update(int deltaTime)
 	std::list<Entity*>::iterator it = enemies_in_map.begin();
 	while (it != enemies_in_map.end() && !stop) {
 		glm::ivec2 posEnemy = (*it)->getPosition();
-		if ((((((int) posPlayer.x) + 192) / 64 + 2) * 64) > posEnemy.x) {
+		if ((((((int)posPlayer.x) + 192) / 64 + 2) * 64) > posEnemy.x) {
 			enemies_in_screen.push_back((*it));
 			it = enemies_in_map.erase(it);
 		}
@@ -169,8 +192,8 @@ void Scene::update(int deltaTime)
 		if (posEnemy.x < posPlayer.x - 192 || (*it)->isEntityDead()) it = enemies_in_screen.erase(it);
 		else {
 			(*it)->update(deltaTime);
-			
-			if ((*it)-> isCollidable()) 
+
+			if ((*it)->isCollidable())
 			{
 				//colision with other enemies
 				for (Entity* e2 : enemies_in_screen) {
@@ -213,10 +236,7 @@ void Scene::update(int deltaTime)
 			++it;
 		}
 	}
-	changeWorldifNeeded();
-	moveCameraifNeeded();
 }
-
 
 void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
@@ -255,6 +275,7 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);	
 	map_sec->render();
 	map->render();
+	flag->render();
 	player->render();
 	renderTubes();
 	renderBricks();
@@ -292,7 +313,7 @@ void Scene::renderBricks() {
 
 void Scene::completeGameifNeeded()
 {
-	completed = (player->getPosition().x >= 198.f * 16.f);
+	completed = (player->getPosition().x >= 199.f * 16.f) && !pickingFlag();
 }
 
 bool Scene::couldBeGoingUnderworld()
@@ -306,6 +327,9 @@ bool Scene::wantsToGoOverworld()
 	return (player->getPosition().x >= 60 * 16 && player->getPosition().x < 62 * 16. && player->getPosition().y >= 26 * 16. && player->getPosition().y <= 27 * 16.);
 }
 
+bool Scene::pickingFlag() {
+	return (player->getPosition().x >= 197.5f * 16.f && player->getPosition().x <= 200.f * 16.f && flag->getPosition().y <= 13.f * 16.f);
+}
 
 
 void Scene::moveCameraifNeeded()
@@ -414,5 +438,3 @@ void Scene::initShaders()
 	vShader.free();
 	fShader.free();
 }
-
-
