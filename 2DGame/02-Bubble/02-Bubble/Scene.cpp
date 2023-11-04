@@ -112,6 +112,23 @@ void Scene::init()
 	enemies_in_map.push_back(enemy_test_a);
 }
 
+void Scene::createTeleportingTubes()
+{
+	if (numLevel == 1) {
+		bool tubeIsHorizontal = true;
+		tubeSet = vector<Tube*>(2, NULL);
+		tubeSet[0] = new Tube();
+		tubeSet[0]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, tubeIsHorizontal);
+		tubeSet[0]->setPosition(glm::vec2(57 * 16.f, 11 * 16.f));
+		tubeSet[1] = new Tube();
+		tubeSet[1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, !tubeIsHorizontal);
+		tubeSet[1]->setPosition(glm::vec2(61 * 16.f, 26 * 16.f));
+
+	}
+
+}
+
+
 void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
@@ -128,7 +145,7 @@ void Scene::update(int deltaTime)
 		return;
 	};
 
-	player->update(deltaTime);
+	//player->update(deltaTime); <-- PQ ACTUALITZEM DOS VEGADES EL JUGADOR A LA MATEIXA FUNCIO? (linia 120)
 	glm::vec2 posPlayer = player->getPosition();
 	glm::ivec2 playerSize = player->getSize();
 	bool playerIsFalling = player->isFalling();
@@ -196,7 +213,7 @@ void Scene::update(int deltaTime)
 			++it;
 		}
 	}
-
+	changeWorldifNeeded();
 	moveCameraifNeeded();
 }
 

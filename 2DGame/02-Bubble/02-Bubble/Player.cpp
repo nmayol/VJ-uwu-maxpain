@@ -246,7 +246,6 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		invencibleFrames--;
 	}
 
-	if (downKeyPressed) sprite->flipVertically();
 
 	// MARIO IS MID-JUMPING
 	if (bJumping) {
