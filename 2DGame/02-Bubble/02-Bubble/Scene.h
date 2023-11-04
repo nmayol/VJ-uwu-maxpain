@@ -11,7 +11,7 @@
 #include "QMBlock.h"
 #include "Tube.h"
 #include "PlayerInterface.h"
-
+#include "Flag.h"
 #include "Entity.h"
 #include <list>
 
@@ -36,11 +36,16 @@ private:
 	void moveCameraifNeeded();
 	void updateBricks(vector<vector<int>>& brickIndex, int deltaTime);
 	void updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime);
+	void updateEnemies(int deltaTime);
 	void renderBricks();
 	void completeGameifNeeded();
 	void changeWorldifNeeded();
 	void renderTubes();
 	void createTeleportingTubes();
+	void createBlocks();
+	void createPlayer();
+	void createFlag();
+
 
 	bool completed; // True if player has picked the flag
 	bool couldBeGoingUnderworld(); // True if player is in the right position to go to underworld (but we don't know if it's crouching [checked at player.cpp])
@@ -57,6 +62,7 @@ private:
 	TileMap* map;
 	TileMap* map_sec;
 	Player *player;
+	Flag *flag;
 
 	PlayerInterface* player_iface;
 
