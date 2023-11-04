@@ -13,6 +13,8 @@ public:
 	void setScreenX(const float& new_x);
 
 	void changeActualLevel(const int& new_level);
+	void addToScore(const int& new_score);
+	void addCoins(const int& amount);
 
 	void startTime();
 	void stopTime();

@@ -153,8 +153,24 @@ void PlayerInterface::changeActualLevel(const int& new_level)
 	levelSymbol->changeAnimation(new_level);
 }
 
+void PlayerInterface::addToScore(const int& new_score)
+{
+	updateNumber(score, total_score, total_score + new_score);
+	total_score = total_score;
+}
+
+void PlayerInterface::addCoins(const int& amount)
+{
+	updateNumber(coins, total_coins, (total_coins + amount) % 100);
+	total_coins = (total_coins + amount) % 100;
+}
+
+
 void PlayerInterface::startTime()
 {
+	updateNumber(time, time_left, 400);
+	time_left = 400;
+	tick_rate = 24;
 	time_counting_down = true;
 }
 
