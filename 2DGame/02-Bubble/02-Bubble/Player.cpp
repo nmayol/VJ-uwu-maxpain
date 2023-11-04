@@ -40,7 +40,8 @@
 
 //For reading Sprite
 #define SPRITE_OFFSET_X (1.f / 16.f)
-#define BIG_SPRITE_OFFSET_X (1.f / 17.f)
+#define BIG_SPRITE_OFFSET_X (1.f / 32.f)
+#define BIG_SPRITE_OFFSET_Y (1.f / 16.f)
 #define SPRITE_OFFSET_Y (1.f / 16.f)
 
 enum playerAnims
@@ -124,7 +125,7 @@ Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet,
 
 	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 32), glm::vec2(BIG_SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
 	newSprite->setNumberAnimations(7);
-	baseSpriteRow *= SPRITE_OFFSET_Y;
+	baseSpriteRow *= BIG_SPRITE_OFFSET_Y;
 
 	newSprite->setAnimationSpeed(STANDING, 8);
 	newSprite->addKeyframe(STANDING, glm::vec2(BIG_SPRITE_OFFSET_X * 6.f, baseSpriteRow));
@@ -144,7 +145,7 @@ Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet,
 	newSprite->addKeyframe(CROUCHING, glm::vec2(BIG_SPRITE_OFFSET_X * 5.f, baseSpriteRow));
 
 	newSprite->setAnimationSpeed(NONE, 0);
-	newSprite->addKeyframe(NONE, glm::vec2(BIG_SPRITE_OFFSET_X * 15.f, baseSpriteRow));
+	newSprite->addKeyframe(NONE, glm::vec2(BIG_SPRITE_OFFSET_X * 17.f, baseSpriteRow));
 
 	return newSprite;
 }
@@ -181,28 +182,35 @@ void Player::setMarioForm(int formId) {
 	pressedPandReleased = false;
 }
 
-void Player::update(int deltaTime, bool blockedPlayer, bool gameCompleted)
+void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderworld, bool wantsToGoOverworld)
 {
-	
-
-	if (blockedPlayer) { // Cases  where movement is controlled by the game (when moving to the castle/going into a tube)
-
-		if (gameCompleted) { // Movement to the castle
-			if (posPlayer.x <= 204.f * 16) {
-				actualAnimation = RUNNING;
-				posPlayer += glm::vec2(1.f, 0);
-				if (posPlayer.y <=  16 * 16 && !map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
-					posPlayer.y += 8.f;
-				else bJumping = false;
-			}
-			else {
-				actualAnimation = NONE;
-			
-			}
-				
+	if (gameCompleted) { // Movement to the castle
+		if (posPlayer.x <= 204.f * 16) {
+			actualAnimation = RUNNING;
+			posPlayer += glm::vec2(1.f, 0);
+			if (posPlayer.y <=  16 * 16 && !map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
+				posPlayer.y += 8.f;
+			else bJumping = false;
 		}
-
+		else actualAnimation = NONE;
 	}
+	else if ((actualAnimation == CROUCHING) && couldBeGoingUnderworld) {
+		if (posPlayer.y >= 10.15f * 16) { // Movement into a tube OVERWORLD
+			posPlayer.y = 19.f * 16;
+			posPlayer.x = 49.f * 16;
+			actualAnimation = RUNNING;
+		}
+		else posPlayer.y += 2.f;
+	}
+	else if (wantsToGoOverworld) { // Movement into a tube UNDERWORLD
+		if (posPlayer.x >= 61 * 16) {
+			posPlayer.x = 163.5 * 16;
+			posPlayer.y = 8.f * 16;
+			actualAnimation = JUMPING;
+		}	
+		else posPlayer.x += 2.f;
+	}
+
 	else {
 		//load parameters early for better eficiency
 		bool facingLeft = (facingDirection == -1.f);

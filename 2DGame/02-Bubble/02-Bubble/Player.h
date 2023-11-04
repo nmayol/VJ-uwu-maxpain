@@ -15,7 +15,7 @@ class Player
 
 public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
-	void update(int deltaTime, bool blockedPlayer, bool gameCompleted);
+	void update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderworld, bool wantsToGoOverworld);
 	void render();
 
 	void setMarioForm(int formId);
