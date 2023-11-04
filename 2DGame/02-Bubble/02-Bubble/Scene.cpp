@@ -313,7 +313,7 @@ void Scene::renderBricks() {
 
 void Scene::completeGameifNeeded()
 {
-	completed = (player->getPosition().x >= 199.f * 16.f) && !pickingFlag();
+	completed = (player->getPosition().x >= 197.5f * 16.f) && !pickingFlag();
 }
 
 bool Scene::couldBeGoingUnderworld()
