@@ -10,6 +10,7 @@
 #include "Brick.h"
 #include "QMBlock.h"
 #include "Tube.h"
+#include "PlayerInterface.h"
 
 #include "Entity.h"
 #include <list>
@@ -57,8 +58,7 @@ private:
 	TileMap* map_sec;
 	Player *player;
 
-
-	
+	PlayerInterface* player_iface;
 
 	ShaderProgram texProgram;
 	float currentTime;
