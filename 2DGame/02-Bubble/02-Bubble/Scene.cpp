@@ -101,7 +101,7 @@ void Scene::createFlag() {
 void Scene::createPlayer() {
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
+	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
 }
 
@@ -335,21 +335,6 @@ bool Scene::pickingFlag() {
 void Scene::moveCameraifNeeded()
 {
 
-	float down, up, left, right;
-	if (overworld) {
-		left = sceneStart;
-		right = sceneStart + (float(SCREEN_WIDTH - 1));
-		down = float(SCREEN_HEIGHT + 40.);
-		up = 41.;
-	}
-	else {
-		left = 48 * 16.f;
-		right = 48 * 16.f + (float(SCREEN_WIDTH - 1));
-		down = 16 * 16 + float(SCREEN_HEIGHT);
-		up = 16 * 16 + 1;
-	}
-
-	projection = glm::ortho(left, right, down, up);
 
 
 	float posPlayerX = player->getPosition().x;
@@ -369,6 +354,23 @@ void Scene::moveCameraifNeeded()
 		player->setPosition(glm::vec2(sceneStart, player->getPosition().y));
 
 	}
+
+	float down, up, left, right;
+	if (overworld) {
+		left = sceneStart;
+		right = sceneStart + (float(SCREEN_WIDTH - 1));
+		down = float(SCREEN_HEIGHT + 40.);
+		up = 41.;
+	}
+	else {
+		left = 48 * 16.f;
+		right = 48 * 16.f + (float(SCREEN_WIDTH - 1));
+		down = 16 * 16 + float(SCREEN_HEIGHT);
+		up = 16 * 16 + 1;
+	}
+
+	projection = glm::ortho(left, right, down, up);
+	
 
 }
 
