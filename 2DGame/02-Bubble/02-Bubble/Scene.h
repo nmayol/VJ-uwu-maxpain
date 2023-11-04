@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "Brick.h"
 #include "QMBlock.h"
+#include "Tube.h"
 
 #include "Entity.h"
 #include <list>
@@ -35,6 +36,15 @@ private:
 	void updateBricks(vector<vector<int>>& brickIndex, int deltaTime);
 	void updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime);
 	void renderBricks();
+	void completeGameifNeeded();
+	void changeWorldifNeeded();
+	void renderTubes();
+	void createTeleportingTubes();
+
+	bool completed; // True if player has picked the flag
+	bool couldBeGoingUnderworld(); // True if player is in the right position to go to underworld (but we don't know if it's crouching [checked at player.cpp])
+	bool wantsToGoOverworld(); // True if player is in the right position to go to overworld)
+	bool pickingFlag(); // player blocked when the flag is being picked (NOT IMPLEMENTED YET)
 
 	//Enemy & Other Entities handling
 	list<Entity*> enemies_in_map;
@@ -42,13 +52,13 @@ private:
 
 private:
 	int numLevel;
+	bool overworld;
 	TileMap* map;
 	TileMap* map_sec;
-
 	Player *player;
 
 
-
+	
 
 	ShaderProgram texProgram;
 	float currentTime;
@@ -59,6 +69,7 @@ private:
 
 	vector<vector<Brick*>> brickSet;
 	vector<vector<QMBlock*>> qmBlockSet;
+	vector<Tube*> tubeSet;
 
 
 };
