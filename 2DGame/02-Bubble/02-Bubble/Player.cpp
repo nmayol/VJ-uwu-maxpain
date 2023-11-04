@@ -80,9 +80,11 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 
 	//INIT SPRITES
 	smallMarioSpritesheet.loadFromFile("images/small-mario.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	smallMarioSpritesheet.setMagFilter(GL_NEAREST);
 	smallMarioSprite = initSmallMarioSprite(&smallMarioSpritesheet, &shaderProgram);
 
 	normalMarioSpritesheet.loadFromFile("images/normal-mario.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	normalMarioSpritesheet.setMagFilter(GL_NEAREST);
 	normalMarioSprite = initNormalMarioSprite(0.f, &normalMarioSpritesheet, &shaderProgram);
 
 	normalMarioSpritesheet.loadFromFile("images/normal-mario.png", TEXTURE_PIXEL_FORMAT_RGBA);

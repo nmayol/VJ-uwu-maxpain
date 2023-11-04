@@ -36,6 +36,7 @@ void Brick::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	
 	//INIT SPRITES
 	brickSpritesheet.loadFromFile("images/Brick.png",TEXTURE_PIXEL_FORMAT_RGBA);
+	brickSpritesheet.setMagFilter(GL_NEAREST);
 	entireBrickSprite = initEntireBrickSprite(&brickSpritesheet, &shaderProgram);
 	brokenBrickSpriteSL = initBrokenBrickSprite(&brickSpritesheet, &shaderProgram, 0, 0);
 	brokenBrickSpriteSR = initBrokenBrickSprite(&brickSpritesheet, &shaderProgram, 0, 1);

@@ -35,6 +35,7 @@ void QMBlock::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 
 	//INIT SPRITES
 	QMBlockSpritesheet.loadFromFile("images/brick.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	QMBlockSpritesheet.setMagFilter(GL_NEAREST);
 	normalQMBlock = initQMBlockSprite(&QMBlockSpritesheet, &shaderProgram);
 	
 	tileMapDispl = tileMapPos;
