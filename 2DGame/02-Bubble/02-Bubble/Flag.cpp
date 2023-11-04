@@ -55,8 +55,12 @@ Sprite* Flag::initFlagSprite(Texture* spritesheet, ShaderProgram* shaderProgram)
 
 
 
-void Flag::update(int deltaTime)
+void Flag::update(int deltaTime, bool pickingFlag)
 {
+	if (pickingFlag) {
+		posFlag.y += 1;
+	}
+	
 	normalFlag->setPosition(glm::vec2(float(tileMapDispl.x + posFlag.x), float(tileMapDispl.y + posFlag.y)));
 	normalFlag->update(deltaTime);
 }

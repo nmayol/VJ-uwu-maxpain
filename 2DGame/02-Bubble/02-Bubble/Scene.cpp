@@ -150,10 +150,10 @@ void Scene::update(int deltaTime)
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
 	completeGameifNeeded();
-	player->update(deltaTime, completed, couldBeGoingUnderworld(), wantsToGoOverworld());
+	player->update(deltaTime, completed, couldBeGoingUnderworld(), wantsToGoOverworld(), pickingFlag());
 	updateBricks(brickIndex, deltaTime);
 	updateQMBlocks(qmBlockIndex, deltaTime);
-
+	flag->update(deltaTime,pickingFlag());
 	if (stopFrames > 0)
 	{
 		stopFrames--;
@@ -275,8 +275,8 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);	
 	map_sec->render();
 	map->render();
-	player->render();
 	flag->render();
+	player->render();
 	renderTubes();
 	renderBricks();
 		
@@ -313,7 +313,7 @@ void Scene::renderBricks() {
 
 void Scene::completeGameifNeeded()
 {
-	completed = (player->getPosition().x >= 198.f * 16.f);
+	completed = (player->getPosition().x >= 199.f * 16.f) && !pickingFlag();
 }
 
 bool Scene::couldBeGoingUnderworld()
@@ -327,6 +327,9 @@ bool Scene::wantsToGoOverworld()
 	return (player->getPosition().x >= 60 * 16 && player->getPosition().x < 62 * 16. && player->getPosition().y >= 26 * 16. && player->getPosition().y <= 27 * 16.);
 }
 
+bool Scene::pickingFlag() {
+	return (player->getPosition().x >= 197.5f * 16.f && player->getPosition().x <= 200.f * 16.f && flag->getPosition().y <= 13.f * 16.f);
+}
 
 
 void Scene::moveCameraifNeeded()
@@ -435,5 +438,3 @@ void Scene::initShaders()
 	vShader.free();
 	fShader.free();
 }
-
-
