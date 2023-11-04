@@ -192,7 +192,7 @@ bool Scene::couldBeGoingUnderworld()
 
 bool Scene::wantsToGoOverworld()
 {
-	return (player->getPosition().x > 60.5 * 16 && player->getPosition().x < 62 * 16. && player->getPosition().y >= 26 * 16. && player->getPosition().y <= 27 * 16.);
+	return (player->getPosition().x >= 60 * 16 && player->getPosition().x < 62 * 16. && player->getPosition().y >= 26 * 16. && player->getPosition().y <= 27 * 16.);
 }
 
 
