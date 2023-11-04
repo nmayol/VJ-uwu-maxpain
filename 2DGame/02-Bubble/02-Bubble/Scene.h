@@ -44,6 +44,7 @@ private:
 	void createTeleportingTubes();
 	void createBlocks();
 	void createPlayer();
+	void createFlag();
 
 
 	bool completed; // True if player has picked the flag

@@ -54,9 +54,7 @@ void Scene::init()
 	createBlocks();
 	createTeleportingTubes();
 	createPlayer();
-
-	
-	
+	createFlag();
 
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT+40), 41.f);
 	currentTime = 0.0f;
@@ -92,6 +90,12 @@ void Scene::init()
 	enemies_in_map.push_back(enemy_test_a);
 }
 
+
+void Scene::createFlag() {
+	flag = new Flag();
+	flag->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	flag->setPosition(glm::vec2(197.5f * 16.f, 5.f * 16.f));
+}
 
 
 void Scene::createPlayer() {
@@ -272,6 +276,7 @@ void Scene::render()
 	map_sec->render();
 	map->render();
 	player->render();
+	flag->render();
 	renderTubes();
 	renderBricks();
 		

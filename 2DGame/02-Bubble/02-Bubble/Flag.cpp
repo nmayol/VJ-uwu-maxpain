@@ -45,10 +45,10 @@ Sprite* Flag::initFlagSprite(Texture* spritesheet, ShaderProgram* shaderProgram)
 
 	Sprite* newSprite;
 
-	newSprite = Sprite::createSprite(glm::ivec2(16, 16), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
+	newSprite = Sprite::createSprite(glm::ivec2(16, 16), glm::vec2(SPRITE_OFFSET_X,SPRITE_OFFSET_Y), spritesheet, shaderProgram);
 	newSprite->setNumberAnimations(2);
 	newSprite->setAnimationSpeed(NORMAL, 8);
-	newSprite->addKeyframe(NORMAL, glm::vec2(0.f * SPRITE_OFFSET_X, 8.f * SPRITE_OFFSET_Y));
+	newSprite->addKeyframe(NORMAL, glm::vec2(26.f * SPRITE_OFFSET_X, 8.f * SPRITE_OFFSET_Y));
 
 	return newSprite;
 }
