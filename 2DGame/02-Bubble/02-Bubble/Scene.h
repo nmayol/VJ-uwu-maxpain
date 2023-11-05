@@ -10,8 +10,8 @@
 #include "Brick.h"
 #include "QMBlock.h"
 #include "Tube.h"
+#include "PlayerInterface.h"
 #include "Flag.h"
-
 #include "Entity.h"
 #include <list>
 
@@ -64,8 +64,7 @@ private:
 	Player *player;
 	Flag *flag;
 
-
-	
+	PlayerInterface* player_iface;
 
 	ShaderProgram texProgram;
 	float currentTime;

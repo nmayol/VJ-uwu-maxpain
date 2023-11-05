@@ -18,6 +18,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Goomba.h" />
     <ClInclude Include="Koopa.h" />
+    <ClInclude Include="PlayerInterface.h" />
     <ClInclude Include="QMBlock.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
@@ -37,6 +38,7 @@
     <ClCompile Include="Koopa.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerInterface.cpp" />
     <ClCompile Include="QMBlock.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />

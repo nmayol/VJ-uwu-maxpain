@@ -25,6 +25,7 @@ Scene::Scene()
 {
 	map = NULL;
 	player = NULL;
+	player_iface = NULL;
 }
 
 Scene::~Scene()
@@ -33,6 +34,9 @@ Scene::~Scene()
 		delete map;
 	if (player != NULL)
 		delete player;
+
+	if (player_iface != NULL)
+		delete player_iface;
 
 	while (!enemies_in_map.empty()) delete enemies_in_map.front(), enemies_in_map.pop_front();
 	while (!enemies_in_screen.empty()) delete enemies_in_screen.front(), enemies_in_screen.pop_front();
@@ -53,6 +57,14 @@ void Scene::init()
 	
 	createBlocks();
 	createTeleportingTubes();
+	player = new Player();
+	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
+	player->setTileMap(map);
+
+	player_iface = new PlayerInterface();
+	player_iface->init(texProgram);
+	
 	createPlayer();
 	createFlag();
 
@@ -161,6 +173,8 @@ void Scene::update(int deltaTime)
 	};
 
 	updateEnemies(deltaTime);
+	player_iface->update(deltaTime);
+	player_iface->setScreenXandY(sceneStart, 0.f);
 	changeWorldifNeeded();
 	moveCameraifNeeded();
 }
@@ -275,6 +289,7 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);	
 	map_sec->render();
 	map->render();
+	player_iface->render();
 	flag->render();
 	player->render();
 	renderTubes();
