@@ -349,9 +349,6 @@ bool Scene::pickingFlag() {
 
 void Scene::moveCameraifNeeded()
 {
-
-
-
 	float posPlayerX = player->getPosition().x;
 	float directionPlayer = player->getFacingDirection();
 	if (sceneStart < 3120 && (posPlayerX - (sceneStart + float(SCREEN_WIDTH - 1)) / 3.) > 0 && (directionPlayer == 1.f)) {

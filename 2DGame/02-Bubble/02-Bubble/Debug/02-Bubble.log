@@ -1,30 +1,4 @@
-﻿  Scene.cpp
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(121,89): warning C4244: 'argumento': conversión de 'T' a 'const unsigned int'; posible pérdida de datos
-          with
-          [
-              T=float
-          ]
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(121,53): warning C4244: 'argumento': conversión de 'T' a 'const unsigned int'; posible pérdida de datos
-          with
-          [
-              T=float
-          ]
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(122,95): warning C4244: 'argumento': conversión de 'T' a 'const unsigned int'; posible pérdida de datos
-          with
-          [
-              T=float
-          ]
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(122,57): warning C4244: 'argumento': conversión de 'T' a 'const unsigned int'; posible pérdida de datos
-          with
-          [
-              T=float
-          ]
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(256,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(270,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(311,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(317,28): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(321,30): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(358,13): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+﻿  Game.cpp
 SOIL.lib(image_DXT.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_DXT.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(image_helper.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_helper.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(SOIL.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(SOIL.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración

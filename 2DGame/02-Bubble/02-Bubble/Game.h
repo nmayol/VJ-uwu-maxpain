@@ -3,6 +3,7 @@
 
 
 #include "Scene.h"
+#include "MainScreen.h"
 
 // Original pixel size multiplied by 2
 #define SCREEN_WIDTH 256
@@ -44,6 +45,8 @@ public:
 
 private:
 	bool bPlay;                       // Continue to play game?
+	bool inGameScreen;
+	MainScreen mainScreen;
 	Scene scene;                      // Scene to render
 	bool keys[256], specialKeys[256]; // Store key states so that 
 	                                  // we can have access at any time

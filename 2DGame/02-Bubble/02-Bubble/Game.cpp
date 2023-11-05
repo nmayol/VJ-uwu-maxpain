@@ -6,13 +6,19 @@
 void Game::init()
 {
 	bPlay = true;
+	inGameScreen = false;
 	glClearColor(0.390625f, 0.58203125f, 0.92578125f, 1.0f); // Blue sky color
+	mainScreen.init();
 	scene.init();
 }
 
 bool Game::update(int deltaTime)
 {
-	scene.update(deltaTime);
+	if (inGameScreen) scene.update(deltaTime);
+	else {
+		mainScreen.update(deltaTime);
+		inGameScreen = mainScreen.goToGame();
+	}
 	
 	return bPlay;
 }
@@ -20,7 +26,8 @@ bool Game::update(int deltaTime)
 void Game::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	scene.render();
+	if (inGameScreen) scene.render();
+	else mainScreen.render();
 }
 
 void Game::keyPressed(int key)

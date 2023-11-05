@@ -19,6 +19,7 @@ public:
 	void startTime();
 	void stopTime();
 	void changeTickRate(const int& new_tick_rate);
+	void setTimeToNone();
 	bool endedTime();
 
 

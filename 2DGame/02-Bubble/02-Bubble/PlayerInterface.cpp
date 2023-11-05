@@ -179,12 +179,21 @@ void PlayerInterface::stopTime()
 	time_counting_down = false;
 }
 
-bool PlayerInterface::endedTime()
-{
-	return time_left == 0;
-}
 
 void PlayerInterface::changeTickRate(const int& new_tick_rate)
 {
 	tick_rate = new_tick_rate;
+}
+
+void PlayerInterface::setTimeToNone()
+{
+	time_left = 400;
+	time_counting_down = false;
+	for (Sprite* digit : time) 
+		digit->setActivated(false);
+}
+
+bool PlayerInterface::endedTime()
+{
+	return time_left == 0;
 }
