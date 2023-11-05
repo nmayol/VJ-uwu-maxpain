@@ -27,7 +27,7 @@ void PlayerInterface::init(ShaderProgram& shaderProgram)
 
 	countdown_frames = 0;
 	tick_rate = 24;
-	time_counting_down = true;
+	time_counting_down = false;
 
 	//NUMBERS INIT
 	lettersSpritesheet.loadFromFile("images/screens/text.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -35,6 +35,8 @@ void PlayerInterface::init(ShaderProgram& shaderProgram)
 	initNumberInScreen(score, 7, 0, shaderProgram);
 	initNumberInScreen(coins, 2, 0, shaderProgram);
 	initNumberInScreen(time, 3, 400, shaderProgram);
+	for (Sprite* digit : time)
+		digit->setActivated(false);
 
 	//LEVEL
 	levelSymbol = Sprite::createSprite(glm::ivec2(8, 8), glm::vec2(X_SPRITE_OFFSET, Y_SPRITE_OFFSET), &lettersSpritesheet, &shaderProgram);
@@ -172,6 +174,8 @@ void PlayerInterface::startTime()
 	time_left = 400;
 	tick_rate = 24;
 	time_counting_down = true;
+	for (Sprite* digit : time)
+		digit->setActivated(true);
 }
 
 void PlayerInterface::stopTime()

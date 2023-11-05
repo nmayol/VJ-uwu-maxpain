@@ -49,7 +49,7 @@ void Scene::init()
 {
 	initShaders();
 	numLevel = 1;
-
+	amountOfLives = 3;
 	overworld = true;
 	completed = false;
 	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -64,6 +64,10 @@ void Scene::init()
 
 	player_iface = new PlayerInterface();
 	player_iface->init(texProgram);
+
+	loading_screen_frames = 120;
+	loading_screen = new loadingScreen();
+	loading_screen->init(texProgram, numLevel, amountOfLives);
 	
 	createPlayer();
 	createFlag();
@@ -101,7 +105,6 @@ void Scene::init()
 
 	enemies_in_map.push_back(enemy_test_a);
 }
-
 
 void Scene::createFlag() {
 	flag = new Flag();
@@ -162,16 +165,24 @@ void Scene::update(int deltaTime)
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
 	completeGameifNeeded();
-	player->update(deltaTime, completed, couldBeGoingUnderworld(), wantsToGoOverworld(), pickingFlag());
+	
 	updateBricks(brickIndex, deltaTime);
 	updateQMBlocks(qmBlockIndex, deltaTime);
-	flag->update(deltaTime,pickingFlag());
-	if (stopFrames > 0)
-	{
+	
+	if (stopFrames > 0) {
 		stopFrames--;
 		return;
-	};
+	}
+	else if (loading_screen_frames > 0) {
+		player_iface->update(deltaTime);
+		player_iface->setScreenXandY(sceneStart, 0.f);
+		loading_screen_frames--;
+		if (loading_screen_frames == 0) player_iface->startTime();
+		return;
+	}
 
+	player->update(deltaTime, completed, couldBeGoingUnderworld(), wantsToGoOverworld(), pickingFlag());
+	flag->update(deltaTime, pickingFlag());
 	updateEnemies(deltaTime);
 	player_iface->update(deltaTime);
 	player_iface->setScreenXandY(sceneStart, 0.f);
@@ -287,6 +298,13 @@ void Scene::render()
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);	
+
+	if (loading_screen_frames > 0) {
+		loading_screen->render();
+		player_iface->render();
+		return;
+	}
+
 	map_sec->render();
 	map->render();
 	player_iface->render();

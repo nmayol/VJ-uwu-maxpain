@@ -13,6 +13,7 @@
 #include "PlayerInterface.h"
 #include "Flag.h"
 #include "Entity.h"
+#include "loadingScreen.h"
 #include <list>
 
 
@@ -58,13 +59,16 @@ private:
 
 private:
 	int numLevel;
+	int amountOfLives;
 	bool overworld;
 	TileMap* map;
 	TileMap* map_sec;
 	Player *player;
 	Flag *flag;
 
+	int loading_screen_frames;
 	PlayerInterface* player_iface;
+	loadingScreen* loading_screen;
 
 	ShaderProgram texProgram;
 	float currentTime;
