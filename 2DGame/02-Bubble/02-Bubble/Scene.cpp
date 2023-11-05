@@ -173,6 +173,8 @@ void Scene::update(int deltaTime)
 	};
 
 	updateEnemies(deltaTime);
+	player_iface->update(deltaTime);
+	player_iface->setScreenXandY(sceneStart, 0.f);
 	changeWorldifNeeded();
 	moveCameraifNeeded();
 }
@@ -248,11 +250,6 @@ void Scene::updateEnemies(int deltaTime) {
 			++it;
 		}
 	}
-	
-	player_iface->update(deltaTime);
-	player_iface->setScreenX(sceneStart);
-	changeWorldifNeeded();
-	moveCameraifNeeded();
 }
 
 void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {

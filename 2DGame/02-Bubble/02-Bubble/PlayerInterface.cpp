@@ -123,27 +123,27 @@ void PlayerInterface::render()
 	for (Sprite* digit : time) digit->render();
 }
 
-void PlayerInterface::setScreenX(const float& new_x)
+void PlayerInterface::setScreenXandY(const float& new_x, const float& new_y)
 {
-	backgroundSprite->setPosition(glm::vec2(new_x, 41.f));
-	coinSymbol->setPosition(glm::vec2(new_x + 88.f, 65.f));
-	levelSymbol->setPosition(glm::vec2(new_x + 168.f, 65.f));
+	backgroundSprite->setPosition(glm::vec2(new_x, new_y + 41.f));
+	coinSymbol->setPosition(glm::vec2(new_x + 88.f, new_y + 65.f));
+	levelSymbol->setPosition(glm::vec2(new_x + 168.f, new_y + 65.f));
 	
 	int i = 0;
 	for (Sprite* digit : score) {
-		digit->setPosition(glm::vec2(new_x + 64.f - i * 8.f, 65.f));
+		digit->setPosition(glm::vec2(new_x + 64.f - i * 8.f, new_y + 65.f));
 		++i;
 	}
 
 	i = 0;
 	for (Sprite* digit : coins) {
-		digit->setPosition(glm::vec2(new_x + 112.f - i * 8.f, 65.f));
+		digit->setPosition(glm::vec2(new_x + 112.f - i * 8.f, new_y + 65.f));
 		++i;
 	}
 	
 	i = 0;
 	for (Sprite* digit : time) {
-		digit->setPosition(glm::vec2(new_x + 224.f - i * 8.f, 65.f));
+		digit->setPosition(glm::vec2(new_x + 224.f - i * 8.f, new_y + 65.f));
 		++i;
 	}
 }
