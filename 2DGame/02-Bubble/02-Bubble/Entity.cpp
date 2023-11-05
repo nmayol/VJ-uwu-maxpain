@@ -27,6 +27,7 @@ void Entity::update(int deltaTime)
 		kill_frames--;
 		posEntity.x += facingDirection * horitzontal_speed;
 		posEntity.y -= vertical_speed;
+		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEntity.x), float(tileMapDispl.y + posEntity.y)));
 		return;
 	}
 	if (kill_frames == 0) {
@@ -96,9 +97,10 @@ int Entity::detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::
 void Entity::kill()
 {
 	is_collidable = false;
-	vertical_speed = 3.f;
+	vertical_speed = 2.75f;
+	horitzontal_speed = 1.f;
 	sprite->flipVertically();
-	kill_frames = 60;
+	kill_frames = 20;
 
 }
 
