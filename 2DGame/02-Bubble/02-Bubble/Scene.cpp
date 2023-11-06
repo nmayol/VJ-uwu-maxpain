@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <cmath>
+#include <algorithm>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
@@ -72,7 +72,7 @@ void Scene::init()
 	createPlayer();
 	createFlag();
 
-	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT+40), 41.f);
+	projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT+40), 41.f);
 	currentTime = 0.0f;
 	stopFrames = 0;
 
@@ -242,7 +242,11 @@ void Scene::updateEnemies(int deltaTime) {
 				//colision with player
 				if (!player->isInvencible()) {
 					int player_colision_result = (*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize);
-					if (player_colision_result == ENTITY_TAKES_DMG)
+					if (player->inStarMode() && (player_colision_result == ENTITY_TAKES_DMG || player_colision_result == PLAYER_TAKES_DMG)) {
+						(*it)->changeFacingDirection(player->getFacingDirection());
+						(*it)->kill();
+					}
+					else if (player_colision_result == ENTITY_TAKES_DMG)
 					{
 						(*it)->takeDamage();
 						player->applyBounce();
@@ -265,7 +269,7 @@ void Scene::updateEnemies(int deltaTime) {
 
 void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
-	for (int i = startBlock; i < min(startBlock + 8,210); ++i) {
+	for (int i = startBlock; i < std::min(startBlock + 8, 210); ++i) {
 		for (int j = 7; j < 12; j++) {
 			if (brickIndex[i][j] == 2) { // update broken brick animation
 				brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
@@ -329,7 +333,7 @@ void Scene::renderBricks() {
 	int startBlock = (sceneStart / map->getTileSize());
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
-	for (int i = startBlock; i < min(210, startBlock + 17); i++) {
+	for (int i = startBlock; i < std::min(210, startBlock + 17); i++) {
 		for (int j = 7; j < 12; j++) {
 			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
 				brickSet[i][j]->render(currentTime);

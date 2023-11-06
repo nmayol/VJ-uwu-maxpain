@@ -86,7 +86,7 @@ void QMBlock::update(int deltaTime, bool justUsed)
 	}
 
 	if (actualAnimation == USED) {
-		posQMBlock = posQMBlock + glm::vec2(0,-4);
+		posQMBlock = posQMBlock + glm::vec2(0,-8);
 		actualAnimation = INACTIVE;
 	}	
 	else if (actualAnimation == INACTIVE && anim == USED)

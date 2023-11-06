@@ -28,6 +28,7 @@ public:
 	glm::ivec2 getSize();
 	bool isFalling();
 	bool isInvencible();
+	bool inStarMode();
 	void takeDamage();
 	float getFacingDirection();
 
@@ -50,6 +51,7 @@ private:
 
 	int framesUntilSlowdown;
 	int invencibleFrames;
+	int starFrames;
 
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer;
@@ -66,9 +68,11 @@ private:
 	Texture normalMarioSpritesheet;
 	Sprite* smallMarioSprite;
 	Sprite* normalMarioSprite;
-	Sprite* fireMarioSprite;
+	Sprite* starMarioSprite;
+	
 	Sprite* initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shaderProgram);
 	Sprite* initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet, ShaderProgram* shaderProgram);
+	Sprite* initStarMarioSprite(Texture* spritesheet, ShaderProgram* shaderProgram);
 	
 
 };

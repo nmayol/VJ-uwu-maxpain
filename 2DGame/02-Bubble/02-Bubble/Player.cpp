@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
+#include <list>
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "Player.h"
@@ -60,7 +61,7 @@ enum PlayerDirection
 
 enum PlayerTransformation
 {
-	SMALL, NORMAL, FIRE
+	SMALL, NORMAL, STAR
 };
 
 
@@ -72,6 +73,7 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	pressedPandReleased = true;
 	framesUntilSlowdown = 0;
 	invencibleFrames = 0;
+	starFrames = 0;
 	facingDirection = 1.f;
 	actual_speed = 0.f;
 	vertical_speed = -2.5f;
@@ -87,8 +89,7 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	normalMarioSpritesheet.setMagFilter(GL_NEAREST);
 	normalMarioSprite = initNormalMarioSprite(0.f, &normalMarioSpritesheet, &shaderProgram);
 
-	normalMarioSpritesheet.loadFromFile("images/normal-mario.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	fireMarioSprite = initNormalMarioSprite(1.f, &normalMarioSpritesheet, &shaderProgram);
+	starMarioSprite = initStarMarioSprite(&normalMarioSpritesheet, &shaderProgram);
 
 	sprite = smallMarioSprite;
 
@@ -98,7 +99,7 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 
 }
 
-//INIT SMALL MARIO SPRITE_SHEET
+//INIT SMALL MARIO SPRITE
 Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shaderProgram) {
 
 	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 16), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
@@ -129,7 +130,7 @@ Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shader
 }
 
 
-//INIT NORMAL MARIO SPRITE_SHEET
+//INIT NORMAL MARIO SPRITE
 Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet, ShaderProgram* shaderProgram) {
 
 	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 32), glm::vec2(BIG_SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
@@ -162,6 +163,38 @@ Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet,
 	return newSprite;
 }
 
+//INIT STAR MARIO SPRITE
+Sprite* Player::initStarMarioSprite(Texture* spritesheet, ShaderProgram* shaderProgram)
+{
+	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 32), glm::vec2(BIG_SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
+	newSprite->setNumberAnimations(8);
+	newSprite->setAnimationSpeed(STANDING, 24);
+	newSprite->setAnimationSpeed(RUNNING, 24);
+	newSprite->setAnimationSpeed(JUMPING, 24);
+	newSprite->setAnimationSpeed(SKIDDING, 24);
+	newSprite->setAnimationSpeed(CROUCHING, 24);
+	newSprite->setAnimationSpeed(PICKING, 24);
+	newSprite->setAnimationSpeed(NONE, 0);
+	newSprite->addKeyframe(NONE, glm::vec2(BIG_SPRITE_OFFSET_X * 17.f, 0.f));
+
+	// Running animation is special because each key_frame has diferent key_frames (for every color)
+	for (int j = 0; j < 3; ++j) {
+		for (int i : {0, 4, 5, 3}) {
+			newSprite->addKeyframe(RUNNING, glm::vec2(BIG_SPRITE_OFFSET_X * j, BIG_SPRITE_OFFSET_Y * i));
+		}
+	}
+
+	for (int i : {0, 4, 5, 3}) {
+		newSprite->addKeyframe(STANDING, glm::vec2(BIG_SPRITE_OFFSET_X * 6.f, BIG_SPRITE_OFFSET_Y * i));
+		newSprite->addKeyframe(JUMPING, glm::vec2(BIG_SPRITE_OFFSET_X * 4.f, BIG_SPRITE_OFFSET_Y * i));
+		newSprite->addKeyframe(SKIDDING, glm::vec2(BIG_SPRITE_OFFSET_X * 3.f, BIG_SPRITE_OFFSET_Y * i));
+		newSprite->addKeyframe(CROUCHING, glm::vec2(BIG_SPRITE_OFFSET_X * 5.f, BIG_SPRITE_OFFSET_Y * i));
+		newSprite->addKeyframe(PICKING, glm::vec2(BIG_SPRITE_OFFSET_X * 8.f, BIG_SPRITE_OFFSET_Y * i));
+		newSprite->addKeyframe(NONE, glm::vec2(BIG_SPRITE_OFFSET_X * 17.f, BIG_SPRITE_OFFSET_Y * i));
+	}
+	return newSprite;
+}
+
 
 //CHANGE MARIO FORM
 void Player::setMarioForm(int formId) {
@@ -183,7 +216,8 @@ void Player::setMarioForm(int formId) {
 		break;
 
 	default:
-		sprite = fireMarioSprite;
+		sprite = starMarioSprite;
+		starFrames = 620;
 		collision_box_size = glm::ivec2(16, 32);
 		break;
 	}
@@ -244,6 +278,12 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		}
 		else pressedPandReleased = true;
 		pressedPCount--;
+
+		//STAR MARIO
+		if (starFrames > 0) {
+			starFrames--;
+			if (starFrames == 0) setMarioForm(NORMAL);
+		}
 
 		//Save inputs and prevents bugs by only allowing left or right (not both)
 		if (leftKeyPressed && rightKeyPressed) {
@@ -526,6 +566,11 @@ bool Player::isFalling()
 bool Player::isInvencible()
 {
 	return invencibleFrames > 0;
+}
+
+bool Player::inStarMode()
+{	
+	return actualForm == STAR;
 }
 
 void Player::takeDamage()
