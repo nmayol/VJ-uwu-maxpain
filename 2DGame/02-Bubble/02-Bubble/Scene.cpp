@@ -59,13 +59,19 @@ void Scene::init()
 void Scene::initNewLevel(const int& level_id) {
 	overworld = true;
 	completed = false;
-	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	if (level_id == 1) {
+		map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	}
+	else {
+		map_sec = TileMap::createTileMap("levels/level02_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	}
 
 	createBlocks();
 	createTeleportingTubes();
 	player->reset();
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
+	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() - 1.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
 
 	loading_screen_frames = 120;
@@ -76,6 +82,7 @@ void Scene::initNewLevel(const int& level_id) {
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT + 40), 41.f);
 	currentTime = 0.0f;
 	stopFrames = 0;
+	sceneStart = 0.f;
 
 	//TODO -> FIX THIS READING FROM FILE
 	enemies_in_map.clear();
@@ -156,6 +163,10 @@ void Scene::createTeleportingTubes()
 
 void Scene::update(int deltaTime)
 {
+	//CHANGE LEVEL
+	if (Game::instance().getKey('1')) initNewLevel(1);
+	if (Game::instance().getKey('2')) initNewLevel(2);
+
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();

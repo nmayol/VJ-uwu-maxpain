@@ -114,6 +114,9 @@ void Player::reset()
 	actual_speed = 0.f;
 	vertical_speed = -2.5f;
 	actualAnimation = STANDING;
+	
+	sprite->changeDirection(FACING_RIGHT);
+
 }
 
 //INIT SMALL MARIO SPRITE
