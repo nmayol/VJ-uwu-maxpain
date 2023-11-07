@@ -100,6 +100,25 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 
 }
 
+void Player::reset()
+{
+	bJumping = false;
+	JumpedAndReleased = true;
+	pressedPCount = 0;
+	pressedPandReleased = true;
+	framesUntilSlowdown = 0;
+	invencibleFrames = 0;
+	dyingFrames = 0;
+	starFrames = 0;
+	facingDirection = 1.f;
+	actual_speed = 0.f;
+	vertical_speed = -2.5f;
+	actualAnimation = STANDING;
+	
+	sprite->changeDirection(FACING_RIGHT);
+
+}
+
 //INIT SMALL MARIO SPRITE
 Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shaderProgram) {
 
