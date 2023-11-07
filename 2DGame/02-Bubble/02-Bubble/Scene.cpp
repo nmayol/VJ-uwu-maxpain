@@ -42,41 +42,44 @@ Scene::~Scene()
 	while (!enemies_in_screen.empty()) delete enemies_in_screen.front(), enemies_in_screen.pop_front();
 }
 
-
-
-
 void Scene::init()
 {
 	initShaders();
 	numLevel = 1;
 	amountOfLives = 3;
-	overworld = true;
-	completed = false;
-	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	
-	createBlocks();
-	createTeleportingTubes();
-	player = new Player();
-	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
-	player->setTileMap(map);
 
 	player_iface = new PlayerInterface();
 	player_iface->init(texProgram);
 
+	player = new Player();
+	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	initNewLevel(numLevel);
+}
+
+void Scene::initNewLevel(const int& level_id) {
+	overworld = true;
+	completed = false;
+	map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+
+	createBlocks();
+	createTeleportingTubes();
+	player->reset();
+	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 128.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
+	player->setTileMap(map);
+
 	loading_screen_frames = 120;
 	loading_screen = new loadingScreen();
 	loading_screen->init(texProgram, numLevel, amountOfLives);
-	
-	createPlayer();
-	createFlag();
 
-	projection = glm::ortho(0.f, float(SCREEN_WIDTH-1), float(SCREEN_HEIGHT+40), 41.f);
+	createFlag();
+	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT + 40), 41.f);
 	currentTime = 0.0f;
 	stopFrames = 0;
 
 	//TODO -> FIX THIS READING FROM FILE
+	enemies_in_map.clear();
+	enemies_in_screen.clear();
 	Goomba* enemy_test = new Goomba();
 	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
@@ -110,14 +113,6 @@ void Scene::createFlag() {
 	flag = new Flag();
 	flag->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	flag->setPosition(glm::vec2(197.5f * 16.f, 5.f * 16.f));
-}
-
-
-void Scene::createPlayer() {
-	player = new Player();
-	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
-	player->setTileMap(map);
 }
 
 void Scene::createBlocks() {
@@ -176,7 +171,9 @@ void Scene::update(int deltaTime)
 	else if (dyingAnimationFrames > 0) {
 		dyingAnimationFrames--;
 		player->update(deltaTime, false, false, false, false);
-		if (dyingAnimationFrames == 0) stopFrames = 1 / (amountOfLives - 2); //TO-DO: FIX THIS :)
+		if (dyingAnimationFrames == 0) {
+			initNewLevel(numLevel); //RESTART LEVEL
+		}
 		return;
 	}
 	else if (loading_screen_frames > 0) {
@@ -195,9 +192,6 @@ void Scene::update(int deltaTime)
 	changeWorldifNeeded();
 	moveCameraifNeeded();
 }
-
-
-
 
 void Scene::updateEnemies(int deltaTime) {
 	glm::vec2 posPlayer = player->getPosition();

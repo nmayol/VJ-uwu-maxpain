@@ -29,6 +29,7 @@ public:
 	~Scene();
 
 	void init();
+	void initNewLevel(const int& level_id);
 	void update(int deltaTime);
 	void render();
 
@@ -44,7 +45,6 @@ private:
 	void renderTubes();
 	void createTeleportingTubes();
 	void createBlocks();
-	void createPlayer();
 	void createFlag();
 
 

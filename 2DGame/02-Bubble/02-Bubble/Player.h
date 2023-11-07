@@ -15,6 +15,7 @@ class Player
 
 public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
+	void reset();
 	void update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderworld, bool wantsToGoOverworld, bool pickingFlag);
 	void render();
 
