@@ -21,6 +21,7 @@ public:
 	void setMarioForm(int formId);
 	void setTileMap(TileMap* tileMap);
 	void setPosition(const glm::vec2& pos);
+	void stopMarioFromMoving(const glm::vec2& pos);
 	void applyBounce();
 
 	glm::vec2 getPosition();
@@ -29,7 +30,7 @@ public:
 	bool isFalling();
 	bool isInvencible();
 	bool inStarMode();
-	void takeDamage();
+	bool takeDamage();
 	float getFacingDirection();
 
 private:
@@ -52,6 +53,7 @@ private:
 	int framesUntilSlowdown;
 	int invencibleFrames;
 	int starFrames;
+	int dyingFrames;
 
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer;

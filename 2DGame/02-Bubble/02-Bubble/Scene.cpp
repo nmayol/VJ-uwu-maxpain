@@ -173,6 +173,12 @@ void Scene::update(int deltaTime)
 		stopFrames--;
 		return;
 	}
+	else if (dyingAnimationFrames > 0) {
+		dyingAnimationFrames--;
+		player->update(deltaTime, false, false, false, false);
+		if (dyingAnimationFrames == 0) stopFrames = 1 / (amountOfLives - 2); //TO-DO: FIX THIS :)
+		return;
+	}
 	else if (loading_screen_frames > 0) {
 		player_iface->update(deltaTime);
 		player_iface->setScreenXandY(sceneStart, 0.f);
@@ -256,7 +262,11 @@ void Scene::updateEnemies(int deltaTime) {
 						(*it)->changeFacingDirection(player->getFacingDirection());
 					}
 					else if (player_colision_result == PLAYER_TAKES_DMG) {
-						player->takeDamage();
+						if (player->takeDamage()) {
+							//player is dead
+							dyingAnimationFrames = 80;
+							amountOfLives--;
+						}
 						stopFrames = 20;
 					}
 				}
@@ -385,7 +395,7 @@ void Scene::moveCameraifNeeded()
 	}
 	else if (directionPlayer == -1.f && posPlayerX < sceneStart) {
 		// make player unable to go back to last scene
-		player->setPosition(glm::vec2(sceneStart, player->getPosition().y));
+		player->stopMarioFromMoving(glm::vec2(sceneStart, player->getPosition().y));
 
 	}
 

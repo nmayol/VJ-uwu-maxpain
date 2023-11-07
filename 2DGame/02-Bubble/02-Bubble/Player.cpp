@@ -50,7 +50,7 @@
 
 enum playerAnims
 {
-	STANDING, RUNNING, JUMPING, SKIDDING, CROUCHING, PICKING, NONE
+	STANDING, RUNNING, JUMPING, SKIDDING, CROUCHING, PICKING, DYING, NONE
 };
 
 
@@ -73,6 +73,7 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	pressedPandReleased = true;
 	framesUntilSlowdown = 0;
 	invencibleFrames = 0;
+	dyingFrames = 0;
 	starFrames = 0;
 	facingDirection = 1.f;
 	actual_speed = 0.f;
@@ -104,7 +105,7 @@ Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shader
 
 	Sprite* newSprite = Sprite::createSprite(glm::ivec2(16, 16), glm::vec2(SPRITE_OFFSET_X, SPRITE_OFFSET_Y), spritesheet, shaderProgram);
 
-	newSprite->setNumberAnimations(7);
+	newSprite->setNumberAnimations(8);
 
 	newSprite->setAnimationSpeed(STANDING, 8);
 	newSprite->addKeyframe(STANDING, glm::vec2(SPRITE_OFFSET_X * 6.f, 0.f));
@@ -122,6 +123,9 @@ Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shader
 
 	newSprite->setAnimationSpeed(PICKING, 8);
 	newSprite->addKeyframe(PICKING, glm::vec2(SPRITE_OFFSET_X * 8.f, 0.f));
+
+	newSprite->setAnimationSpeed(DYING, 8);
+	newSprite->addKeyframe(DYING, glm::vec2(SPRITE_OFFSET_X * 5.f, 0.f));
 
 	newSprite->setAnimationSpeed(NONE, 8);
 	newSprite->addKeyframe(NONE, glm::vec2(SPRITE_OFFSET_X * 14.f, 0.f));
@@ -284,6 +288,24 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 			starFrames--;
 			if (starFrames == 0) setMarioForm(NORMAL);
 		}
+		//invencible Frames after taking damage
+		else if (invencibleFrames > 0) {
+			if (invencibleFrames == I_FRAMES) setMarioForm((2 + actualForm) % 3);
+			sprite->setActivated(invencibleFrames % 4 < 2);
+			invencibleFrames--;
+		}
+		//death animation
+		else if (dyingFrames > 0) {
+			if (dyingFrames == I_FRAMES) {
+				sprite->changeAnimation(DYING);
+				vertical_speed = 6.5f;
+			}
+			dyingFrames--;
+			vertical_speed -= 0.2f;
+			posPlayer.y -= vertical_speed;
+			sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+			return;
+		}
 
 		//Save inputs and prevents bugs by only allowing left or right (not both)
 		if (leftKeyPressed && rightKeyPressed) {
@@ -292,11 +314,6 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		}
 
 	//invencible Frames after taking damage
-	if (invencibleFrames > 0) {
-		if (invencibleFrames == I_FRAMES) setMarioForm((2 + actualForm) % 3);
-		sprite->setActivated(invencibleFrames % 4 < 2);
-		invencibleFrames--;
-	}
 
 
 	// MARIO IS MID-JUMPING
@@ -540,6 +557,14 @@ void Player::setPosition(const glm::vec2& pos)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
+void Player::stopMarioFromMoving(const glm::vec2& pos)
+{
+	posPlayer = pos;
+	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+	if (map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) sprite->changeAnimation(STANDING);
+	actual_speed = 0;
+}
+
 void Player::applyBounce()
 {
 		vertical_speed = 5.f;
@@ -573,9 +598,15 @@ bool Player::inStarMode()
 	return actualForm == STAR;
 }
 
-void Player::takeDamage()
+bool Player::takeDamage()
 {
-	invencibleFrames = I_FRAMES;
+	if (actualForm != 0) {
+		invencibleFrames = I_FRAMES;
+		return false;
+	}
+	
+	dyingFrames = I_FRAMES;
+	return true;
 }
 
 float Player::getFacingDirection() {

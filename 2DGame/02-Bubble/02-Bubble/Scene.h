@@ -67,6 +67,7 @@ private:
 	Flag *flag;
 
 	int loading_screen_frames;
+	int dyingAnimationFrames;
 	PlayerInterface* player_iface;
 	loadingScreen* loading_screen;
 
