@@ -63,6 +63,8 @@ private:
 	bool overworld;
 	TileMap* map;
 	TileMap* map_sec;
+	TileMap* map_sec2;
+
 	Player *player;
 	Flag *flag;
 

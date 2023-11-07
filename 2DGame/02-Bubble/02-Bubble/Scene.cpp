@@ -45,7 +45,7 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	numLevel = 1;
+	numLevel = 2;
 	amountOfLives = 3;
 
 	player_iface = new PlayerInterface();
@@ -59,12 +59,14 @@ void Scene::init()
 void Scene::initNewLevel(const int& level_id) {
 	overworld = true;
 	completed = false;
-	if (level_id == 1) {
+	numLevel = level_id;
+	if (numLevel == 1) {
 		map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	}
 	else {
-		map_sec = TileMap::createTileMap("levels/level02_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		map_sec2 = TileMap::createTileMap("levels/level02_sec01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		map_sec = TileMap::createTileMap("levels/level02_sec02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	}
 
@@ -146,17 +148,17 @@ void Scene::createBlocks() {
 
 void Scene::createTeleportingTubes()
 {
-	if (numLevel == 1) {
-		bool tubeIsHorizontal = true;
-		tubeSet = vector<Tube*>(2, NULL);
-		tubeSet[0] = new Tube();
-		tubeSet[0]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, tubeIsHorizontal);
-		tubeSet[0]->setPosition(glm::vec2(57 * 16.f, 11 * 16.f));
-		tubeSet[1] = new Tube();
-		tubeSet[1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, !tubeIsHorizontal);
-		tubeSet[1]->setPosition(glm::vec2(61 * 16.f, 26 * 16.f));
 
-	}
+	bool tubeIsHorizontal = true;
+	tubeSet = vector<Tube*>(2, NULL);
+	tubeSet[0] = new Tube();
+	tubeSet[0]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, tubeIsHorizontal);
+	tubeSet[0]->setPosition(glm::vec2(57 * 16.f, 11 * 16.f));
+	tubeSet[1] = new Tube();
+	tubeSet[1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, !tubeIsHorizontal);
+	tubeSet[1]->setPosition(glm::vec2(61 * 16.f, 26 * 16.f));
+
+
 
 }
 
@@ -323,7 +325,7 @@ void Scene::render()
 		player_iface->render();
 		return;
 	}
-
+	if (numLevel == 2) map_sec2->render();
 	map_sec->render();
 	map->render();
 	player_iface->render();
@@ -335,13 +337,8 @@ void Scene::render()
 }
 
 void Scene::renderTubes() {
-	if (numLevel == 1) {
-		tubeSet[0]->render();
-		tubeSet[1]->render();
-	}
-	else if (numLevel == 2) {
-		;
-	}
+	tubeSet[0]->render();
+	tubeSet[1]->render();
 }
 
 void Scene::renderBricks() {
@@ -429,22 +426,20 @@ void Scene::changeWorldifNeeded() {
 	if (numLevel < 1) return; // text scenes don't need to change this.
 
 	if (overworld) {
-		if (numLevel == 1) {
-			limY = 10.16f * 16.f;
-			limXInf = 57 * 16.f;
-			limXSup = limXInf + 16;
-		}
+		limY = 10.16f * 16.f;
+		limXInf = 57 * 16.f;
+		limXSup = limXInf + 16;
+		
 		if (player->getPosition().y >= limY && player->getPosition().x >= limXInf && player->getPosition().x < limXSup) {
 			sceneStart = 48 * 16.f;
 			overworld = false;
 		}
 	}
 	else {
-		if (numLevel == 1) {
-			limY = 26.f * 16.f;
-			limXInf = 61 * 16.f;
-			limXSup = limXInf + 16;
-		}
+		limY = 26.f * 16.f;
+		limXInf = 61 * 16.f;
+		limXSup = limXInf + 16;
+		
 		if (player->getPosition().y >= limY && player->getPosition().x >= limXInf && player->getPosition().x < limXSup) {
 			sceneStart = 159 * 16.f;
 			overworld = true;
