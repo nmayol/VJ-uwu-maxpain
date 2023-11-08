@@ -52,6 +52,7 @@ private:
 	void createTeleportingTubes();
 	void createBlocks();
 	void createFlag();
+	void actIfMarioHasCommitedSuicide();
 
 
 	bool completed; // True if player has picked the flag
