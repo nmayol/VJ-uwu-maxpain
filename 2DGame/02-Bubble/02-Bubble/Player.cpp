@@ -261,7 +261,12 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 				posPlayer.y += 8.f;
 			else bJumping = false;
 		}
-		else actualAnimation = NONE;
+		else if (posPlayer.x <= 207.f * 16) {
+			actualAnimation = NONE;
+			posPlayer += glm::vec2(1.f, 0);
+		}
+			
+		
 	}
 	else if ((actualAnimation == CROUCHING) && couldBeGoingUnderworld) {
 		if (posPlayer.y >= 10.15f * 16) { // Movement into a tube OVERWORLD

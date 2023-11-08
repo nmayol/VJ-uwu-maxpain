@@ -28,10 +28,11 @@ public:
 	Scene();
 	~Scene();
 
-	void init();
+	void init(int num);
 	void initNewLevel(const int& level_id);
 	void update(int deltaTime);
 	void render();
+	void setNumLevel(int num);
 
 private:
 	void initShaders();
@@ -46,9 +47,11 @@ private:
 	void createTeleportingTubes();
 	void createBlocks();
 	void createFlag();
+	void checkIfFinished();
 
 
 	bool completed; // True if player has picked the flag
+	bool finished; // The player has picked the flag and entered the castle
 	bool couldBeGoingUnderworld(); // True if player is in the right position to go to underworld (but we don't know if it's crouching [checked at player.cpp])
 	bool wantsToGoOverworld(); // True if player is in the right position to go to overworld)
 	bool pickingFlag(); // player blocked when the flag is being picked (NOT IMPLEMENTED YET)

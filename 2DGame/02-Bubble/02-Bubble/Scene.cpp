@@ -42,10 +42,10 @@ Scene::~Scene()
 	while (!enemies_in_screen.empty()) delete enemies_in_screen.front(), enemies_in_screen.pop_front();
 }
 
-void Scene::init()
+void Scene::init(int num)
 {
 	initShaders();
-	numLevel = 2;
+	
 	amountOfLives = 3;
 
 	player_iface = new PlayerInterface();
@@ -53,12 +53,13 @@ void Scene::init()
 
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	initNewLevel(numLevel);
+	setNumLevel(num);
 }
 
 void Scene::initNewLevel(const int& level_id) {
 	overworld = true;
 	completed = false;
+	finished = false;
 	numLevel = level_id;
 	if (numLevel == 1) {
 		map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -165,9 +166,12 @@ void Scene::createTeleportingTubes()
 
 void Scene::update(int deltaTime)
 {
+
 	//CHANGE LEVEL
-	if (Game::instance().getKey('1')) initNewLevel(1);
-	if (Game::instance().getKey('2')) initNewLevel(2);
+	checkIfFinished();
+	if (Game::instance().getKey('1')) setNumLevel(1);
+	else if (Game::instance().getKey('2') || (numLevel == 1 && finished)) setNumLevel(2);
+	else if (numLevel == 2 && finished) Game::instance().setInGameScreen(false);
 
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
@@ -365,6 +369,12 @@ void Scene::completeGameifNeeded()
 	completed = (player->getPosition().x >= 197.5f * 16.f) && !pickingFlag();
 }
 
+
+void Scene::checkIfFinished()
+{
+	finished = completed && (player->getPosition().x >= 206.f * 16.f);
+}
+
 bool Scene::couldBeGoingUnderworld()
 {
 	return (player->getPosition().x > 57 * 16 && player->getPosition().x < 58 * 16. && player->getPosition().y >= 9 * 16. && player->getPosition().y <= 17 * 16.);
@@ -483,4 +493,17 @@ void Scene::initShaders()
 	texProgram.bindFragmentOutput("outColor");
 	vShader.free();
 	fShader.free();
+}
+
+
+void Scene::setNumLevel(int num)
+{
+	if (numLevel != num)
+	{
+		numLevel = num;
+		initNewLevel(num);
+	}
+		
+	
+
 }
