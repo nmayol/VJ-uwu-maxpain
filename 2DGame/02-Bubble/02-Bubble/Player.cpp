@@ -295,7 +295,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 			actualAnimation = PICKING;
 			SoundController::instance()->play(FLAG);
 		}
-		if (posPlayer.y <= 14 * 16 && !map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) posPlayer.y += 2.f;
+		if (!map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) posPlayer.y += 2.f;
 		
 	}
 	else {
