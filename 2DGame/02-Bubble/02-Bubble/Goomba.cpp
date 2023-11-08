@@ -68,12 +68,13 @@ void Goomba::update(int deltaTime)
 	else Entity::update(deltaTime);
 }
 
-void Goomba::takeDamage()
+bool Goomba::takeDamage()
 {
 	SoundController::instance()->play(KILL);
 	is_collidable = false;
 	sprite->changeAnimation(DYING);
 	frames_until_death = 45;
+	return true;
 }
 
 string Goomba::whoAmI()

@@ -18,7 +18,7 @@ public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
 	void update(int deltaTime);
 	int detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::ivec2& size);
-	void takeDamage();
+	bool takeDamage();
 	bool canKillEnemies();
 	string whoAmI();
 

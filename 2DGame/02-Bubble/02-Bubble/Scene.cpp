@@ -41,6 +41,7 @@ Scene::~Scene()
 
 	while (!enemies_in_map.empty()) delete enemies_in_map.front(), enemies_in_map.pop_front();
 	while (!enemies_in_screen.empty()) delete enemies_in_screen.front(), enemies_in_screen.pop_front();
+	while (!floating_scores.empty()) delete floating_scores.front(), floating_scores.pop_front();
 }
 
 void Scene::init()
@@ -105,6 +106,8 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	//TODO -> FIX THIS READING FROM FILE
 	enemies_in_map.clear();
 	enemies_in_screen.clear();
+	floating_scores.clear();
+
 	Goomba* enemy_test = new Goomba();
 	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
@@ -283,10 +286,14 @@ void Scene::updateEnemies(int deltaTime) {
 					if (e2 != (*it) && e2->detectCollision(&posEnemy, (*it)->getFacingDirection(), (*it)->getSize())) {
 						if ((*it)->canKillEnemies()) {
 							e2->changeFacingDirection((*it)->getFacingDirection());
+							floating_scores.push_back(new FloatingScore(100, e2->getPosition(), texProgram)); //create Score
+							player_iface->addToScore(100);
 							e2->kill();
 						}
 						else if (e2->canKillEnemies()) {
 							(*it)->changeFacingDirection(e2->getFacingDirection());
+							floating_scores.push_back(new FloatingScore(100, (*it)->getPosition(), texProgram)); //create Score
+							player_iface->addToScore(100);
 							(*it)->kill();
 						}
 						else {
@@ -306,12 +313,17 @@ void Scene::updateEnemies(int deltaTime) {
 					}
 					else if (player_colision_result == ENTITY_TAKES_DMG)
 					{
-						(*it)->takeDamage();
+						bool spawns_floating_score = (*it)->takeDamage();
+						if (spawns_floating_score) {
+							floating_scores.push_back(new FloatingScore(100, (*it)->getPosition(), texProgram)); //create Score
+							player_iface->addToScore(100);
+						}
 						player->applyBounce();
 					}
 					else if (player_colision_result == LAUNCH_SHELL) {
 						(*it)->takeDamage();
 						(*it)->changeFacingDirection(player->getFacingDirection());
+						player->applyBounce();
 					}
 					else if (player_colision_result == PLAYER_TAKES_DMG) {
 						if (player->takeDamage()) {
@@ -323,10 +335,16 @@ void Scene::updateEnemies(int deltaTime) {
 					}
 				}
 			}
-
 			++it;
 		}
 	}
+
+	for (auto it = floating_scores.begin(); it != floating_scores.end(); /* no increment here */) {
+		if ((*it)->update(deltaTime)) it = floating_scores.erase(it);
+		else ++it;
+	}
+
+
 	//time runned out
 	if (player_iface->getTime() == 0) {
 		player_iface->setTimeToNone();
@@ -414,6 +432,7 @@ void Scene::renderBricks() {
 	}
 
 	for (Entity* e : enemies_in_screen) e->render();
+	for (FloatingScore* floating_score : floating_scores) floating_score->render();
 }
 
 void Scene::completeGameifNeeded()

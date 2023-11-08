@@ -179,7 +179,7 @@ void PlayerInterface::changeActualLevel(const int& new_level)
 void PlayerInterface::addToScore(const int& new_score)
 {
 	updateNumber(score, total_score, total_score + new_score);
-	total_score = total_score;
+	total_score += new_score;
 }
 
 int PlayerInterface::getTotalScore()

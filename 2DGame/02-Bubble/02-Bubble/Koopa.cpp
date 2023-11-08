@@ -67,14 +67,14 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 
 void Koopa::update(int deltaTime)
 {
-	if (frames_until_respawn >= 0 && kill_frames != -1) {
+	if (frames_until_respawn >= 0 && kill_frames == -1) {
 		if (frames_until_respawn == 120) sprite->changeAnimation(DESHELLING);
 		else if (frames_until_respawn == 0) {
 			sprite->changeAnimation(WALKING);
 			horitzontal_speed = NORMAL_WALK_SPEED;
 		}
 		frames_until_respawn--;
-
+		sprite->update(deltaTime);
 	}
 	else Entity::update(deltaTime);
 }
@@ -99,7 +99,7 @@ int Koopa::detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::i
 	}
 }
 
-void Koopa::takeDamage()
+bool Koopa::takeDamage()
 {
 	//Base koopa has base speed, shell has 0 and moving shell has shell launch speed
 	if (horitzontal_speed == 0) {
@@ -113,6 +113,7 @@ void Koopa::takeDamage()
 		frames_until_respawn = 8 * 60;
 		sprite->changeAnimation(SHELL);
 	}
+	return false;
 }
 
 bool Koopa::canKillEnemies()

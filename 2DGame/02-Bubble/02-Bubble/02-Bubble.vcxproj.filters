@@ -72,7 +72,11 @@
     <ClInclude Include="loadingScreen.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+<<<<<<< Updated upstream
     <ClInclude Include="SoundController.h">
+=======
+    <ClInclude Include="FloatingScore.h">
+>>>>>>> Stashed changes
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
@@ -134,7 +138,11 @@
     <ClCompile Include="loadingScreen.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
+<<<<<<< Updated upstream
     <ClCompile Include="SoundController.cpp">
+=======
+    <ClCompile Include="FloatingScore.cpp">
+>>>>>>> Stashed changes
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
   </ItemGroup>

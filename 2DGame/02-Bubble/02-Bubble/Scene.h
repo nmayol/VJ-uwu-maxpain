@@ -14,6 +14,7 @@
 #include "Flag.h"
 #include "Entity.h"
 #include "loadingScreen.h"
+#include "FloatingScore.h"
 #include <list>
 
 
@@ -61,6 +62,7 @@ private:
 	//Enemy & Other Entities handling
 	list<Entity*> enemies_in_map;
 	list<Entity*> enemies_in_screen;
+	list<FloatingScore*> floating_scores;
 
 private:
 	int gameState;

@@ -88,7 +88,7 @@ int Entity::detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::
 	entx1 = posEntity.x + collision_box_size.x;
 
 	if (((x0 > posEntity.x && x0 < entx1) || (x1 > posEntity.x && x1 < entx1)) && y0 >= posEntity.y && y0 <= posEntity.y + collision_box_size.y) {
-		if (y0 > (posEntity.y + collision_box_size.y * 0.25)) return PLAYER_TAKES_DMG;
+		if (y0 > (posEntity.y + collision_box_size.y * 0.5)) return PLAYER_TAKES_DMG;
 		else return ENTITY_TAKES_DMG;
 	}
 	return NOTHING;

@@ -614,7 +614,11 @@ void Player::stopMarioFromMoving(const glm::vec2& pos)
 
 void Player::applyBounce()
 {
-		vertical_speed = 5.f;
+
+	vertical_speed = 5.f; 
+	posPlayer.y = (((int)posPlayer.y) / 16) * 16.f;
+	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+	vertical_speed = 5.f;
 }
 
 glm::vec2 Player::getPosition() {
