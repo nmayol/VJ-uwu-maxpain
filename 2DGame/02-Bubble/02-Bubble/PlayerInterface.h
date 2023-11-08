@@ -10,11 +10,16 @@ public:
 	void init(ShaderProgram& shaderProgram);
 	void update(int deltaTime);
 	void render();
+	void reset();
 	void setScreenXandY(const float& new_x, const float& new_y);
 
 	void changeActualLevel(const int& new_level);
 	void addToScore(const int& new_score);
+	int getTotalScore();
 	void addCoins(const int& amount);
+	int getTotalCoins();
+
+	int getTime();
 
 	void startTime();
 	void stopTime();

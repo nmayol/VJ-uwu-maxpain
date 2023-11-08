@@ -11,10 +11,12 @@
 #define X_SPRITE_OFFSET (1.f / 16.f)
 
 MainScreen::MainScreen()
-{}
+{
+	player_iface = NULL;
+}
 
 enum showingScreen {
-	MAIN, INSTRUCTIONS, CREDITS
+	MAIN_SCREEN, INSTRUCTIONS_SCREEN, CREDITS_SCREEN, GAME_OVER_SCREEN, GAME_COMPLETED_SCREEN
 };
 
 MainScreen::~MainScreen()
@@ -29,6 +31,8 @@ MainScreen::~MainScreen()
 		delete instructionsScreen;
 	if (creditsScreen != NULL)
 		delete creditsScreen;
+	if (player_iface != NULL)
+		delete player_iface;
 }
 
 void MainScreen::init()
@@ -40,7 +44,7 @@ void MainScreen::init()
 	selected_Option = 0;
 	go_to_game = false;
 	pressed_and_released = true;
-	actual_screen_showed = MAIN;
+	actual_screen_showed = MAIN_SCREEN;
 
 	//MAIN SCREEN BACKGROUND
 	mainScreenBackground.loadFromFile("images/screens/mainScreen.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -53,9 +57,9 @@ void MainScreen::init()
 	mainScreen->setPosition(glm::vec2(0.f, 41.f));
 
 	//INSTRUCTIONS SCREEN BACKGROUND
-	instructionsScreenBackground.loadFromFile("images/screens/instructionsScreen.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	instructionsScreenBackground.setMagFilter(GL_NEAREST);
-	instructionsScreen = Sprite::createSprite(glm::ivec2(256, 240), glm::vec2(1.f, 1.f), &instructionsScreenBackground, &texProgram);
+	secondaryScreensBackground.loadFromFile("images/screens/secondaryScreens.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	secondaryScreensBackground.setMagFilter(GL_NEAREST);
+	instructionsScreen = Sprite::createSprite(glm::ivec2(256, 240), glm::vec2(0.5f, 0.5f), &secondaryScreensBackground, &texProgram);
 	instructionsScreen->setNumberAnimations(1);
 	instructionsScreen->setAnimationSpeed(0, 8);
 	instructionsScreen->addKeyframe(0, glm::vec2(0.f, 0.f));
@@ -63,14 +67,30 @@ void MainScreen::init()
 	instructionsScreen->setPosition(glm::vec2(0.f, 41.f));
 
 	//CREDITS SCREEN BACKGROUND
-	creditsScreenBackground.loadFromFile("images/screens/creditsScreen.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	creditsScreenBackground.setMagFilter(GL_NEAREST);
-	creditsScreen = Sprite::createSprite(glm::ivec2(256, 240), glm::vec2(1.f, 1.f), &creditsScreenBackground, &texProgram);
+	creditsScreen = Sprite::createSprite(glm::ivec2(256, 240), glm::vec2(0.5f, 0.5f), &secondaryScreensBackground, &texProgram);
 	creditsScreen->setNumberAnimations(1);
 	creditsScreen->setAnimationSpeed(0, 8);
-	creditsScreen->addKeyframe(0, glm::vec2(0.f, 0.f));
+	creditsScreen->addKeyframe(0, glm::vec2(0.5f, 0.f));
 	creditsScreen->changeAnimation(0);
 	creditsScreen->setPosition(glm::vec2(0.f, 41.f));
+
+	//GAME_OVER SCREEN BACKGROUND
+	gameOverScreen = Sprite::createSprite(glm::ivec2(256, 240), glm::vec2(0.5f, 0.5f), &secondaryScreensBackground, &texProgram);
+	gameOverScreen->setNumberAnimations(1);
+	gameOverScreen->setAnimationSpeed(0, 8);
+	gameOverScreen->addKeyframe(0, glm::vec2(0.f, 0.5f));
+	gameOverScreen->changeAnimation(0);
+	gameOverScreen->setPosition(glm::vec2(0.f, 41.f));
+
+	//GAME_COMPLETED SCREEN BACKGROUND
+	gameCompletedScreen = Sprite::createSprite(glm::ivec2(256, 240), glm::vec2(0.5f, 0.5f), &secondaryScreensBackground, &texProgram);
+	gameCompletedScreen->setNumberAnimations(1);
+	gameCompletedScreen->setAnimationSpeed(0, 8);
+	gameCompletedScreen->addKeyframe(0, glm::vec2(0.5f, 0.5f));
+	gameCompletedScreen->changeAnimation(0);
+	gameCompletedScreen->setPosition(glm::vec2(0.f, 41.f));
+
+
 
 	//COIN SYMBOL
 	cursorAndCoinSpritesheet.loadFromFile("images/screens/text.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -96,6 +116,11 @@ void MainScreen::init()
 	cursorSymbol->addKeyframe(0, glm::vec2(X_SPRITE_OFFSET * 12.f, Y_SPRITE_OFFSET * 2.f));
 	cursorSymbol->changeAnimation(0);
 	cursorSymbol->setPosition(glm::vec2(72.f, 185.f));
+
+	//STATS FOR ENDING SCREEN
+	player_iface = new PlayerInterface();
+	player_iface->init(texProgram);
+	player_iface->setScreenXandY(0.f, 0.f);
 	
 }
 
@@ -104,8 +129,10 @@ void MainScreen::update(int deltaTime)
 	currentTime += deltaTime;
 	coinSymbol->update(deltaTime);
 
+	if (actual_screen_showed == GAME_COMPLETED || actual_screen_showed == GAME_OVER) player_iface->render();
+
 	//Cursor Moving
-	if (actual_screen_showed == MAIN) {
+	if (actual_screen_showed == MAIN_SCREEN) {
 		if (Game::instance().getSpecialKey(GLUT_KEY_DOWN)) {
 			if (pressed_and_released || delay_Frames == 0) {
 				selected_Option = (selected_Option + 1) % 3;
@@ -142,7 +169,7 @@ void MainScreen::update(int deltaTime)
 	// GO TO MAIN SCREEN
 	else if (Game::instance().getKey(13) || Game::instance().getKey(' ')) {
 		if (pressed_and_released) {
-			actual_screen_showed = MAIN;
+			actual_screen_showed = MAIN_SCREEN;
 			pressed_and_released = false;
 		}
 	}
@@ -160,12 +187,22 @@ void MainScreen::render()
 
 	switch (actual_screen_showed)
 	{
-	case 1:
+	case INSTRUCTIONS_SCREEN:
 		instructionsScreen->render();
 		break;
 
-	case 2:
+	case CREDITS_SCREEN:
 		creditsScreen->render();
+		break;
+
+	case GAME_OVER_SCREEN:
+		gameOverScreen->render();
+		player_iface->render();
+		break;
+
+	case GAME_COMPLETED_SCREEN:
+		gameCompletedScreen->render();
+		player_iface->render();
 		break;
 
 	default:
@@ -174,6 +211,21 @@ void MainScreen::render()
 		cursorSymbol->render();
 		break;
 	}
+}
+
+void MainScreen::setEndingScreenTo(const int& endingLastPlaythrough, const int& finalScore, const int& finalCoins, const int& finalLevel)
+{
+	// 1 -> GAME_OVER
+	// 2 -> GAME_COMPLETED
+	if (endingLastPlaythrough == GAME_OVER) actual_screen_showed = 3;
+	else if (endingLastPlaythrough == GAME_COMPLETED) actual_screen_showed = 4;
+	go_to_game = false;
+
+	player_iface->reset();
+	player_iface->changeActualLevel(finalLevel);
+	player_iface->addCoins(finalCoins);
+	player_iface->addToScore(finalScore);
+	
 }
 
 void MainScreen::initShaders()
