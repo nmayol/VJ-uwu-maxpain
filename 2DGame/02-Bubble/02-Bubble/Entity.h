@@ -45,6 +45,8 @@ protected:
 	bool is_collidable;
 	bool is_dead;
 	float vertical_speed;
+	float base_vertical_speed;
+	float gravity;
 	float horitzontal_speed;
 	float facingDirection;
 	int kill_frames;

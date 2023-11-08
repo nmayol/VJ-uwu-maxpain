@@ -660,6 +660,11 @@ bool Player::takeDamage()
 	return true;
 }
 
+void Player::powerUp()
+{
+	setMarioForm(std::min(2, actualForm+1));
+}
+
 float Player::getFacingDirection() {
 	return facingDirection;
 }

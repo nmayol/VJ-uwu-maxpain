@@ -10,6 +10,7 @@
 #define NORMAL_WALK_SPEED 1.f
 #define SHELL_LAUNCH_SPEED 3.f
 #define NORMAL_FALL_SPEED -2.5f
+#define GRAVITY 0.375f;
 
 //For reading Sprite
 #define SPRITE_OFFSET_X (1.f / 4.f)
@@ -33,7 +34,8 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	//define physics values
 	facingDirection = -1.f;
 	horitzontal_speed = NORMAL_WALK_SPEED;
-	vertical_speed = NORMAL_FALL_SPEED;
+	gravity = GRAVITY;
+	vertical_speed = base_vertical_speed = NORMAL_FALL_SPEED;
 	frames_until_respawn = -1;
 	kill_frames = -1;
 	shell_in_movement = false;

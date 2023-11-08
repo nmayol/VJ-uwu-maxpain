@@ -32,6 +32,7 @@ public:
 	bool isInvencible();
 	bool inStarMode();
 	bool takeDamage();
+	void powerUp();
 	float getFacingDirection();
 
 private:

@@ -21,6 +21,7 @@
     <ClInclude Include="Koopa.h" />
     <ClInclude Include="loadingScreen.h" />
     <ClInclude Include="MainScreen.h" />
+    <ClInclude Include="Mushroom.h" />
     <ClInclude Include="PlayerInterface.h" />
     <ClInclude Include="QMBlock.h" />
     <ClInclude Include="Player.h" />
@@ -44,6 +45,7 @@
     <ClCompile Include="loadingScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScreen.cpp" />
+    <ClCompile Include="Mushroom.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerInterface.cpp" />
     <ClCompile Include="QMBlock.cpp" />

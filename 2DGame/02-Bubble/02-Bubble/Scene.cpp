@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "Goomba.h"
 #include "Koopa.h"
+#include "Mushroom.h"
 
 
 #define SCREEN_X 0
@@ -42,11 +43,13 @@ Scene::~Scene()
 	while (!enemies_in_map.empty()) delete enemies_in_map.front(), enemies_in_map.pop_front();
 	while (!enemies_in_screen.empty()) delete enemies_in_screen.front(), enemies_in_screen.pop_front();
 	while (!floating_scores.empty()) delete floating_scores.front(), floating_scores.pop_front();
+	while (!power_ups.empty()) delete power_ups.front(), power_ups.pop_front();
 }
 
 void Scene::init()
 {
 	initShaders();
+	pressed_and_released = true;
 	gameState = KEEP_PLAYING;
 	numLevel = 1;
 	amountOfLives = 3;
@@ -107,6 +110,7 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	enemies_in_map.clear();
 	enemies_in_screen.clear();
 	floating_scores.clear();
+	power_ups.clear();
 
 	Goomba* enemy_test = new Goomba();
 	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -187,6 +191,19 @@ void Scene::update(int deltaTime)
 	//CHANGE LEVEL
 	if (Game::instance().getKey('1')) initNewLevel(1, false);
 	if (Game::instance().getKey('2')) initNewLevel(2, false);
+
+	if (Game::instance().getKey('-')) 
+	{
+		if (pressed_and_released) {
+			Mushroom* mushy_test = new Mushroom();
+			mushy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+			mushy_test->setPosition(glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f));
+			mushy_test->setTileMap(map);
+			power_ups.push_back(mushy_test);
+			pressed_and_released = false;
+		}
+	}
+	else pressed_and_released = true;
 
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
@@ -307,7 +324,7 @@ void Scene::updateEnemies(int deltaTime) {
 				//colision with player
 				if (!player->isInvencible()) {
 					int player_colision_result = (*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize);
-					if (player->inStarMode() && (player_colision_result == ENTITY_TAKES_DMG || player_colision_result == PLAYER_TAKES_DMG)) {
+					if (player->inStarMode() && (player_colision_result != NOTHING)) {
 						(*it)->changeFacingDirection(player->getFacingDirection());
 						(*it)->kill();
 					}
@@ -338,7 +355,24 @@ void Scene::updateEnemies(int deltaTime) {
 			++it;
 		}
 	}
+	//render power ups if any
+	for (auto it = power_ups.begin(); it != power_ups.end(); /* no increment here */) {
+		if ((*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize)) {
+			player->powerUp();
+			stopFrames = 20;
+			floating_scores.push_back(new FloatingScore(1000, (*it)->getPosition(), texProgram)); //create Score
+			player_iface->addToScore(1000);
 
+			//kill entity
+			it = power_ups.erase(it);
+		}
+		else {
+			(*it)->update(deltaTime);
+			++it;
+		}
+	}
+
+	//render floating Scores
 	for (auto it = floating_scores.begin(); it != floating_scores.end(); /* no increment here */) {
 		if ((*it)->update(deltaTime)) it = floating_scores.erase(it);
 		else ++it;
@@ -432,6 +466,7 @@ void Scene::renderBricks() {
 	}
 
 	for (Entity* e : enemies_in_screen) e->render();
+	for (Entity* power_up : power_ups) power_up->render();
 	for (FloatingScore* floating_score : floating_scores) floating_score->render();
 }
 
