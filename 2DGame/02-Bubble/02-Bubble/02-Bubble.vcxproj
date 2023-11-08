@@ -30,6 +30,7 @@
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="SoundController.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="Star.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Tube.h" />
@@ -54,6 +55,7 @@
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="SoundController.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Star.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Tube.cpp" />

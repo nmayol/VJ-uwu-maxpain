@@ -9,6 +9,7 @@
 #include "Goomba.h"
 #include "Koopa.h"
 #include "Mushroom.h"
+#include "Star.h"
 
 
 #define SCREEN_X 0
@@ -200,6 +201,17 @@ void Scene::update(int deltaTime)
 			mushy_test->setPosition(glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f));
 			mushy_test->setTileMap(map);
 			power_ups.push_back(mushy_test);
+			pressed_and_released = false;
+		}
+	}
+	else if (Game::instance().getKey('.'))
+	{
+		if (pressed_and_released) {
+			Star* star_test = new Star();
+			star_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+			star_test->setPosition(glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f));
+			star_test->setTileMap(map);
+			power_ups.push_back(star_test);
 			pressed_and_released = false;
 		}
 	}
