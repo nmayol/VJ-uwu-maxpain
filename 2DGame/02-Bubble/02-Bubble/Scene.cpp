@@ -66,14 +66,14 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	if (numLevel == 1) {
 		map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-		SoundController::instance()->stop(LEVEL2);
+		SoundController::instance()->stopAll();
 		SoundController::instance()->play(LEVEL1);
 	}
 	else {
 		map_sec2 = TileMap::createTileMap("levels/level02_sec01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map_sec = TileMap::createTileMap("levels/level02_sec02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-		SoundController::instance()->stop(LEVEL1);
+		SoundController::instance()->stopAll();
 		SoundController::instance()->play(LEVEL2);
 	}
 
