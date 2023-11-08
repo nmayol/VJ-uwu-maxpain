@@ -252,6 +252,7 @@ void Scene::update(int deltaTime)
 	player_iface->setScreenXandY(sceneStart, 0.f);
 	changeWorldifNeeded();
 	moveCameraifNeeded();
+	actIfMarioHasCommitedSuicide();
 }
 
 void Scene::updateEnemies(int deltaTime) {
@@ -334,6 +335,7 @@ void Scene::updateEnemies(int deltaTime) {
 						stopFrames = 20;
 					}
 				}
+
 			}
 			++it;
 		}
@@ -354,6 +356,17 @@ void Scene::updateEnemies(int deltaTime) {
 		dyingAnimationFrames = 200;
 		timeoutFrames = 240;
 		loading_screen->setTimeoutScreen();
+
+	}
+}
+
+
+void Scene::actIfMarioHasCommitedSuicide() {
+	if (player->getPosition().y > 14.1 * 16 && player->getPosition().y < 15 * 16) {
+		//player is dead
+		dyingAnimationFrames = 200;
+		amountOfLives--;
+		stopFrames = 20;
 
 	}
 }

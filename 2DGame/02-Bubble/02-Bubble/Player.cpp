@@ -40,7 +40,7 @@
 #define MAX_FALL_SPEED -4.53515625f
 
 //others
-#define I_FRAMES 120
+#define I_FRAMES 200
 
 //For reading Sprite
 #define SPRITE_OFFSET_X (1.f / 16.f)
@@ -297,6 +297,11 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		}
 		if (!map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) posPlayer.y += 2.f;
 		
+	}
+	else if (posPlayer.y > 14.1*16 && posPlayer.y < 15*16 && bJumping) {
+		bJumping = false;
+		sprite->changeAnimation(DYING);
+		return;
 	}
 	else {
 		//load parameters early for better eficiency
