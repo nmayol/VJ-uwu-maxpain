@@ -265,8 +265,6 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 			actualAnimation = NONE;
 			posPlayer += glm::vec2(1.f, 0);
 		}
-			
-		
 	}
 	else if ((actualAnimation == CROUCHING) && couldBeGoingUnderworld) {
 		if (posPlayer.y >= 10.15f * 16) { // Movement into a tube OVERWORLD

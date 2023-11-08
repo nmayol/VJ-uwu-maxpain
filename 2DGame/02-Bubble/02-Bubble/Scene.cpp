@@ -43,7 +43,7 @@ Scene::~Scene()
 	while (!enemies_in_screen.empty()) delete enemies_in_screen.front(), enemies_in_screen.pop_front();
 }
 
-void Scene::init(int num)
+void Scene::init()
 {
 	initShaders();
 	gameState = KEEP_PLAYING;
@@ -60,7 +60,6 @@ void Scene::init(int num)
 void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	overworld = true;
 	completed = false;
-	finished = false;
 	numLevel = level_id;
 	gameState = KEEP_PLAYING;
 
@@ -78,13 +77,14 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	createTeleportingTubes();
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() - 1.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
+	player->reset();
 
 	if (new_game) {
 		amountOfLives = 3;
-		player->reset();
 		player_iface->reset();
 	}
 	player_iface->changeActualLevel(level_id);
+	player_iface->stopTime();
 
 
 	loading_screen_frames = 120;
@@ -177,9 +177,7 @@ void Scene::createTeleportingTubes()
 
 void Scene::update(int deltaTime)
 {
-
 	//CHANGE LEVEL
-	checkIfFinished();
 	if (Game::instance().getKey('1')) initNewLevel(1, false);
 	if (Game::instance().getKey('2')) initNewLevel(2, false);
 
@@ -407,12 +405,6 @@ void Scene::renderBricks() {
 void Scene::completeGameifNeeded()
 {
 	completed = (player->getPosition().x >= 197.5f * 16.f) && !pickingFlag();
-}
-
-
-void Scene::checkIfFinished()
-{
-	finished = completed && (player->getPosition().x >= 206.f * 16.f);
 }
 
 bool Scene::couldBeGoingUnderworld()

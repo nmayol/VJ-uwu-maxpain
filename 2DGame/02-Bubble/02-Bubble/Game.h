@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "MainScreen.h"
 #include "PlayerInterface.h"
+#include "SoundController.h"
 
 // Original pixel size multiplied by 2
 #define SCREEN_WIDTH 256
@@ -43,7 +44,6 @@ public:
 	
 	bool getKey(int key) const;
 	bool getSpecialKey(int key) const;
-	void setInGameScreen(bool inGame);
 
 private:
 	bool bPlay;                       // Continue to play game?

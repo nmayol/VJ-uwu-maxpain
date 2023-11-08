@@ -1,17 +1,17 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "Game.h"
-#include "SoundController.h"
 
 
 void Game::init()
 {
-	SoundController::instance()->init();
+
 	bPlay = true;
 	inGameScreen = false;
 	glClearColor(0.390625f, 0.58203125f, 0.92578125f, 1.0f); // Blue sky color
+	SoundController::instance()->init();
 	mainScreen.init();
-	scene.init(1);
+	scene.init();
 }
 
 bool Game::update(int deltaTime)
@@ -45,7 +45,7 @@ void Game::render()
 
 void Game::keyPressed(int key)
 {
-	if (key == 27) // Escape code
+	if(key == 27) // Escape code
 		bPlay = false;
 	keys[key] = true;
 }
@@ -87,9 +87,6 @@ bool Game::getSpecialKey(int key) const
 	return specialKeys[key];
 }
 
-void Game::setInGameScreen(bool inGame) {
-	inGameScreen = inGame;
-}
 
 
 

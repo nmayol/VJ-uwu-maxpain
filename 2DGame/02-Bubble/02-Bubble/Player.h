@@ -4,7 +4,6 @@
 
 #include "Sprite.h"
 #include "TileMap.h"
-#include "SoundController.h"
 
 
 // Player is basically a Sprite that represents the player. As such it has
