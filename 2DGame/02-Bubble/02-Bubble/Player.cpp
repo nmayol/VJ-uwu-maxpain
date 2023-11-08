@@ -318,8 +318,16 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 
 		//STAR MARIO
 		if (starFrames > 0) {
+			if (starFrames == 620) {
+				SoundController::instance()->pauseAll();
+				SoundController::instance()->play(STARRED);
+			}
 			starFrames--;
-			if (starFrames == 0) setMarioForm(NORMAL);
+			if (starFrames == 0) {
+				setMarioForm(NORMAL);
+				SoundController::instance()->stop(STARRED);
+				SoundController::instance()->unPauseAll();
+			}
 		}
 		//invencible Frames after taking damage
 		else if (invencibleFrames > 0) {

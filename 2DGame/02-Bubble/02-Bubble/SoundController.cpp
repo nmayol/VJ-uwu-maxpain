@@ -19,6 +19,8 @@ void SoundController::init()
 	sounds[WIN] = engine->addSoundSourceFromFile("sounds/Win.wav");
 	sounds[KILL] = engine->addSoundSourceFromFile("sounds/Squish.wav");
 	sounds[SKID] = engine->addSoundSourceFromFile("sounds/Skid.wav");
+	sounds[STARRED] = engine->addSoundSourceFromFile("sounds/Star.wav");
+
 
 
 }
