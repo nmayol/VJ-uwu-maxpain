@@ -21,6 +21,7 @@ enum PlayerColisionResult
 	NOTHING, PLAYER_TAKES_DMG, ENTITY_TAKES_DMG, LAUNCH_SHELL
 };
 
+
 Scene::Scene()
 {
 	map = NULL;
@@ -45,7 +46,8 @@ Scene::~Scene()
 void Scene::init(int num)
 {
 	initShaders();
-	
+	gameState = KEEP_PLAYING;
+	numLevel = 1;
 	amountOfLives = 3;
 
 	player_iface = new PlayerInterface();
@@ -53,14 +55,15 @@ void Scene::init(int num)
 
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	setNumLevel(num);
 }
 
-void Scene::initNewLevel(const int& level_id) {
+void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	overworld = true;
 	completed = false;
 	finished = false;
 	numLevel = level_id;
+	gameState = KEEP_PLAYING;
+
 	if (numLevel == 1) {
 		map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -73,11 +76,19 @@ void Scene::initNewLevel(const int& level_id) {
 
 	createBlocks();
 	createTeleportingTubes();
-	player->reset();
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() - 1.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
 
+	if (new_game) {
+		amountOfLives = 3;
+		player->reset();
+		player_iface->reset();
+	}
+	player_iface->changeActualLevel(level_id);
+
+
 	loading_screen_frames = 120;
+	timeoutFrames = 0;
 	loading_screen = new loadingScreen();
 	loading_screen->init(texProgram, numLevel, amountOfLives);
 
@@ -169,9 +180,8 @@ void Scene::update(int deltaTime)
 
 	//CHANGE LEVEL
 	checkIfFinished();
-	if (Game::instance().getKey('1')) setNumLevel(1);
-	else if (Game::instance().getKey('2') || (numLevel == 1 && finished)) setNumLevel(2);
-	else if (numLevel == 2 && finished) Game::instance().setInGameScreen(false);
+	if (Game::instance().getKey('1')) initNewLevel(1, false);
+	if (Game::instance().getKey('2')) initNewLevel(2, false);
 
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
@@ -188,8 +198,27 @@ void Scene::update(int deltaTime)
 	else if (dyingAnimationFrames > 0) {
 		dyingAnimationFrames--;
 		player->update(deltaTime, false, false, false, false);
-		if (dyingAnimationFrames == 0) {
-			initNewLevel(numLevel); //RESTART LEVEL
+		if (dyingAnimationFrames == 0 && timeoutFrames == 0) {
+			if (amountOfLives == 0) {
+				gameState = GAME_OVER; //RETURN TO MAIN SCREEN if no more lives
+				return;
+			}
+			player_iface->setTimeToNone();
+			initNewLevel(numLevel, false); //RESTART LEVEL
+		}
+		return;
+	}
+	else if (timeoutFrames > 0) {
+		timeoutFrames--;
+		player_iface->update(deltaTime);
+		player_iface->setScreenXandY(sceneStart, 0.f);
+		if (timeoutFrames == 0) {
+			if (amountOfLives == 0) {
+				gameState = GAME_OVER; //RETURN TO MAIN SCREEN if no more lives
+				return;
+			}
+			player_iface->setTimeToNone();
+			initNewLevel(numLevel, false); //RESTART LEVEL
 		}
 		return;
 	}
@@ -286,6 +315,17 @@ void Scene::updateEnemies(int deltaTime) {
 			++it;
 		}
 	}
+	//time runned out
+	if (player_iface->getTime() == 0) {
+		player_iface->setTimeToNone();
+		player->setMarioForm(0);
+		player->takeDamage();
+		amountOfLives--;
+		dyingAnimationFrames = 80;
+		timeoutFrames = 240;
+		loading_screen->setTimeoutScreen();
+
+	}
 }
 
 void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
@@ -324,7 +364,7 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);	
 
-	if (loading_screen_frames > 0) {
+	if (loading_screen_frames > 0 || timeoutFrames > 0) {
 		loading_screen->render();
 		player_iface->render();
 		return;
@@ -495,15 +535,22 @@ void Scene::initShaders()
 	fShader.free();
 }
 
-
-void Scene::setNumLevel(int num)
+int Scene::actualGameState()
 {
-	if (numLevel != num)
-	{
-		numLevel = num;
-		initNewLevel(num);
-	}
-		
-	
+	return gameState;
+}
 
+int Scene::getFinalScore()
+{
+	return player_iface->getTotalScore();
+}
+
+int Scene::getFinalCoins()
+{
+	return player_iface->getTotalCoins();
+}
+
+int Scene::getFinalLevel()
+{
+	return numLevel;
 }

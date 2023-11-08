@@ -15,6 +15,7 @@ public:
 	void init();
 	void update(int deltaTime);
 	void render();
+	void setEndingScreenTo(const int& endingLastPlaythrough, const int& finalScore, const int& finalCoins, const int& finalLevel);
 	bool goToGame();
 
 private:
@@ -37,10 +38,13 @@ private:
 
 	Texture mainScreenBackground;
 	Sprite* mainScreen;
-	Texture instructionsScreenBackground;
-	Sprite* instructionsScreen;
-	Texture creditsScreenBackground;
-	Sprite* creditsScreen;
 
+	Texture secondaryScreensBackground;
+	Sprite* instructionsScreen;
+	Sprite* creditsScreen;
+	Sprite* gameOverScreen;
+	Sprite* gameCompletedScreen;
+
+	PlayerInterface* player_iface;
 };
 

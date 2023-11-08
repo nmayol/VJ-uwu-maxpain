@@ -7,8 +7,11 @@ loadingScreen::loadingScreen(){}
 
 loadingScreen::~loadingScreen()
 {
-	if (backgroundSprite != NULL)
-		delete backgroundSprite;
+	if (loadingBackgroundSprite != NULL)
+		delete loadingBackgroundSprite;
+
+	if (timeoutBackgroundSprite != NULL)
+		delete timeoutBackgroundSprite;
 
 	if (levelSymbol != NULL)
 		delete levelSymbol;
@@ -16,15 +19,28 @@ loadingScreen::~loadingScreen()
 
 void loadingScreen::init(ShaderProgram& shaderProgram, const int& level_number, const int& number_lives)
 {
+
+	renderTimeout = false;
+
 	//Background of Screen
-	background.loadFromFile("images/screens/loadingScreen.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	background.setMagFilter(GL_NEAREST);
-	backgroundSprite = Sprite::createSprite(glm::ivec2(256, 240), glm::vec2(1.f, 1.f), &background, &shaderProgram);
-	backgroundSprite->setNumberAnimations(1);
-	backgroundSprite->setAnimationSpeed(0, 8);
-	backgroundSprite->addKeyframe(0, glm::vec2(0.f, 0.f));
-	backgroundSprite->changeAnimation(0);
-	backgroundSprite->setPosition(glm::vec2(0.f, 41.f));
+	loadingAndTimeoutbackground.loadFromFile("images/screens/loading&timeoutScreen.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	loadingAndTimeoutbackground.setMagFilter(GL_NEAREST);
+
+	//loading Screen
+	loadingBackgroundSprite = Sprite::createSprite(glm::ivec2(256, 240), glm::vec2(0.5f, 1.f), &loadingAndTimeoutbackground, &shaderProgram);
+	loadingBackgroundSprite->setNumberAnimations(1);
+	loadingBackgroundSprite->setAnimationSpeed(0, 8);
+	loadingBackgroundSprite->addKeyframe(0, glm::vec2(0.f, 0.f));
+	loadingBackgroundSprite->changeAnimation(0);
+	loadingBackgroundSprite->setPosition(glm::vec2(0.f, 41.f));
+
+	//timeout Screen
+	timeoutBackgroundSprite = Sprite::createSprite(glm::ivec2(256, 240), glm::vec2(0.5f, 1.f), &loadingAndTimeoutbackground, &shaderProgram);
+	timeoutBackgroundSprite->setNumberAnimations(1);
+	timeoutBackgroundSprite->setAnimationSpeed(0, 8);
+	timeoutBackgroundSprite->addKeyframe(0, glm::vec2(0.5f, 0.f));
+	timeoutBackgroundSprite->changeAnimation(0);
+	timeoutBackgroundSprite->setPosition(glm::vec2(0.f, 41.f));
 
 	//LEVEL
 	levelSymbolSpritesheet.loadFromFile("images/screens/text.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -49,15 +65,28 @@ void loadingScreen::init(ShaderProgram& shaderProgram, const int& level_number, 
 	livesSymbol->setPosition(glm::vec2(136.f, 153.f));
 }
 
-void loadingScreen::update_level(const int& level_number, const int& number_lives)
+void loadingScreen::update(const int& level_number, const int& number_lives)
 {
 	levelSymbol->changeAnimation(level_number);
 	livesSymbol->changeAnimation(number_lives);
 }
 
+void loadingScreen::setTimeoutScreen()
+{
+	renderTimeout = true;
+}
+
+void loadingScreen::setLoadingScreen()
+{
+	renderTimeout = false;
+}
+
 void loadingScreen::render()
 {
-	backgroundSprite->render();
-	levelSymbol->render();
-	livesSymbol->render();
+	if (renderTimeout) timeoutBackgroundSprite->render();
+	else {
+		loadingBackgroundSprite->render();
+		levelSymbol->render();
+		livesSymbol->render();
+	}
 }

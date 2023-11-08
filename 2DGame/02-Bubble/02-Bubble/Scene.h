@@ -28,11 +28,16 @@ public:
 	Scene();
 	~Scene();
 
-	void init(int num);
-	void initNewLevel(const int& level_id);
+	void init();
+	void initNewLevel(const int& level_id, const bool& new_game);
 	void update(int deltaTime);
 	void render();
 	void setNumLevel(int num);
+
+	int actualGameState();
+	int getFinalScore();
+	int getFinalCoins();
+	int getFinalLevel();
 
 private:
 	void initShaders();
@@ -61,6 +66,7 @@ private:
 	list<Entity*> enemies_in_screen;
 
 private:
+	int gameState;
 	int numLevel;
 	int amountOfLives;
 	bool overworld;
@@ -73,6 +79,7 @@ private:
 
 	int loading_screen_frames;
 	int dyingAnimationFrames;
+	int timeoutFrames;
 	PlayerInterface* player_iface;
 	loadingScreen* loading_screen;
 
@@ -90,6 +97,10 @@ private:
 
 };
 
+enum screenUpdateResult
+{
+	KEEP_PLAYING, GAME_OVER, GAME_COMPLETED
+};
 
 #endif // _SCENE_INCLUDE
 

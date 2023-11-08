@@ -32,9 +32,9 @@ void PlayerInterface::init(ShaderProgram& shaderProgram)
 	//NUMBERS INIT
 	lettersSpritesheet.loadFromFile("images/screens/text.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	lettersSpritesheet.setMagFilter(GL_NEAREST);
-	initNumberInScreen(score, 7, 0, shaderProgram);
-	initNumberInScreen(coins, 2, 0, shaderProgram);
-	initNumberInScreen(time, 3, 400, shaderProgram);
+	initNumberInScreen(score, 7, total_score, shaderProgram);
+	initNumberInScreen(coins, 2, total_coins, shaderProgram);
+	initNumberInScreen(time, 3, time_left, shaderProgram);
 	for (Sprite* digit : time)
 		digit->setActivated(false);
 
@@ -125,6 +125,27 @@ void PlayerInterface::render()
 	for (Sprite* digit : time) digit->render();
 }
 
+void PlayerInterface::reset()
+{
+	updateNumber(time, time_left, 400);
+	updateNumber(score, total_score, 0);
+	updateNumber(coins, total_coins, 0);
+	levelSymbol->changeAnimation(1);
+	for (Sprite* digit : time)
+		digit->setActivated(false);
+
+	total_score = 0;
+	total_coins = 0;
+	time_left = 400;
+	actual_level = 1;
+
+	countdown_frames = 0;
+	tick_rate = 24;
+	time_counting_down = false;
+
+
+}
+
 void PlayerInterface::setScreenXandY(const float& new_x, const float& new_y)
 {
 	backgroundSprite->setPosition(glm::vec2(new_x, new_y + 41.f));
@@ -161,10 +182,25 @@ void PlayerInterface::addToScore(const int& new_score)
 	total_score = total_score;
 }
 
+int PlayerInterface::getTotalScore()
+{
+	return total_score;
+}
+
 void PlayerInterface::addCoins(const int& amount)
 {
 	updateNumber(coins, total_coins, (total_coins + amount) % 100);
 	total_coins = (total_coins + amount) % 100;
+}
+
+int PlayerInterface::getTotalCoins()
+{
+	return total_coins;
+}
+
+int PlayerInterface::getTime()
+{
+	return time_left;
 }
 
 
@@ -193,8 +229,12 @@ void PlayerInterface::setTimeToNone()
 {
 	time_left = 400;
 	time_counting_down = false;
+	updateNumber(time, time_left, 400);
 	for (Sprite* digit : time) 
 		digit->setActivated(false);
+
+	//reset coin to match Question Blocks
+	coinSymbol->changeAnimation(0);
 }
 
 bool PlayerInterface::endedTime()

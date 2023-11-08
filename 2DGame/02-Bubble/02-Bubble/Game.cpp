@@ -16,10 +16,21 @@ void Game::init()
 
 bool Game::update(int deltaTime)
 {
-	if (inGameScreen) scene.update(deltaTime);
+	if (inGameScreen) {
+		scene.update(deltaTime);
+		int SceneState = scene.actualGameState();
+
+		if (SceneState == GAME_OVER || SceneState == GAME_COMPLETED)
+		{
+			inGameScreen = false;
+			mainScreen.setEndingScreenTo(SceneState, scene.getFinalScore(), scene.getFinalCoins(), scene.getFinalLevel());
+		}
+
+	}
 	else {
 		mainScreen.update(deltaTime);
 		inGameScreen = mainScreen.goToGame();
+		if (inGameScreen) scene.initNewLevel(1, true);
 	}
 	
 	return bPlay;
