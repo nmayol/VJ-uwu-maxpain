@@ -77,13 +77,14 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	createTeleportingTubes();
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() - 1.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
+	player->reset();
 
 	if (new_game) {
 		amountOfLives = 3;
-		player->reset();
 		player_iface->reset();
 	}
 	player_iface->changeActualLevel(level_id);
+	player_iface->stopTime();
 
 
 	loading_screen_frames = 120;

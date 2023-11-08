@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "MainScreen.h"
 #include "PlayerInterface.h"
+#include "SoundController.h"
 
 // Original pixel size multiplied by 2
 #define SCREEN_WIDTH 256

@@ -5,9 +5,11 @@
 
 void Game::init()
 {
+
 	bPlay = true;
 	inGameScreen = false;
 	glClearColor(0.390625f, 0.58203125f, 0.92578125f, 1.0f); // Blue sky color
+	SoundController::instance()->init();
 	mainScreen.init();
 	scene.init();
 }
