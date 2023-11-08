@@ -407,6 +407,8 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 				if (actual_speed < MIN_XSPEED_FAST_JUMP) vertical_speed = INITIAL_JUMP_YSPEED;
 				else vertical_speed = INITIAL_FAST_JUMP_YSPEED;
 
+				SoundController::instance()->play(JUMP);
+
 				initial_jump_xspeed = actual_speed;
 				sprite->changeAnimation(JUMPING);
 				bJumping = true;

@@ -14,8 +14,9 @@ void SoundController::play(Sounds id, bool loop) //Loop is optional
 {
 	//std::cout<<sounds[sound]<<std::endl;
 	ISound* sound;
-	/*if (id == MENUU || id == MAINTHEME) sound = engine->play2D(sounds[id], true, false, true);
-	else sound = engine->play2D(sounds[id], loop, false, true);*/
+	//if (id == MENUU || id == MAINTHEME) sound = engine->play2D(sounds[id], true, false, true);
+	//else 
+	sound = engine->play2D(sounds[id], loop, false, true);
 	playing[id].push_back(sound);
 }
 

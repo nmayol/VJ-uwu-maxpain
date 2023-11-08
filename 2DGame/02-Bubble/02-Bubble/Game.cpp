@@ -7,7 +7,6 @@
 void Game::init()
 {
 	SoundController::instance()->init();
-	SoundController::instance()->play(JUMP);
 	bPlay = true;
 	inGameScreen = false;
 	glClearColor(0.390625f, 0.58203125f, 0.92578125f, 1.0f); // Blue sky color
