@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "Goomba.h"
+#include "Game.h"
 
 
 // <- and -> Physics Values from ORIGINAL GAME
@@ -69,6 +70,7 @@ void Goomba::update(int deltaTime)
 
 void Goomba::takeDamage()
 {
+	SoundController::instance()->play(KILL);
 	is_collidable = false;
 	sprite->changeAnimation(DYING);
 	frames_until_death = 45;
@@ -77,5 +79,5 @@ void Goomba::takeDamage()
 string Goomba::whoAmI()
 {
 
-	return "KOOPA";
+	return "GOOMBA";
 }

@@ -80,6 +80,7 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	vertical_speed = -2.5f;
 	actualAnimation = STANDING;
 	actualForm = SMALL;
+	
 
 	//INIT SPRITES
 	smallMarioSpritesheet.loadFromFile("images/small-mario.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -257,9 +258,13 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		if (posPlayer.x <= 204.f * 16) {
 			actualAnimation = RUNNING;
 			posPlayer += glm::vec2(1.f, 0);
-			if (posPlayer.y <=  16 * 16 && !map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
+			if (!map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y))
 				posPlayer.y += 8.f;
-			else bJumping = false;
+			else {
+				bJumping = false;
+				SoundController::instance()->stopAll();
+				SoundController::instance()->play(WIN);
+			}
 		}
 		else if (posPlayer.x <= 207.f * 16) {
 			actualAnimation = NONE;
@@ -270,6 +275,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		if (posPlayer.y >= 10.15f * 16) { // Movement into a tube OVERWORLD
 			posPlayer.y = 19.f * 16;
 			posPlayer.x = 49.f * 16;
+			
 			actualAnimation = RUNNING;
 		}
 		else posPlayer.y += 2.f;
@@ -279,13 +285,18 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 			posPlayer.x = 163.5 * 16;
 			posPlayer.y = 8.f * 16;
 			actualAnimation = JUMPING;
+
 		}	
 		else posPlayer.x += 2.f;
 	}
 	else if (pickingFlag) {
 		bJumping = false;
-		actualAnimation = PICKING;
+		if (actualAnimation != PICKING) {
+			actualAnimation = PICKING;
+			SoundController::instance()->play(FLAG);
+		}
 		if (posPlayer.y <= 14 * 16 && !map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) posPlayer.y += 2.f;
+		
 	}
 	else {
 		//load parameters early for better eficiency
@@ -386,7 +397,11 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 				//Moving backwards, apply special logic
 				if (actual_speed < 0) {
 					actual_speed *= -1.f;
-					actualAnimation = SKIDDING;
+					if (actualAnimation != SKIDDING) {
+						actualAnimation = SKIDDING;
+						SoundController::instance()->play(SKID);
+					}
+					
 
 				}
 			}

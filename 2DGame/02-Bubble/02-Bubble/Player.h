@@ -43,6 +43,7 @@ private:
 	//OTHERS
 	int actualAnimation;
 	int actualForm;
+
 	float actual_speed;
 	float initial_jump_xspeed;
 	float vertical_speed;

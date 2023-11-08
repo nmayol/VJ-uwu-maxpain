@@ -108,6 +108,7 @@ void Brick::update(int deltaTime, bool justBroken)
 		vxi = INITIAL_SPEED * cos(BETA);
 		vyi = -INITIAL_SPEED * sin(BETA);
 
+		SoundController::instance()->play(BREAK);
 	}
 	if (frames_from_breaking >= 0) {
 

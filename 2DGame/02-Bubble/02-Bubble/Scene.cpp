@@ -66,11 +66,15 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	if (numLevel == 1) {
 		map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		SoundController::instance()->stop(LEVEL2);
+		SoundController::instance()->play(LEVEL1);
 	}
 	else {
 		map_sec2 = TileMap::createTileMap("levels/level02_sec01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map_sec = TileMap::createTileMap("levels/level02_sec02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		SoundController::instance()->stop(LEVEL1);
+		SoundController::instance()->play(LEVEL2);
 	}
 
 	createBlocks();
@@ -194,16 +198,24 @@ void Scene::update(int deltaTime)
 		return;
 	}
 	else if (dyingAnimationFrames > 0) {
-		dyingAnimationFrames--;
+		
 		player->update(deltaTime, false, false, false, false);
+		if (dyingAnimationFrames == 200) {
+			SoundController::instance()->stopAll();
+			SoundController::instance()->play(DEAD);
+		}
+		dyingAnimationFrames--;
 		if (dyingAnimationFrames == 0 && timeoutFrames == 0) {
 			if (amountOfLives == 0) {
 				gameState = GAME_OVER; //RETURN TO MAIN SCREEN if no more lives
+				SoundController::instance()->stopAll();
+				SoundController::instance()->play(GAMEOVER);
 				return;
-			}
+			}			
 			player_iface->setTimeToNone();
 			initNewLevel(numLevel, false); //RESTART LEVEL
 		}
+
 		return;
 	}
 	else if (timeoutFrames > 0) {
@@ -213,6 +225,8 @@ void Scene::update(int deltaTime)
 		if (timeoutFrames == 0) {
 			if (amountOfLives == 0) {
 				gameState = GAME_OVER; //RETURN TO MAIN SCREEN if no more lives
+				SoundController::instance()->stopAll();
+				SoundController::instance()->play(GAMEOVER);
 				return;
 			}
 			player_iface->setTimeToNone();
@@ -302,7 +316,7 @@ void Scene::updateEnemies(int deltaTime) {
 					else if (player_colision_result == PLAYER_TAKES_DMG) {
 						if (player->takeDamage()) {
 							//player is dead
-							dyingAnimationFrames = 80;
+							dyingAnimationFrames = 200;
 							amountOfLives--;
 						}
 						stopFrames = 20;
@@ -319,7 +333,7 @@ void Scene::updateEnemies(int deltaTime) {
 		player->setMarioForm(0);
 		player->takeDamage();
 		amountOfLives--;
-		dyingAnimationFrames = 80;
+		dyingAnimationFrames = 200;
 		timeoutFrames = 240;
 		loading_screen->setTimeoutScreen();
 
@@ -473,6 +487,9 @@ void Scene::changeWorldifNeeded() {
 		limXSup = limXInf + 16;
 		
 		if (player->getPosition().y >= limY && player->getPosition().x >= limXInf && player->getPosition().x < limXSup) {
+			SoundController::instance()->stopAll();
+			SoundController::instance()->play(WARP);
+			SoundController::instance()->play(UNDERWORLD);
 			sceneStart = 48 * 16.f;
 			overworld = false;
 		}
@@ -483,8 +500,17 @@ void Scene::changeWorldifNeeded() {
 		limXSup = limXInf + 16;
 		
 		if (player->getPosition().y >= limY && player->getPosition().x >= limXInf && player->getPosition().x < limXSup) {
+			SoundController::instance()->stopAll();
+			if (numLevel == 1)
+				SoundController::instance()->play(LEVEL1);
+			else if (numLevel == 2)
+			{
+				SoundController::instance()->play(LEVEL2);
+			}
+			SoundController::instance()->play(WARP);
 			sceneStart = 159 * 16.f;
 			overworld = true;
+			
 		}
 
 	}
