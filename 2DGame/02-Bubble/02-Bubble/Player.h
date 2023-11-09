@@ -19,6 +19,7 @@ public:
 	void update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderworld, bool wantsToGoOverworld, bool pickingFlag);
 	void render();
 
+	int getMarioForm();
 	void setMarioForm(int formId);
 	void setTileMap(TileMap* tileMap);
 	void setPosition(const glm::vec2& pos);

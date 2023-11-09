@@ -19,7 +19,8 @@ void Mushroom::init(const glm::ivec2& tileMapPos, const glm::vec2& initial_pos, 
 	facingDirection = 1.f;
 	horitzontal_speed = NORMAL_WALK_SPEED;
 	gravity = GRAVITY;
-	vertical_speed = base_vertical_speed =  NORMAL_FALL_SPEED;
+	vertical_speed = 2.f;
+	base_vertical_speed = NORMAL_FALL_SPEED;
 	is_dead = false;
 	is_collidable = false;
 	kill_frames = -1;

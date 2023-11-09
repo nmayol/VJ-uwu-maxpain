@@ -157,7 +157,12 @@ void Scene::createBlocks() {
 			}
 			else if (qmBlockIndex[i][j] == 1) {
 				qmBlockSet[i][j] = new QMBlock();
-				qmBlockSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+				qmBlockSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), false, texProgram);
+				qmBlockSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+			}
+			else if (qmBlockIndex[i][j] == 10) {
+				qmBlockSet[i][j] = new QMBlock();
+				qmBlockSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), true, texProgram);
 				qmBlockSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
 			}
 		}
@@ -339,6 +344,7 @@ void Scene::updateEnemies(int deltaTime) {
 					int player_colision_result = (*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize);
 					if (player->inStarMode() && (player_colision_result != NOTHING)) {
 						(*it)->changeFacingDirection(player->getFacingDirection());
+						floating_scores.push_back(new FloatingScore(100, (*it)->getPosition(), texProgram)); //create Score
 						(*it)->kill();
 					}
 					else if (player_colision_result == ENTITY_TAKES_DMG)
@@ -428,7 +434,8 @@ void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 	for (int i = startBlock; i < std::min(startBlock + 8, 210); ++i) {
 		for (int j = 7; j < 12; j++) {
 			if (brickIndex[i][j] == 2) { // update broken brick animation
-				brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
+				bool add_to_score = brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
+				if (add_to_score) player_iface->addToScore(50);
 			}
 
 
@@ -441,10 +448,26 @@ void Scene::updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
 	for (int i = startBlock; i < 210; ++i) {
 		for (int j = 7; j < 12; j++) {
-			if (qmBlockIndex[i][j] <= 3 && qmBlockIndex[i][j] >= 1) { // update used qm animation
-				qmBlockSet[i][j]->update(deltaTime, map->getQMBlockIndexPosition(i, j));
+			if (qmBlockIndex[i][j] <= 3 && qmBlockIndex[i][j] >= 1 || qmBlockIndex[i][j] == 10) { // update used qm animation
+				int spawn_powerup = qmBlockSet[i][j]->update(deltaTime, map->getQMBlockIndexPosition(i, j));
 				if (qmBlockIndex[i][j] == 2)
 					map->inactivateQMBlock(i, j);
+
+				if (spawn_powerup == 1) { //coin
+					Coin* coin_test = new Coin();
+					coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(i * 16.f, (j-1) * 16.f), map, texProgram);
+					power_ups.push_back(coin_test);
+				}
+				else if (spawn_powerup == 2 && player->getMarioForm() == 0) { //powerup mushroom
+					Mushroom* mushy_test = new Mushroom();
+					mushy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(i * 16.f, (j - 1) * 16.f), map, texProgram);
+					power_ups.push_back(mushy_test);
+				}
+				else if (spawn_powerup == 2 && player->getMarioForm() > 0) { //powerup star
+					Star* star_test = new Star();
+					star_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(i * 16.f, (j - 1) * 16.f), map, texProgram);
+					power_ups.push_back(star_test);
+				}
 			}
 		}
 	}
@@ -489,7 +512,7 @@ void Scene::renderBricks() {
 			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
 				brickSet[i][j]->render(currentTime);
 			}
-			else if (qmBlockIndex[i][j] >= 1 && qmBlockIndex[i][j] <= 3)
+			else if (qmBlockIndex[i][j] >= 1 && qmBlockIndex[i][j] <= 3 || qmBlockIndex[i][j] == 10)
 			{
 				qmBlockSet[i][j]->render(currentTime);
 			}

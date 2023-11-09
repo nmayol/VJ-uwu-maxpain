@@ -143,6 +143,9 @@ void TileMap::prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program)
 				else if (tile == 1294) { // QMBlock case
 					qmBlockIndex[i][j] = 1;
 				}
+				else if (tile == 1293) { // QMBlock case
+					qmBlockIndex[i][j] = 10;
+				}
 			}
 		}
 	}
@@ -206,11 +209,13 @@ bool TileMap::collisionMoveUp(const glm::vec2 &pos, const glm::ivec2 &size, floa
 	for(int x=x0; x<=x1; x++)
 	{
 		if(map[y*mapSize.x+x] != 0){
+
+			x = (pos.x + 8.f) / 16;
 			if (map[y * mapSize.x + x] == 1292 && size.y > 17 && brickIndex[x][y] != 3) { // brick case in supermario mode
 				brickIndex[x][y] = 2;
 				map[y * mapSize.x + x] = 0;
 			}
-			else if (map[y * mapSize.x + x] == 1294) { // QMBlock case
+			else if (map[y * mapSize.x + x] == 1294 || map[y * mapSize.x + x] == 1293) { // QMBlock case
 				qmBlockIndex[x][y] = 2;
 			}
 			*posY = tileSize * (y+1);

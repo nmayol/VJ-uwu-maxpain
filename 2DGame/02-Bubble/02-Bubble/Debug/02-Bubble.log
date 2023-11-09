@@ -1,11 +1,4 @@
-﻿  Brick.cpp
-  Game.cpp
-  Goomba.cpp
-  MainScreen.cpp
-  Player.cpp
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Player.cpp(256,17): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-  QMBlock.cpp
-  Scene.cpp
+﻿  Scene.cpp
 C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(146,89): warning C4244: 'argumento': conversión de 'T' a 'const unsigned int'; posible pérdida de datos
           with
           [
@@ -26,14 +19,12 @@ C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene
           [
               T=float
           ]
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(426,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(440,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(483,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(489,28): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(493,30): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(529,13): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
-  main.cpp
-  Generando código...
+C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(433,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(448,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(507,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(513,28): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(517,30): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(553,13): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
 SOIL.lib(image_DXT.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_DXT.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(image_helper.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_helper.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(SOIL.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(SOIL.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración

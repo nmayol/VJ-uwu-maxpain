@@ -87,10 +87,11 @@ Sprite* Brick::initBrokenBrickSprite(Texture* spritesheet, ShaderProgram* shader
 
 
 
-void Brick::update(int deltaTime, bool justBroken)
+bool Brick::update(int deltaTime, bool justBroken)
 {
-	
+	bool addPoints = false;
 	if (justBroken && frames_from_breaking == -1) {
+		addPoints = true;
 		actualAnimation = BROKEN;
 		brokenBrickSpriteIL->changeAnimation(actualAnimation);
 		brokenBrickSpriteIR->changeAnimation(actualAnimation);
@@ -141,6 +142,7 @@ void Brick::update(int deltaTime, bool justBroken)
 		entireBrickSprite->setPosition(glm::vec2(float(tileMapDispl.x + posBrick.x), float(tileMapDispl.y + posBrick.y)));
 
 	}
+	return addPoints;
 
 }
 
