@@ -49,6 +49,7 @@ void Entity::update(int deltaTime)
 
 	//APPLY FALLING PHYSICS
 	posEntity.y -= vertical_speed;
+	if (posEntity.y > 260.f) is_dead = true;
 	if (!map->collisionMoveDown(posEntity, collision_box_size, &posEntity.y)) vertical_speed = std::max(base_vertical_speed * 2.25f, vertical_speed - gravity);
 	else vertical_speed = base_vertical_speed;
 

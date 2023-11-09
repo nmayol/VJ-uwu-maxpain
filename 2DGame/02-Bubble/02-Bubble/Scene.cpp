@@ -72,6 +72,7 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	if (numLevel == 1) {
 		map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		readEnemies("levels/level01_enemies.txt");
 		SoundController::instance()->stopAll();
 		SoundController::instance()->play(LEVEL1);
 	}
@@ -108,7 +109,6 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	stopFrames = 0;
 	sceneStart = 0.f;
 
-	enemies_in_map.clear();
 	enemies_in_screen.clear();
 	floating_scores.clear();
 	power_ups.clear();
@@ -299,7 +299,7 @@ void Scene::updateEnemies(int deltaTime) {
 	std::list<Entity*>::iterator it = enemies_in_map.begin();
 	while (it != enemies_in_map.end() && !stop) {
 		glm::ivec2 posEnemy = (*it)->getPosition();
-		if ((((((int)posPlayer.x) + 192) / 64 + 2) * 64) > posEnemy.x) {
+		if ((((((int)posPlayer.x) + 192) / 80 + 1) * 80) > posEnemy.x) {
 			enemies_in_screen.push_back((*it));
 			it = enemies_in_map.erase(it);
 		}
@@ -310,7 +310,7 @@ void Scene::updateEnemies(int deltaTime) {
 	it = enemies_in_screen.begin();
 	while (it != enemies_in_screen.end()) {
 		glm::vec2 posEnemy = (*it)->getPosition();
-		if (posEnemy.x < posPlayer.x - 192 || (*it)->isEntityDead()) it = enemies_in_screen.erase(it);
+		if (posEnemy.x < posPlayer.x - 192 || posEnemy.x > posPlayer.x + 272 ||(*it)->isEntityDead()) it = enemies_in_screen.erase(it);
 		else {
 			(*it)->update(deltaTime);
 
@@ -345,6 +345,7 @@ void Scene::updateEnemies(int deltaTime) {
 					if (player->inStarMode() && (player_colision_result != NOTHING)) {
 						(*it)->changeFacingDirection(player->getFacingDirection());
 						floating_scores.push_back(new FloatingScore(100, (*it)->getPosition(), texProgram)); //create Score
+						player_iface->addToScore(100);
 						(*it)->kill();
 					}
 					else if (player_colision_result == ENTITY_TAKES_DMG)
@@ -427,6 +428,47 @@ void Scene::actIfMarioHasCommitedSuicide() {
 		stopFrames = 20;
 
 	}
+}
+
+void Scene::readEnemies(const string& enemy_file)
+{
+	enemies_in_map.clear();
+	ifstream fin;
+	string line, tilesheetFile;
+	stringstream sstream;
+	char delimiter = ',';
+	fin.open(enemy_file.c_str());
+	if (!fin.is_open()) {
+		// Handle file open error
+		cerr << "Error opening file: " << enemy_file << endl;
+		return;
+	}
+
+	//Read Enemies
+	int n_Enemies;
+	int enemy_type, x, y;
+	getline(fin, line);
+	sstream.str(line);
+	sstream >> n_Enemies;
+
+	for (int i = 0; i < n_Enemies; i++) {
+		getline(fin, line);
+		sstream.clear();
+		sstream.str(line);
+		sstream >> enemy_type >> x >> y;
+
+		if (enemy_type == 0) {
+			Goomba* enemy = new Goomba();
+			enemy->init(glm::ivec2(0, 16), glm::vec2(x * 16.f, y * 16.f), map, texProgram);
+			enemies_in_map.push_back(enemy);
+		}
+		else {
+			Koopa* enemy = new Koopa();
+			enemy->init(glm::ivec2(0, 16), glm::vec2(x * 16.f, y * 16.f), map, texProgram);
+			enemies_in_map.push_back(enemy);
+		}
+	}
+	fin.close();
 }
 
 void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
