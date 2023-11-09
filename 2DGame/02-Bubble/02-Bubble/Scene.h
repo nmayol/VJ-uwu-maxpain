@@ -54,7 +54,7 @@ private:
 	void createFlag();
 	void actIfMarioHasCommitedSuicide();
 
-
+	bool pressed_and_released;
 	bool completed; // True if player has picked the flag
 	bool couldBeGoingUnderworld(); // True if player is in the right position to go to underworld (but we don't know if it's crouching [checked at player.cpp])
 	bool wantsToGoOverworld(); // True if player is in the right position to go to overworld)
@@ -63,6 +63,7 @@ private:
 	//Enemy & Other Entities handling
 	list<Entity*> enemies_in_map;
 	list<Entity*> enemies_in_screen;
+	list<Entity*> power_ups;
 	list<FloatingScore*> floating_scores;
 
 private:

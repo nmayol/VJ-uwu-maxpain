@@ -8,6 +8,9 @@
 #include "Game.h"
 #include "Goomba.h"
 #include "Koopa.h"
+#include "Mushroom.h"
+#include "Star.h"
+#include "Coin.h"
 
 
 #define SCREEN_X 0
@@ -42,11 +45,13 @@ Scene::~Scene()
 	while (!enemies_in_map.empty()) delete enemies_in_map.front(), enemies_in_map.pop_front();
 	while (!enemies_in_screen.empty()) delete enemies_in_screen.front(), enemies_in_screen.pop_front();
 	while (!floating_scores.empty()) delete floating_scores.front(), floating_scores.pop_front();
+	while (!power_ups.empty()) delete power_ups.front(), power_ups.pop_front();
 }
 
 void Scene::init()
 {
 	initShaders();
+	pressed_and_released = true;
 	gameState = KEEP_PLAYING;
 	numLevel = 1;
 	amountOfLives = 3;
@@ -103,37 +108,31 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	stopFrames = 0;
 	sceneStart = 0.f;
 
-	//TODO -> FIX THIS READING FROM FILE
 	enemies_in_map.clear();
 	enemies_in_screen.clear();
 	floating_scores.clear();
+	power_ups.clear();
 
+	//TODO -> FIX THIS READING FROM FILE
 	Goomba* enemy_test = new Goomba();
-	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
-	enemy_test->setTileMap(map);
-	enemy_test->changeFacingDirection();
+	glm::vec2 initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize());
+	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
 	enemies_in_map.push_back(enemy_test);
 
 	enemy_test = new Goomba();
-	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 90.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
-	enemy_test->setTileMap(map);
+	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 90.f, INIT_PLAYER_Y_TILES * map->getTileSize());
+	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
 	enemy_test->changeFacingDirection();
 	enemies_in_map.push_back(enemy_test);
 
 	Koopa* enemy_test_a = new Koopa();
-	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 4, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
+	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 4, INIT_PLAYER_Y_TILES * map->getTileSize() - 16);
+	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
 	enemy_test_a->changeFacingDirection();
-	enemy_test_a->setTileMap(map);
 
 	enemy_test_a = new Koopa();
-	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 106.f, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
-	enemy_test_a->changeFacingDirection();
-	enemy_test_a->setTileMap(map);
-
+	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 106.f, INIT_PLAYER_Y_TILES * map->getTileSize() - 16);
+	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
 	enemies_in_map.push_back(enemy_test_a);
 }
 
@@ -187,6 +186,35 @@ void Scene::update(int deltaTime)
 	//CHANGE LEVEL
 	if (Game::instance().getKey('1')) initNewLevel(1, false);
 	if (Game::instance().getKey('2')) initNewLevel(2, false);
+
+	if (Game::instance().getKey('-')) 
+	{
+		if (pressed_and_released) {
+			Mushroom* mushy_test = new Mushroom();
+			mushy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f), map, texProgram);
+			power_ups.push_back(mushy_test);
+			pressed_and_released = false;
+		}
+	}
+	else if (Game::instance().getKey('.'))
+	{
+		if (pressed_and_released) {
+			Star* star_test = new Star();
+			star_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f), map, texProgram);
+			power_ups.push_back(star_test);
+			pressed_and_released = false;
+		}
+	}
+	else if (Game::instance().getKey(','))
+	{
+		if (pressed_and_released) {
+			Coin* coin_test = new Coin();
+			coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x, player->getPosition().y - 16.f), map, texProgram);
+			power_ups.push_back(coin_test);
+			pressed_and_released = false;
+		}
+	}
+	else pressed_and_released = true;
 
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
@@ -308,7 +336,7 @@ void Scene::updateEnemies(int deltaTime) {
 				//colision with player
 				if (!player->isInvencible()) {
 					int player_colision_result = (*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize);
-					if (player->inStarMode() && (player_colision_result == ENTITY_TAKES_DMG || player_colision_result == PLAYER_TAKES_DMG)) {
+					if (player->inStarMode() && (player_colision_result != NOTHING)) {
 						(*it)->changeFacingDirection(player->getFacingDirection());
 						(*it)->kill();
 					}
@@ -340,7 +368,30 @@ void Scene::updateEnemies(int deltaTime) {
 			++it;
 		}
 	}
+	//render power ups if any
+	for (auto it = power_ups.begin(); it != power_ups.end(); /* no increment here */) {
+		if ((*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize)) {
+			player->powerUp();
+			stopFrames = 20;
+			floating_scores.push_back(new FloatingScore(1000, (*it)->getPosition(), texProgram)); //create Score
+			player_iface->addToScore(1000);
 
+			//kill entity
+			it = power_ups.erase(it);
+		}
+		else {
+			(*it)->update(deltaTime);
+			if ((*it)->isEntityDead()) {
+				glm::vec2 finalPos= (*it)->getPosition() + glm::vec2(2.f, 20.f);
+				floating_scores.push_back(new FloatingScore(200, finalPos, texProgram)); //create Score
+				player_iface->addToScore(200);
+				it = power_ups.erase(it);
+			}
+			else ++it;
+		}
+	}
+
+	//render floating Scores
 	for (auto it = floating_scores.begin(); it != floating_scores.end(); /* no increment here */) {
 		if ((*it)->update(deltaTime)) it = floating_scores.erase(it);
 		else ++it;
@@ -445,6 +496,7 @@ void Scene::renderBricks() {
 	}
 
 	for (Entity* e : enemies_in_screen) e->render();
+	for (Entity* power_up : power_ups) power_up->render();
 	for (FloatingScore* floating_score : floating_scores) floating_score->render();
 }
 
@@ -473,7 +525,7 @@ void Scene::moveCameraifNeeded()
 {
 	float posPlayerX = player->getPosition().x;
 	float directionPlayer = player->getFacingDirection();
-	if (sceneStart < 3120 && (posPlayerX - (sceneStart + float(SCREEN_WIDTH - 1)) / 3.) > 0 && (directionPlayer == 1.f)) {
+	if (sceneStart < 3120 && (posPlayerX - (sceneStart + float(SCREEN_WIDTH - 1)) / 3.) > 0) {
 		float aux = posPlayerX - (float(SCREEN_WIDTH - 1)) / 3.;
 		if (!overworld) {
 			sceneStart = 48 * 16.f;

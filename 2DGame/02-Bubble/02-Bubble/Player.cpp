@@ -250,6 +250,10 @@ void Player::setMarioForm(int formId) {
 	else sprite->changeDirection(FACING_RIGHT);
 	pressedPCount = 30;
 	pressedPandReleased = false;
+	if (!bJumping)sprite->changeAnimation(actualAnimation);
+	else sprite->changeAnimation(JUMPING);
+	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+	sprite->update(0.f);
 }
 
 void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderworld, bool wantsToGoOverworld, bool pickingFlag)
@@ -585,7 +589,6 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 			}
 		}
 	}
-	int anim = sprite->animation();
 	if (sprite->animation() != actualAnimation && !bJumping)
 		sprite->changeAnimation(actualAnimation);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
@@ -663,6 +666,11 @@ bool Player::takeDamage()
 	
 	dyingFrames = I_FRAMES;
 	return true;
+}
+
+void Player::powerUp()
+{
+	setMarioForm(std::min(2, actualForm+1));
 }
 
 float Player::getFacingDirection() {

@@ -10,6 +10,7 @@
 // <- and -> Physics Values from ORIGINAL GAME
 #define NORMAL_WALK_SPEED 1.f
 #define NORMAL_FALL_SPEED -2.5f
+#define GRAVITY 0.375f;
 
 //For reading Sprite
 #define SPRITE_OFFSET_X (1.f / 3.f)
@@ -28,16 +29,19 @@ enum GoombaDirection
 
 
 
-void Goomba::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
+void Goomba::init(const glm::ivec2& tileMapPos, const glm::vec2& initial_pos, TileMap* tileMap, ShaderProgram& shaderProgram)
 {
 	//define physics values
 	facingDirection = -1.f;
 	horitzontal_speed = NORMAL_WALK_SPEED;
-	vertical_speed = NORMAL_FALL_SPEED;
+	vertical_speed = base_vertical_speed =  NORMAL_FALL_SPEED;
+	gravity = GRAVITY;
 	is_dead = false;
 	is_collidable = true;
 	frames_until_death = -1;
 	kill_frames = -1;
+	posEntity = initial_pos;
+	map = tileMap;
 
 	//INIT SPRITES
 	entitySpritesheet.loadFromFile("images/goomba.png", TEXTURE_PIXEL_FORMAT_RGBA);
