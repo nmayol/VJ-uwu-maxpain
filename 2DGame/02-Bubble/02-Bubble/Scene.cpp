@@ -280,6 +280,7 @@ void Scene::update(int deltaTime)
 	player_iface->setScreenXandY(sceneStart, 0.f);
 	changeWorldifNeeded();
 	moveCameraifNeeded();
+
 	actIfMarioHasCommitedSuicide();
 }
 
@@ -537,7 +538,7 @@ void Scene::moveCameraifNeeded()
 	}
 	else if (directionPlayer == -1.f && posPlayerX < sceneStart) {
 		// make player unable to go back to last scene
-		player->stopMarioFromMoving(glm::vec2(sceneStart, player->getPosition().y));
+		player->setPosition(glm::vec2(sceneStart, player->getPosition().y));
 
 	}
 

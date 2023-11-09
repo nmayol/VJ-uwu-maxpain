@@ -181,6 +181,10 @@ Sprite* Player::initNormalMarioSprite(float baseSpriteRow, Texture* spritesheet,
 	newSprite->setAnimationSpeed(PICKING, 8);
 	newSprite->addKeyframe(PICKING, glm::vec2(BIG_SPRITE_OFFSET_X * 8.f, baseSpriteRow));
 
+	newSprite->setAnimationSpeed(DYING, 8);
+	newSprite->addKeyframe(DYING, glm::vec2(BIG_SPRITE_OFFSET_X * 5.f, baseSpriteRow));
+
+
 	newSprite->setAnimationSpeed(NONE, 0);
 	newSprite->addKeyframe(NONE, glm::vec2(BIG_SPRITE_OFFSET_X * 17.f, baseSpriteRow));
 
@@ -214,6 +218,7 @@ Sprite* Player::initStarMarioSprite(Texture* spritesheet, ShaderProgram* shaderP
 		newSprite->addKeyframe(SKIDDING, glm::vec2(BIG_SPRITE_OFFSET_X * 3.f, BIG_SPRITE_OFFSET_Y * i));
 		newSprite->addKeyframe(CROUCHING, glm::vec2(BIG_SPRITE_OFFSET_X * 5.f, BIG_SPRITE_OFFSET_Y * i));
 		newSprite->addKeyframe(PICKING, glm::vec2(BIG_SPRITE_OFFSET_X * 8.f, BIG_SPRITE_OFFSET_Y * i));
+		newSprite->addKeyframe(DYING, glm::vec2(BIG_SPRITE_OFFSET_X * 5.f, BIG_SPRITE_OFFSET_Y * i));
 		newSprite->addKeyframe(NONE, glm::vec2(BIG_SPRITE_OFFSET_X * 17.f, BIG_SPRITE_OFFSET_Y * i));
 	}
 	return newSprite;

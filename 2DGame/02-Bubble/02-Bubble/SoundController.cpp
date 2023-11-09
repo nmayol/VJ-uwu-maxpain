@@ -29,7 +29,7 @@ void SoundController::play(Sounds id, bool loop) //Loop is optional
 {
 	//std::cout<<sounds[sound]<<std::endl;
 	ISound* sound;
-	if (id == LEVEL1 || id == LEVEL2) sound = engine->play2D(sounds[id], true, false, true);
+	if (id == LEVEL1 || id == LEVEL2 || id == UNDERWORLD) sound = engine->play2D(sounds[id], true, false, true);
 	else 
 		sound = engine->play2D(sounds[id], loop, false, true);
 	playing[id].push_back(sound);
