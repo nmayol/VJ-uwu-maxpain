@@ -60,6 +60,7 @@ private:
 	bool couldBeGoingUnderworld(); // True if player is in the right position to go to underworld (but we don't know if it's crouching [checked at player.cpp])
 	bool wantsToGoOverworld(); // True if player is in the right position to go to overworld)
 	bool pickingFlag(); // player blocked when the flag is being picked (NOT IMPLEMENTED YET)
+	void sumFlagPointsIfNeeded();
 
 	//Enemy & Other Entities handling
 	list<Entity*> enemies_in_map;
@@ -90,6 +91,7 @@ private:
 	glm::mat4 projection;
 	float sceneStart;
 	int stopFrames;
+	bool hasFlagBeenPicked;
 	
 
 	vector<vector<Brick*>> brickSet;

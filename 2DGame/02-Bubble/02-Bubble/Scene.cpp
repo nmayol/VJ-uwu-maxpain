@@ -67,6 +67,7 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	overworld = true;
 	completed = false;
 	numLevel = level_id;
+	hasFlagBeenPicked = false;
 	gameState = KEEP_PLAYING;
 
 	if (numLevel == 1) {
@@ -189,6 +190,7 @@ void Scene::update(int deltaTime)
 	else if (numLevel == 2 && player_iface->getTime() == 0 && completed) {
 		gameState = GAME_COMPLETED;
 		SoundController::instance()->stopAll();
+		SoundController::instance()->play(GAMEOVER);
 		return;
 	}
 
@@ -278,6 +280,9 @@ void Scene::update(int deltaTime)
 	}
 
 	player->update(deltaTime, completed, couldBeGoingUnderworld(), wantsToGoOverworld(), pickingFlag());
+
+	sumFlagPointsIfNeeded();
+
 	flag->update(deltaTime, pickingFlag());
 	updateEnemies(deltaTime);
 	player_iface->update(deltaTime);
@@ -287,6 +292,22 @@ void Scene::update(int deltaTime)
 	sumLastPoints();
 
 	actIfMarioHasCommitedSuicide();
+}
+
+
+void Scene::sumFlagPointsIfNeeded() {
+	if (!hasFlagBeenPicked && pickingFlag()) {
+		hasFlagBeenPicked = true;
+		int point_decider = int(player->getPosition().y);
+		int obtained_flag_points = 0;
+		if (point_decider <= 5 * 16) obtained_flag_points = 5000;
+		else if (point_decider <= 7 * 16) obtained_flag_points = 2000;
+		else if (point_decider <= 9 * 16) obtained_flag_points = 800;
+		else if (point_decider <= 11 * 16) obtained_flag_points = 400;
+		else if (point_decider <= 13 * 16) obtained_flag_points = 100;
+		floating_scores.push_back(new FloatingScore(obtained_flag_points, player->getPosition(), texProgram)); //create Score
+		player_iface->addToScore(obtained_flag_points);
+	}
 }
 
 void Scene::updateEnemies(int deltaTime) {
