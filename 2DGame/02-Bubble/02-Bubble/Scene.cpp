@@ -10,6 +10,7 @@
 #include "Koopa.h"
 #include "Mushroom.h"
 #include "Star.h"
+#include "Coin.h"
 
 
 #define SCREEN_X 0
@@ -215,6 +216,17 @@ void Scene::update(int deltaTime)
 			pressed_and_released = false;
 		}
 	}
+	else if (Game::instance().getKey(','))
+	{
+		if (pressed_and_released) {
+			Coin* coin_test = new Coin();
+			coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+			coin_test->setPosition(glm::vec2(player->getPosition().x, player->getPosition().y - 16.f));
+			coin_test->setTileMap(map);
+			power_ups.push_back(coin_test);
+			pressed_and_released = false;
+		}
+	}
 	else pressed_and_released = true;
 
 	currentTime += deltaTime;
@@ -380,7 +392,13 @@ void Scene::updateEnemies(int deltaTime) {
 		}
 		else {
 			(*it)->update(deltaTime);
-			++it;
+			if ((*it)->isEntityDead()) {
+				glm::vec2 finalPos= (*it)->getPosition() + glm::vec2(2.f, 20.f);
+				floating_scores.push_back(new FloatingScore(200, finalPos, texProgram)); //create Score
+				player_iface->addToScore(200);
+				it = power_ups.erase(it);
+			}
+			else ++it;
 		}
 	}
 
