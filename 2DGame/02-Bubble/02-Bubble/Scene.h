@@ -54,7 +54,7 @@ private:
 	void createFlag();
 	void actIfMarioHasCommitedSuicide();
 	void sumLastPoints();
-	void readEnemies(const string& enemy_file);
+	void readEnemies(const string& enemy_file); 
 
 	bool pressed_and_released;
 	bool completed; // True if player has picked the flag
@@ -88,7 +88,7 @@ private:
 	loadingScreen* loading_screen;
 
 	ShaderProgram texProgram;
-	float currentTime;
+	int currentTime;
 	glm::mat4 projection;
 	float sceneStart;
 	int stopFrames;

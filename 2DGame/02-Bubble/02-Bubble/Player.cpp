@@ -265,7 +265,7 @@ void Player::setMarioForm(int formId) {
 	if (!bJumping)sprite->changeAnimation(actualAnimation);
 	else sprite->changeAnimation(JUMPING);
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
-	sprite->update(0.f);
+	sprite->update(0);
 }
 
 void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderworld, bool wantsToGoOverworld, bool pickingFlag)
@@ -325,6 +325,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 		bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
 		bool runKeyPressed = glutGetModifiers() == GLUT_ACTIVE_SHIFT;
+		int aa = glutGetModifiers();
 		bool downKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_DOWN);
 		bool upKeyPressed = false;
 		if (Game::instance().getSpecialKey(GLUT_KEY_UP) || Game::instance().getKey(' ')) upKeyPressed = JumpedAndReleased;
@@ -640,7 +641,7 @@ void Player::applyBounce()
 {
 
 	vertical_speed = 5.f; 
-	posPlayer.y = (((int)posPlayer.y) / 16) * 16.f;
+	posPlayer.y = ((posPlayer.y) / 16) * 16.f;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	vertical_speed = 5.f;
 }

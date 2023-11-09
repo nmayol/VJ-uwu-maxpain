@@ -1,67 +1,8 @@
-<<<<<<< Updated upstream
-﻿  Scene.cpp
-<<<<<<< HEAD
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(146,89): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
-=======
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(125,89): warning C4244: 'argumento': conversión de 'T' a 'const unsigned int'; posible pérdida de datos
->>>>>>> b505e00a01036787c47793e26a7e7039df5b6613
-          with
-          [
-              T=float
-          ]
-<<<<<<< HEAD
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(146,53): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
-=======
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(125,53): warning C4244: 'argumento': conversión de 'T' a 'const unsigned int'; posible pérdida de datos
->>>>>>> b505e00a01036787c47793e26a7e7039df5b6613
-          with
-          [
-              T=float
-          ]
-<<<<<<< HEAD
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(147,95): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
-=======
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(126,95): warning C4244: 'argumento': conversión de 'T' a 'const unsigned int'; posible pérdida de datos
->>>>>>> b505e00a01036787c47793e26a7e7039df5b6613
-          with
-          [
-              T=float
-          ]
-<<<<<<< HEAD
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(147,57): warning C4244: 'argument': conversion from 'T' to 'const unsigned int', possible loss of data
-=======
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(126,57): warning C4244: 'argumento': conversión de 'T' a 'const unsigned int'; posible pérdida de datos
->>>>>>> b505e00a01036787c47793e26a7e7039df5b6613
-          with
-          [
-              T=float
-          ]
-<<<<<<< HEAD
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(432,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(446,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(489,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(495,28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(499,30): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\02-Bubble\Scene.cpp(552,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-SOIL.lib(image_DXT.obj) : warning LNK4099: PDB '' was not found with 'SOIL.lib(image_DXT.obj)' or at ''; linking object as if no debug info
-SOIL.lib(image_helper.obj) : warning LNK4099: PDB '' was not found with 'SOIL.lib(image_helper.obj)' or at ''; linking object as if no debug info
-SOIL.lib(SOIL.obj) : warning LNK4099: PDB '' was not found with 'SOIL.lib(SOIL.obj)' or at ''; linking object as if no debug info
-SOIL.lib(stb_image_aug.obj) : warning LNK4099: PDB '' was not found with 'SOIL.lib(stb_image_aug.obj)' or at ''; linking object as if no debug info
-  02-Bubble.vcxproj -> C:\Users\mayol\Desktop\$VJ\Lab\2DGame\02-Bubble\Debug\02-Bubble.exe
-=======
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(425,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(440,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(499,17): warning C4244: 'inicializando': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(505,28): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(509,30): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Scene.cpp(545,13): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
-=======
 ﻿  Player.cpp
-C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\02-Bubble\Player.cpp(268,17): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
->>>>>>> Stashed changes
+  Scene.cpp
+  Generando código...
 SOIL.lib(image_DXT.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_DXT.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(image_helper.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(image_helper.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(SOIL.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(SOIL.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
 SOIL.lib(stb_image_aug.obj) : warning LNK4099: no se encontró PDB '' con 'SOIL.lib(stb_image_aug.obj)' o en ''; se vinculará el objeto sin tener en cuenta información de depuración
   02-Bubble.vcxproj -> C:\Users\Ñoñi\Documents\GitHub\VJ-uwu-maxpain\2DGame\02-Bubble\Debug\02-Bubble.exe
->>>>>>> b505e00a01036787c47793e26a7e7039df5b6613

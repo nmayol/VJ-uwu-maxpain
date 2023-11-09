@@ -107,7 +107,7 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 
 	createFlag();
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT + 40), 41.f);
-	currentTime = 0.0f;
+	currentTime = 0;
 	stopFrames = 0;
 	sceneStart = 0.f;
 
@@ -123,8 +123,8 @@ void Scene::createFlag() {
 }
 
 void Scene::createBlocks() {
-	brickSet = vector<vector<Brick*>>(map->getMapSize().x, vector<Brick*>(map->getMapSize().y, NULL));
-	qmBlockSet = vector<vector<QMBlock*>>(map->getMapSize().x, vector<QMBlock*>(map->getMapSize().y, NULL));
+	brickSet = vector<vector<Brick*>>((int)map->getMapSize().x, vector<Brick*>((int)map->getMapSize().y, NULL));
+	qmBlockSet = vector<vector<QMBlock*>>((int)map->getMapSize().x, vector<QMBlock*>((int)map->getMapSize().y, NULL));
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
 	for (int i = 0; i < map->getMapSize().x; i++) {
@@ -448,7 +448,7 @@ void Scene::readEnemies(const string& enemy_file)
 }
 
 void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
-	int startBlock = (sceneStart / map->getTileSize());
+	int startBlock = (int)(sceneStart / map->getTileSize());
 	for (int i = startBlock; i < std::min(startBlock + 8, 210); ++i) {
 		for (int j = 7; j < 12; j++) {
 			if (brickIndex[i][j] == 2) { // update broken brick animation
@@ -463,7 +463,7 @@ void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 }
 
 void Scene::updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime) {
-	int startBlock = (sceneStart / map->getTileSize());
+	int startBlock = (int)(sceneStart / map->getTileSize());
 	for (int i = startBlock; i < 210; ++i) {
 		for (int j = 7; j < 12; j++) {
 			if (qmBlockIndex[i][j] <= 3 && qmBlockIndex[i][j] >= 1 || qmBlockIndex[i][j] == 10) { // update used qm animation
@@ -525,7 +525,7 @@ void Scene::renderTubes() {
 }
 
 void Scene::renderBricks() {
-	int startBlock = (sceneStart / map->getTileSize());
+	int startBlock = (int)(sceneStart / map->getTileSize());
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
 	for (int i = startBlock; i < std::min(210, startBlock + 17); i++) {
@@ -588,7 +588,7 @@ void Scene::moveCameraifNeeded()
 	float posPlayerX = player->getPosition().x;
 	float directionPlayer = player->getFacingDirection();
 	if (sceneStart < 3120 && (posPlayerX - (sceneStart + float(SCREEN_WIDTH - 1)) / 3.) > 0) {
-		float aux = posPlayerX - (float(SCREEN_WIDTH - 1)) / 3.;
+		float aux = posPlayerX - (float(SCREEN_WIDTH - 1)) / 3.f;
 		if (!overworld) {
 			sceneStart = 48 * 16.f;
 		}
