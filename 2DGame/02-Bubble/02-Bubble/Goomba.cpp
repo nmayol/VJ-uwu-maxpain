@@ -29,7 +29,7 @@ enum GoombaDirection
 
 
 
-void Goomba::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
+void Goomba::init(const glm::ivec2& tileMapPos, const glm::vec2& initial_pos, TileMap* tileMap, ShaderProgram& shaderProgram)
 {
 	//define physics values
 	facingDirection = -1.f;
@@ -40,6 +40,8 @@ void Goomba::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	is_collidable = true;
 	frames_until_death = -1;
 	kill_frames = -1;
+	posEntity = initial_pos;
+	map = tileMap;
 
 	//INIT SPRITES
 	entitySpritesheet.loadFromFile("images/goomba.png", TEXTURE_PIXEL_FORMAT_RGBA);

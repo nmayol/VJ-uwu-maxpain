@@ -8,7 +8,7 @@ enum EntityDirection
 	FACING_LEFT, FACING_RIGHT
 };
 
-void Coin::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
+void Coin::init(const glm::ivec2& tileMapPos, const glm::vec2& initial_pos, TileMap* tileMap, ShaderProgram& shaderProgram)
 {
 	//define physics values
 	facingDirection = 1.f;
@@ -18,6 +18,8 @@ void Coin::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	is_dead = false;
 	is_collidable = false;
 	kill_frames = 38;		//spawned as a killed entity (lasts a few frames and disapears)
+	posEntity = initial_pos;
+	map = tileMap;
 
 	//INIT SPRITES
 	entitySpritesheet.loadFromFile("images/coin.png", TEXTURE_PIXEL_FORMAT_RGBA);

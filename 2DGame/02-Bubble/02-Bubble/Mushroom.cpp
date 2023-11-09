@@ -13,7 +13,7 @@ enum mushroomDirection
 	FACING_LEFT, FACING_RIGHT
 };
 
-void Mushroom::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
+void Mushroom::init(const glm::ivec2& tileMapPos, const glm::vec2& initial_pos, TileMap* tileMap, ShaderProgram& shaderProgram)
 {
 	//define physics values
 	facingDirection = 1.f;
@@ -23,6 +23,8 @@ void Mushroom::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	is_dead = false;
 	is_collidable = false;
 	kill_frames = -1;
+	posEntity = initial_pos;
+	map = tileMap;
 
 	//INIT SPRITES
 	entitySpritesheet.loadFromFile("images/items.png", TEXTURE_PIXEL_FORMAT_RGBA);

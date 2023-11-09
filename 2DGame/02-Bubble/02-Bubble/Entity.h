@@ -16,14 +16,13 @@ class Entity
 public:
 
 	//Abstract
-	virtual void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram) = 0;
+	virtual void init(const glm::ivec2& tileMapPos, const glm::vec2& initial_pos, TileMap* tileMap, ShaderProgram& shaderProgram) = 0;
 	virtual bool takeDamage() = 0;
 	virtual string whoAmI() = 0; // for debugging
 
 	//Implemented Methods
 	virtual void update(int deltaTime);
 	void render();
-	void setTileMap(TileMap* tileMap);
 
 	void setPosition(const glm::vec2& pos);
 	glm::vec2 getPosition();

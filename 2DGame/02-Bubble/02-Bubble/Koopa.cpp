@@ -29,7 +29,7 @@ enum KoopaDirection
 
 
 
-void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
+void Koopa::init(const glm::ivec2& tileMapPos, const glm::vec2& initial_pos, TileMap* tileMap, ShaderProgram& shaderProgram)
 {
 	//define physics values
 	facingDirection = -1.f;
@@ -41,6 +41,8 @@ void Koopa::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	shell_in_movement = false;
 	is_dead = false;
 	is_collidable = true;
+	posEntity = initial_pos;
+	map = tileMap;
 
 	//INIT SPRITES
 	entitySpritesheet.loadFromFile("images/koopa.png", TEXTURE_PIXEL_FORMAT_RGBA);

@@ -108,38 +108,31 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	stopFrames = 0;
 	sceneStart = 0.f;
 
-	//TODO -> FIX THIS READING FROM FILE
 	enemies_in_map.clear();
 	enemies_in_screen.clear();
 	floating_scores.clear();
 	power_ups.clear();
 
+	//TODO -> FIX THIS READING FROM FILE
 	Goomba* enemy_test = new Goomba();
-	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
-	enemy_test->setTileMap(map);
-	enemy_test->changeFacingDirection();
+	glm::vec2 initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize());
+	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
 	enemies_in_map.push_back(enemy_test);
 
 	enemy_test = new Goomba();
-	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 90.f, INIT_PLAYER_Y_TILES * map->getTileSize()));
-	enemy_test->setTileMap(map);
+	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 90.f, INIT_PLAYER_Y_TILES * map->getTileSize());
+	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
 	enemy_test->changeFacingDirection();
 	enemies_in_map.push_back(enemy_test);
 
 	Koopa* enemy_test_a = new Koopa();
-	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 4, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
+	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 4, INIT_PLAYER_Y_TILES * map->getTileSize() - 16);
+	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
 	enemy_test_a->changeFacingDirection();
-	enemy_test_a->setTileMap(map);
 
 	enemy_test_a = new Koopa();
-	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy_test_a->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 106.f, INIT_PLAYER_Y_TILES * map->getTileSize() - 16));
-	enemy_test_a->changeFacingDirection();
-	enemy_test_a->setTileMap(map);
-
+	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 106.f, INIT_PLAYER_Y_TILES * map->getTileSize() - 16);
+	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
 	enemies_in_map.push_back(enemy_test_a);
 }
 
@@ -198,9 +191,7 @@ void Scene::update(int deltaTime)
 	{
 		if (pressed_and_released) {
 			Mushroom* mushy_test = new Mushroom();
-			mushy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-			mushy_test->setPosition(glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f));
-			mushy_test->setTileMap(map);
+			mushy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f), map, texProgram);
 			power_ups.push_back(mushy_test);
 			pressed_and_released = false;
 		}
@@ -209,9 +200,7 @@ void Scene::update(int deltaTime)
 	{
 		if (pressed_and_released) {
 			Star* star_test = new Star();
-			star_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-			star_test->setPosition(glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f));
-			star_test->setTileMap(map);
+			star_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f), map, texProgram);
 			power_ups.push_back(star_test);
 			pressed_and_released = false;
 		}
@@ -220,9 +209,7 @@ void Scene::update(int deltaTime)
 	{
 		if (pressed_and_released) {
 			Coin* coin_test = new Coin();
-			coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-			coin_test->setPosition(glm::vec2(player->getPosition().x, player->getPosition().y - 16.f));
-			coin_test->setTileMap(map);
+			coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x, player->getPosition().y - 16.f), map, texProgram);
 			power_ups.push_back(coin_test);
 			pressed_and_released = false;
 		}
