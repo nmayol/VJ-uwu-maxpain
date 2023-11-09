@@ -185,7 +185,12 @@ void Scene::update(int deltaTime)
 {
 	//CHANGE LEVEL
 	if (Game::instance().getKey('1')) initNewLevel(1, false);
-	if (Game::instance().getKey('2')) initNewLevel(2, false);
+	if (Game::instance().getKey('2') || (numLevel == 1 && player_iface->getTime() == 0 && completed)) initNewLevel(2, false);
+	else if (numLevel == 2 && player_iface->getTime() == 0 && completed) {
+		gameState = GAME_COMPLETED;
+		SoundController::instance()->stopAll();
+		return;
+	}
 
 	if (Game::instance().getKey('-')) 
 	{

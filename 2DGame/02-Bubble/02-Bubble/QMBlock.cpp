@@ -78,7 +78,7 @@ Sprite* QMBlock::initQMBlockSprite(Texture* spritesheet, ShaderProgram* shaderPr
 
 void QMBlock::update(int deltaTime, bool justUsed)
 {
-	if (justUsed)
+	if (justUsed && actualAnimation != INACTIVE)
 		actualAnimation = USED;
 	int anim = normalQMBlock->animation();
 	if (anim != actualAnimation) {
