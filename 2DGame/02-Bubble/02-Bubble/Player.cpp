@@ -324,15 +324,18 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		bool facingLeft = (facingDirection == -1.f);
 		bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 		bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
-		bool runKeyPressed = Game::instance().getKey('z') || Game::instance().getKey('Z');
+		bool runKeyPressed = glutGetModifiers() == GLUT_ACTIVE_SHIFT;
 		bool downKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_DOWN);
 		bool upKeyPressed = false;
-		if (Game::instance().getSpecialKey(GLUT_KEY_UP) || Game::instance().getKey('x') || Game::instance().getKey('X')) upKeyPressed = JumpedAndReleased;
+		if (Game::instance().getSpecialKey(GLUT_KEY_UP) || Game::instance().getKey(' ')) upKeyPressed = JumpedAndReleased;
 		else JumpedAndReleased = true;
 
 		//DEV CONTROLS
-		if ((Game::instance().getKey('p') || Game::instance().getKey('P'))) {
-			if (pressedPandReleased || pressedPCount == 0) setMarioForm((actualForm + 1) % 3);
+		if ((Game::instance().getKey('m') || Game::instance().getKey('M'))) {
+			if (pressedPandReleased || pressedPCount == 0) setMarioForm(1);
+		}
+		else if ((Game::instance().getKey('g') || Game::instance().getKey('G'))) {
+			if (pressedPandReleased || pressedPCount == 0) setMarioForm(2);
 		}
 		else pressedPandReleased = true;
 		pressedPCount--;
