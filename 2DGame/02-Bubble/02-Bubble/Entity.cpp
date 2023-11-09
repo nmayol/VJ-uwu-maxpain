@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "Entity.h"
+#include <algorithm>
 
 
 enum EntityDirection
@@ -48,7 +49,8 @@ void Entity::update(int deltaTime)
 
 	//APPLY FALLING PHYSICS
 	posEntity.y -= vertical_speed;
-	map->collisionMoveDown(posEntity, collision_box_size, &posEntity.y);
+	if (!map->collisionMoveDown(posEntity, collision_box_size, &posEntity.y)) vertical_speed = std::max(base_vertical_speed * 2.25f, vertical_speed - gravity);
+	else vertical_speed = base_vertical_speed;
 
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEntity.x), float(tileMapDispl.y + posEntity.y)));
 
@@ -107,11 +109,6 @@ void Entity::kill()
 void Entity::render()
 {
 	sprite->render();
-}
-
-void Entity::setTileMap(TileMap* tileMap)
-{
-	map = tileMap;
 }
 
 void Entity::setPosition(const glm::vec2& pos)
