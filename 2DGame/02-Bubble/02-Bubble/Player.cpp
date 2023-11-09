@@ -353,6 +353,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		//invencible Frames after taking damage
 		else if (invencibleFrames > 0) {
 			if (invencibleFrames == I_FRAMES) setMarioForm((2 + actualForm) % 3);
+			if (actualForm != STAR) SoundController::instance()->stop(STARRED);
 			sprite->setActivated(invencibleFrames % 4 < 2);
 			invencibleFrames--;
 		}
@@ -683,6 +684,7 @@ bool Player::takeDamage()
 void Player::powerUp()
 {
 	setMarioForm(std::min(2, actualForm+1));
+	SoundController::instance()->play(POWERUP);
 }
 
 float Player::getFacingDirection() {

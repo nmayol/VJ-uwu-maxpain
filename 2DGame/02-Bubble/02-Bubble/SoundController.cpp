@@ -20,7 +20,8 @@ void SoundController::init()
 	sounds[KILL] = engine->addSoundSourceFromFile("sounds/Squish.wav");
 	sounds[SKID] = engine->addSoundSourceFromFile("sounds/Skid.wav");
 	sounds[STARRED] = engine->addSoundSourceFromFile("sounds/Star.wav");
-	sounds[TICK] = engine->addSoundSourceFromFile("sounds/Beep1.wav");
+	sounds[TICK] = engine->addSoundSourceFromFile("sounds/Beep.wav");
+	sounds[ITEM] = engine->addSoundSourceFromFile("sounds/Item.wav");
 
 
 
