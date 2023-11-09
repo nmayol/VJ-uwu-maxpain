@@ -14,8 +14,8 @@ class QMBlock
 {
 
 public:
-	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
-	void update(int deltaTime, bool justUsed);
+	void init(const glm::ivec2& tileMapPos, const bool& contains_powerup, ShaderProgram& shaderProgram);
+	int update(int deltaTime, bool justUsed);
 	void render(int deltaTime);
 	void setPosition(const glm::vec2& pos);
 	glm::vec2 getPosition();
@@ -25,6 +25,7 @@ private:
 
 
 	//OTHERS
+	bool contains_power_up;
 	int actualAnimation;
 	float vys; float vxs;
 	float vyi; float vxi;

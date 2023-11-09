@@ -15,7 +15,7 @@ class Brick
 
 public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
-	void update(int deltaTime, bool justBroken);
+	bool update(int deltaTime, bool justBroken);
 	void render(int deltaTime);
 	void setPosition(const glm::vec2& pos);
 	glm::vec2 getPosition();

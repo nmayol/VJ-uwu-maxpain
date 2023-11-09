@@ -26,12 +26,12 @@ enum QMBlockAnims
 
 
 
-void QMBlock::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
+void QMBlock::init(const glm::ivec2& tileMapPos, const bool& contains_powerup, ShaderProgram& shaderProgram)
 {
-
 
 	frames_from_breaking = -1;
 	actualAnimation = NORMAL;
+	this->contains_power_up = contains_powerup;
 
 	//INIT SPRITES
 	QMBlockSpritesheet.loadFromFile("images/brick.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -76,8 +76,9 @@ Sprite* QMBlock::initQMBlockSprite(Texture* spritesheet, ShaderProgram* shaderPr
 
 
 
-void QMBlock::update(int deltaTime, bool justUsed)
+int QMBlock::update(int deltaTime, bool justUsed)
 {
+	int spawn_powerup = 0;
 	if (justUsed && actualAnimation != INACTIVE)
 		actualAnimation = USED;
 	int anim = normalQMBlock->animation();
@@ -88,6 +89,8 @@ void QMBlock::update(int deltaTime, bool justUsed)
 	if (actualAnimation == USED) {
 		posQMBlock = posQMBlock + glm::vec2(0,-8);
 		actualAnimation = INACTIVE;
+		if (contains_power_up) spawn_powerup = 2;
+		else spawn_powerup = 1;
 	}	
 	else if (actualAnimation == INACTIVE && anim == USED)
 		posQMBlock = posQMBlock + glm::vec2(0, 8);
@@ -95,7 +98,7 @@ void QMBlock::update(int deltaTime, bool justUsed)
 
 	normalQMBlock->setPosition(glm::vec2(float(tileMapDispl.x + posQMBlock.x), float(tileMapDispl.y + posQMBlock.y)));
 	normalQMBlock->update(deltaTime);
-	
+	return spawn_powerup;
 }
 
 

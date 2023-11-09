@@ -73,6 +73,7 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	if (numLevel == 1) {
 		map_sec = TileMap::createTileMap("levels/level01_sec.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		readEnemies("levels/level01_enemies.txt");
 		SoundController::instance()->stopAll();
 		SoundController::instance()->play(LEVEL1);
 	}
@@ -80,6 +81,7 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 		map_sec2 = TileMap::createTileMap("levels/level02_sec01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map_sec = TileMap::createTileMap("levels/level02_sec02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		readEnemies("levels/level02_enemies.txt");
 		SoundController::instance()->stopAll();
 		SoundController::instance()->play(LEVEL2);
 	}
@@ -109,32 +111,9 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	stopFrames = 0;
 	sceneStart = 0.f;
 
-	enemies_in_map.clear();
 	enemies_in_screen.clear();
 	floating_scores.clear();
 	power_ups.clear();
-
-	//TODO -> FIX THIS READING FROM FILE
-	Goomba* enemy_test = new Goomba();
-	glm::vec2 initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize());
-	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
-	enemies_in_map.push_back(enemy_test);
-
-	enemy_test = new Goomba();
-	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 90.f, INIT_PLAYER_Y_TILES * map->getTileSize());
-	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
-	enemy_test->changeFacingDirection();
-	enemies_in_map.push_back(enemy_test);
-
-	Koopa* enemy_test_a = new Koopa();
-	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 4, INIT_PLAYER_Y_TILES * map->getTileSize() - 16);
-	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
-	enemy_test_a->changeFacingDirection();
-
-	enemy_test_a = new Koopa();
-	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 106.f, INIT_PLAYER_Y_TILES * map->getTileSize() - 16);
-	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
-	enemies_in_map.push_back(enemy_test_a);
 }
 
 void Scene::createFlag() {
@@ -158,7 +137,12 @@ void Scene::createBlocks() {
 			}
 			else if (qmBlockIndex[i][j] == 1) {
 				qmBlockSet[i][j] = new QMBlock();
-				qmBlockSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+				qmBlockSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), false, texProgram);
+				qmBlockSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+			}
+			else if (qmBlockIndex[i][j] == 10) {
+				qmBlockSet[i][j] = new QMBlock();
+				qmBlockSet[i][j]->init(glm::ivec2(SCREEN_X, SCREEN_Y), true, texProgram);
 				qmBlockSet[i][j]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
 			}
 		}
@@ -193,35 +177,6 @@ void Scene::update(int deltaTime)
 		SoundController::instance()->play(GAMEOVER);
 		return;
 	}
-
-	if (Game::instance().getKey('-')) 
-	{
-		if (pressed_and_released) {
-			Mushroom* mushy_test = new Mushroom();
-			mushy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f), map, texProgram);
-			power_ups.push_back(mushy_test);
-			pressed_and_released = false;
-		}
-	}
-	else if (Game::instance().getKey('.'))
-	{
-		if (pressed_and_released) {
-			Star* star_test = new Star();
-			star_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f), map, texProgram);
-			power_ups.push_back(star_test);
-			pressed_and_released = false;
-		}
-	}
-	else if (Game::instance().getKey(','))
-	{
-		if (pressed_and_released) {
-			Coin* coin_test = new Coin();
-			coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x, player->getPosition().y - 16.f), map, texProgram);
-			power_ups.push_back(coin_test);
-			pressed_and_released = false;
-		}
-	}
-	else pressed_and_released = true;
 
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
@@ -320,7 +275,7 @@ void Scene::updateEnemies(int deltaTime) {
 	std::list<Entity*>::iterator it = enemies_in_map.begin();
 	while (it != enemies_in_map.end() && !stop) {
 		glm::ivec2 posEnemy = (*it)->getPosition();
-		if ((((((int)posPlayer.x) + 192) / 64 + 2) * 64) > posEnemy.x) {
+		if ((((((int)posPlayer.x) + 192) / 80 + 1) * 80) > posEnemy.x) {
 			enemies_in_screen.push_back((*it));
 			it = enemies_in_map.erase(it);
 		}
@@ -331,7 +286,7 @@ void Scene::updateEnemies(int deltaTime) {
 	it = enemies_in_screen.begin();
 	while (it != enemies_in_screen.end()) {
 		glm::vec2 posEnemy = (*it)->getPosition();
-		if (posEnemy.x < posPlayer.x - 192 || (*it)->isEntityDead()) it = enemies_in_screen.erase(it);
+		if (posEnemy.x < posPlayer.x - 192 || posEnemy.x > posPlayer.x + 272 ||(*it)->isEntityDead()) it = enemies_in_screen.erase(it);
 		else {
 			(*it)->update(deltaTime);
 
@@ -365,6 +320,8 @@ void Scene::updateEnemies(int deltaTime) {
 					int player_colision_result = (*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize);
 					if (player->inStarMode() && (player_colision_result != NOTHING)) {
 						(*it)->changeFacingDirection(player->getFacingDirection());
+						floating_scores.push_back(new FloatingScore(100, (*it)->getPosition(), texProgram)); //create Score
+						player_iface->addToScore(100);
 						(*it)->kill();
 					}
 					else if (player_colision_result == ENTITY_TAKES_DMG)
@@ -440,7 +397,7 @@ void Scene::updateEnemies(int deltaTime) {
 
 
 void Scene::actIfMarioHasCommitedSuicide() {
-	if (player->getPosition().y > 14.1 * 16 && player->getPosition().y < 15 * 16) {
+	if (player->getPosition().y > 15.1 * 16 && player->getPosition().y < 16 * 16) {
 		//player is dead
 		dyingAnimationFrames = 200;
 		amountOfLives--;
@@ -449,12 +406,54 @@ void Scene::actIfMarioHasCommitedSuicide() {
 	}
 }
 
+void Scene::readEnemies(const string& enemy_file)
+{
+	enemies_in_map.clear();
+	ifstream fin;
+	string line, tilesheetFile;
+	stringstream sstream;
+	char delimiter = ',';
+	fin.open(enemy_file.c_str());
+	if (!fin.is_open()) {
+		// Handle file open error
+		cerr << "Error opening file: " << enemy_file << endl;
+		return;
+	}
+
+	//Read Enemies
+	int n_Enemies;
+	int enemy_type, x, y;
+	getline(fin, line);
+	sstream.str(line);
+	sstream >> n_Enemies;
+
+	for (int i = 0; i < n_Enemies; i++) {
+		getline(fin, line);
+		sstream.clear();
+		sstream.str(line);
+		sstream >> enemy_type >> x >> y;
+
+		if (enemy_type == 0) {
+			Goomba* enemy = new Goomba();
+			enemy->init(glm::ivec2(0, 16), glm::vec2(x * 16.f, y * 16.f), map, texProgram);
+			enemies_in_map.push_back(enemy);
+		}
+		else {
+			Koopa* enemy = new Koopa();
+			enemy->init(glm::ivec2(0, 16), glm::vec2(x * 16.f, y * 16.f), map, texProgram);
+			enemies_in_map.push_back(enemy);
+		}
+	}
+	fin.close();
+}
+
 void Scene::updateBricks(vector<vector<int>>& brickIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
 	for (int i = startBlock; i < std::min(startBlock + 8, 210); ++i) {
 		for (int j = 7; j < 12; j++) {
 			if (brickIndex[i][j] == 2) { // update broken brick animation
-				brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
+				bool add_to_score = brickSet[i][j]->update(deltaTime, map->getBrickIndexPosition(i, j));
+				if (add_to_score) player_iface->addToScore(50);
 			}
 
 
@@ -467,10 +466,26 @@ void Scene::updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime) {
 	int startBlock = (sceneStart / map->getTileSize());
 	for (int i = startBlock; i < 210; ++i) {
 		for (int j = 7; j < 12; j++) {
-			if (qmBlockIndex[i][j] <= 3 && qmBlockIndex[i][j] >= 1) { // update used qm animation
-				qmBlockSet[i][j]->update(deltaTime, map->getQMBlockIndexPosition(i, j));
+			if (qmBlockIndex[i][j] <= 3 && qmBlockIndex[i][j] >= 1 || qmBlockIndex[i][j] == 10) { // update used qm animation
+				int spawn_powerup = qmBlockSet[i][j]->update(deltaTime, map->getQMBlockIndexPosition(i, j));
 				if (qmBlockIndex[i][j] == 2)
 					map->inactivateQMBlock(i, j);
+
+				if (spawn_powerup == 1) { //coin
+					Coin* coin_test = new Coin();
+					coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(i * 16.f, (j-1) * 16.f), map, texProgram);
+					power_ups.push_back(coin_test);
+				}
+				else if (spawn_powerup == 2 && player->getMarioForm() == 0) { //powerup mushroom
+					Mushroom* mushy_test = new Mushroom();
+					mushy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(i * 16.f, (j - 1) * 16.f), map, texProgram);
+					power_ups.push_back(mushy_test);
+				}
+				else if (spawn_powerup == 2 && player->getMarioForm() > 0) { //powerup star
+					Star* star_test = new Star();
+					star_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(i * 16.f, (j - 1) * 16.f), map, texProgram);
+					power_ups.push_back(star_test);
+				}
 			}
 		}
 	}
@@ -515,7 +530,7 @@ void Scene::renderBricks() {
 			if (brickIndex[i][j] == 1 || brickIndex[i][j] == 2) {
 				brickSet[i][j]->render(currentTime);
 			}
-			else if (qmBlockIndex[i][j] >= 1 && qmBlockIndex[i][j] <= 3)
+			else if (qmBlockIndex[i][j] >= 1 && qmBlockIndex[i][j] <= 3 || qmBlockIndex[i][j] == 10)
 			{
 				qmBlockSet[i][j]->render(currentTime);
 			}

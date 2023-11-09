@@ -54,6 +54,7 @@ private:
 	void createFlag();
 	void actIfMarioHasCommitedSuicide();
 	void sumLastPoints();
+	void readEnemies(const string& enemy_file);
 
 	bool pressed_and_released;
 	bool completed; // True if player has picked the flag

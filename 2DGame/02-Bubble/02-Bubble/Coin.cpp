@@ -18,7 +18,7 @@ void Coin::init(const glm::ivec2& tileMapPos, const glm::vec2& initial_pos, Tile
 	is_dead = false;
 	is_collidable = false;
 	kill_frames = 38;		//spawned as a killed entity (lasts a few frames and disapears)
-	posEntity = initial_pos;
+	posEntity = initial_pos + glm::vec2(4.f, 0.f);
 	map = tileMap;
 
 	//INIT SPRITES

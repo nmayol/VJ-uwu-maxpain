@@ -225,8 +225,15 @@ Sprite* Player::initStarMarioSprite(Texture* spritesheet, ShaderProgram* shaderP
 }
 
 
+int Player::getMarioForm()
+{
+	return actualForm;
+}
+
 //CHANGE MARIO FORM
 void Player::setMarioForm(int formId) {
+
+	if (formId > 2) formId = 2;
 
 	if (actualForm != SMALL && formId == SMALL) posPlayer.y += 16.f;
 	else if (actualForm == SMALL && formId != SMALL) posPlayer.y -= 16.f;
