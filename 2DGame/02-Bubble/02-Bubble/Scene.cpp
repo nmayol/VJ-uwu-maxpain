@@ -80,6 +80,7 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 		map_sec2 = TileMap::createTileMap("levels/level02_sec01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map_sec = TileMap::createTileMap("levels/level02_sec02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 		map = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+		readEnemies("levels/level02_enemies.txt");
 		SoundController::instance()->stopAll();
 		SoundController::instance()->play(LEVEL2);
 	}
@@ -112,28 +113,6 @@ void Scene::initNewLevel(const int& level_id, const bool& new_game) {
 	enemies_in_screen.clear();
 	floating_scores.clear();
 	power_ups.clear();
-
-	//TODO -> FIX THIS READING FROM FILE
-	Goomba* enemy_test = new Goomba();
-	glm::vec2 initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 64.f, INIT_PLAYER_Y_TILES * map->getTileSize());
-	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
-	enemies_in_map.push_back(enemy_test);
-
-	enemy_test = new Goomba();
-	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 90.f, INIT_PLAYER_Y_TILES * map->getTileSize());
-	enemy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
-	enemy_test->changeFacingDirection();
-	enemies_in_map.push_back(enemy_test);
-
-	Koopa* enemy_test_a = new Koopa();
-	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 4, INIT_PLAYER_Y_TILES * map->getTileSize() - 16);
-	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
-	enemy_test_a->changeFacingDirection();
-
-	enemy_test_a = new Koopa();
-	initialPos = glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() + 64.f * 7 + 106.f, INIT_PLAYER_Y_TILES * map->getTileSize() - 16);
-	enemy_test_a->init(glm::ivec2(SCREEN_X, SCREEN_Y), initialPos, map, texProgram);
-	enemies_in_map.push_back(enemy_test_a);
 }
 
 void Scene::createFlag() {
@@ -191,35 +170,6 @@ void Scene::update(int deltaTime)
 	//CHANGE LEVEL
 	if (Game::instance().getKey('1')) initNewLevel(1, false);
 	if (Game::instance().getKey('2')) initNewLevel(2, false);
-
-	if (Game::instance().getKey('-')) 
-	{
-		if (pressed_and_released) {
-			Mushroom* mushy_test = new Mushroom();
-			mushy_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f), map, texProgram);
-			power_ups.push_back(mushy_test);
-			pressed_and_released = false;
-		}
-	}
-	else if (Game::instance().getKey('.'))
-	{
-		if (pressed_and_released) {
-			Star* star_test = new Star();
-			star_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x + 128.f, player->getPosition().y - 64.f), map, texProgram);
-			power_ups.push_back(star_test);
-			pressed_and_released = false;
-		}
-	}
-	else if (Game::instance().getKey(','))
-	{
-		if (pressed_and_released) {
-			Coin* coin_test = new Coin();
-			coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(player->getPosition().x, player->getPosition().y - 16.f), map, texProgram);
-			power_ups.push_back(coin_test);
-			pressed_and_released = false;
-		}
-	}
-	else pressed_and_released = true;
 
 	currentTime += deltaTime;
 	vector<vector<int>> brickIndex = map->getBrickIndex();
@@ -421,7 +371,7 @@ void Scene::updateEnemies(int deltaTime) {
 
 
 void Scene::actIfMarioHasCommitedSuicide() {
-	if (player->getPosition().y > 14.1 * 16 && player->getPosition().y < 15 * 16) {
+	if (player->getPosition().y > 15.1 * 16 && player->getPosition().y < 16 * 16) {
 		//player is dead
 		dyingAnimationFrames = 200;
 		amountOfLives--;
