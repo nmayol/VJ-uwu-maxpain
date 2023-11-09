@@ -26,6 +26,7 @@ public:
 	void changeTickRate(const int& new_tick_rate);
 	void setTimeToNone();
 	bool endedTime();
+	void continueTime();
 
 
 private:

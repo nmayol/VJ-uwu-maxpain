@@ -204,6 +204,8 @@ int PlayerInterface::getTime()
 }
 
 
+
+
 void PlayerInterface::startTime()
 {
 	updateNumber(time, time_left, 400);
@@ -219,6 +221,11 @@ void PlayerInterface::stopTime()
 	time_counting_down = false;
 }
 
+
+void PlayerInterface::continueTime()
+{
+	time_counting_down = true;
+}
 
 void PlayerInterface::changeTickRate(const int& new_tick_rate)
 {

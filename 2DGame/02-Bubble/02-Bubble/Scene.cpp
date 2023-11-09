@@ -220,7 +220,6 @@ void Scene::update(int deltaTime)
 	vector<vector<int>> brickIndex = map->getBrickIndex();
 	vector<vector<int>> qmBlockIndex = map->getQMBlockIndex();
 	completeGameifNeeded();
-	
 	updateBricks(brickIndex, deltaTime);
 	updateQMBlocks(qmBlockIndex, deltaTime);
 	
@@ -280,6 +279,7 @@ void Scene::update(int deltaTime)
 	player_iface->setScreenXandY(sceneStart, 0.f);
 	changeWorldifNeeded();
 	moveCameraifNeeded();
+	sumLastPoints();
 
 	actIfMarioHasCommitedSuicide();
 }
@@ -400,7 +400,7 @@ void Scene::updateEnemies(int deltaTime) {
 
 
 	//time runned out
-	if (player_iface->getTime() == 0) {
+	if (player_iface->getTime() == 0 && !completed) {
 		player_iface->setTimeToNone();
 		player->setMarioForm(0);
 		player->takeDamage();
@@ -504,6 +504,23 @@ void Scene::renderBricks() {
 void Scene::completeGameifNeeded()
 {
 	completed = (player->getPosition().x >= 197.5f * 16.f) && !pickingFlag();
+	if (completed) {
+		
+		if (player->getPosition().x > 207.f * 16) {
+			player_iface->changeTickRate(1);
+			player_iface->continueTime();
+		}
+		else {
+			player_iface->stopTime();
+		}
+	}
+}
+
+void Scene::sumLastPoints() {
+	if (completed && player_iface->getTime() != 0 && player->getPosition().x > 207.f * 16) {
+		if (player_iface->getTotalScore() % 200 == 0) SoundController::instance()->play(TICK);
+		player_iface->addToScore(50);
+	}
 }
 
 bool Scene::couldBeGoingUnderworld()

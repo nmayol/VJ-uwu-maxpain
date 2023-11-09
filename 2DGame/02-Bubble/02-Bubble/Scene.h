@@ -53,6 +53,7 @@ private:
 	void createBlocks();
 	void createFlag();
 	void actIfMarioHasCommitedSuicide();
+	void sumLastPoints();
 
 	bool pressed_and_released;
 	bool completed; // True if player has picked the flag

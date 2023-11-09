@@ -8,7 +8,7 @@
 
 using namespace irrklang;
 
-enum Sounds { POWERUP, JUMP, LEVEL1, LEVEL2, FLAG, DEAD, COIN, GAMEOVER, WARP, BREAK, UNDERWORLD, WIN, KILL, SKID, STARRED};
+enum Sounds { POWERUP, JUMP, LEVEL1, LEVEL2, FLAG, DEAD, COIN, GAMEOVER, WARP, BREAK, UNDERWORLD, WIN, KILL, SKID, STARRED, TICK};
 
 class SoundController : public ISoundStopEventReceiver
 {
