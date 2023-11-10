@@ -142,6 +142,9 @@ Sprite* Player::initSmallMarioSprite(Texture* spritesheet, ShaderProgram* shader
 	newSprite->setAnimationSpeed(SKIDDING, 8);
 	newSprite->addKeyframe(SKIDDING, glm::vec2(SPRITE_OFFSET_X * 3.f, 0.f));
 
+	newSprite->setAnimationSpeed(CROUCHING, 8);
+	newSprite->addKeyframe(CROUCHING, glm::vec2(SPRITE_OFFSET_X * 13.f, 0.f));
+
 	newSprite->setAnimationSpeed(PICKING, 8);
 	newSprite->addKeyframe(PICKING, glm::vec2(SPRITE_OFFSET_X * 8.f, 0.f));
 
@@ -488,7 +491,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 
 				//APPLY CROUCHING
 				if (!leftKeyPressed && !rightKeyPressed && downKeyPressed && actualForm != SMALL) {
-					if (actualAnimation == SKIDDING) {
+					if (actualAnimation == SKIDDING ) {
 						facingDirection *= -1.f;
 						facingLeft = !facingLeft;
 					}
@@ -498,6 +501,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 					if ((facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (!facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) actual_speed = 0;
 					actualAnimation = CROUCHING;
 				}
+				else if (!leftKeyPressed && !rightKeyPressed && downKeyPressed && actualForm == SMALL && actual_speed == 0) actualAnimation = CROUCHING;
 
 				//APPLY SKIDDING ANIMATION and move speed reduction
 				else if (actualAnimation == SKIDDING) {
