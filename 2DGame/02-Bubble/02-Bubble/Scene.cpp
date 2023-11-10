@@ -369,7 +369,8 @@ void Scene::updateEnemies(int deltaTime) {
 		}
 		else {
 			(*it)->update(deltaTime);
-			if ((*it)->isEntityDead()) {
+			if ((*it)->getPosition().y > 280.f) it = power_ups.erase(it);
+			else if ((*it)->isEntityDead()) {
 				glm::vec2 finalPos= (*it)->getPosition() + glm::vec2(2.f, 20.f);
 				floating_scores.push_back(new FloatingScore(200, finalPos, texProgram)); //create Score
 				player_iface->addToScore(200);
