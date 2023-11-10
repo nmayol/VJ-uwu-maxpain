@@ -84,13 +84,14 @@ bool Entity::detectCollision(glm::vec2* posEntity, float facingDirection, const 
 
 int Entity::detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::ivec2& size)
 {
-	float x0, x1, y0, entx1;
+	float x0, x1, y0, y1, entx1;
 	y0 = (posPlayer.y + size.y);
 	x0 = posPlayer.x;
 	x1 = x0 + size.x;
+	y1 = posEntity.y + collision_box_size.y;
 	entx1 = posEntity.x + collision_box_size.x;
 
-	if (((x0 > posEntity.x && x0 < entx1) || (x1 > posEntity.x && x1 < entx1)) && y0 >= posEntity.y && y0 <= posEntity.y + collision_box_size.y) {
+	if (((x0 > posEntity.x && x0 < entx1) || (x1 > posEntity.x && x1 < entx1)) && ((y0 >= posEntity.y && y0 <= y1) || (y1 < y0 && y1 > posPlayer.y))) {
 		if (y0 > (posEntity.y + collision_box_size.y * 0.5)) return PLAYER_TAKES_DMG;
 		else return ENTITY_TAKES_DMG;
 	}

@@ -358,7 +358,7 @@ void Scene::updateEnemies(int deltaTime) {
 	}
 	//render power ups if any
 	for (auto it = power_ups.begin(); it != power_ups.end(); /* no increment here */) {
-		if ((*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize)) {
+		if ((*it)->detectPlayerCollision(posPlayer, playerIsFalling, playerSize) != 0) {
 			player->powerUp();
 			stopFrames = 20;
 			floating_scores.push_back(new FloatingScore(1000, (*it)->getPosition(), texProgram)); //create Score
