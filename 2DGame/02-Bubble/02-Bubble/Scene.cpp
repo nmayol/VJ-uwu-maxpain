@@ -479,6 +479,7 @@ void Scene::updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime) {
 					Coin* coin_test = new Coin();
 					coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(i * 16.f, (j-1) * 16.f), map, texProgram);
 					power_ups.push_back(coin_test);
+					player_iface->addCoins(1);
 					SoundController::instance()->play(COIN);
 				}
 				else if (spawn_powerup == 2 && player->getMarioForm() == 0) { //powerup mushroom
