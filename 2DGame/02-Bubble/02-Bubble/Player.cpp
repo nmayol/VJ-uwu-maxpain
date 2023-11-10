@@ -80,7 +80,7 @@ void Player::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 	vertical_speed = -2.5f;
 	actualAnimation = STANDING;
 	actualForm = SMALL;
-	
+
 
 	//INIT SPRITES
 	smallMarioSpritesheet.loadFromFile("images/small-mario.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -115,7 +115,7 @@ void Player::reset()
 	actual_speed = 0.f;
 	vertical_speed = -2.5f;
 	actualAnimation = STANDING;
-	
+
 	sprite->setActivated(true);
 	sprite->changeDirection(FACING_RIGHT);
 
@@ -295,7 +295,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		if (posPlayer.y >= 10.15f * 16) { // Movement into a tube OVERWORLD
 			posPlayer.y = 19.f * 16;
 			posPlayer.x = 49.f * 16;
-			
+
 			actualAnimation = RUNNING;
 		}
 		else posPlayer.y += 2.f;
@@ -306,8 +306,8 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 			posPlayer.y = 8.f * 16;
 			actualAnimation = JUMPING;
 
-		}	
-		else 
+		}
+		else
 			posPlayer.x += 2.f;
 	}
 	else if (pickingFlag) {
@@ -317,12 +317,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 			SoundController::instance()->play(FLAG);
 		}
 		if (!map->collisionMoveDown(posPlayer, collision_box_size, &posPlayer.y)) posPlayer.y += 2.f;
-		
-	}
-	else if (posPlayer.y > 14.1*16 && posPlayer.y < 15*16 && bJumping) {
-		bJumping = false;
-		sprite->changeAnimation(DYING);
-		return;
+
 	}
 	else {
 		//load parameters early for better eficiency
@@ -384,11 +379,11 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 			rightKeyPressed = !leftKeyPressed;
 		}
 
-	//invencible Frames after taking damage
+		//invencible Frames after taking damage
 
 
-	// MARIO IS MID-JUMPING
-	if (bJumping) {
+		// MARIO IS MID-JUMPING
+		if (bJumping) {
 
 			// VERTICAL MOVEMENT
 			if (vertical_speed < MAX_FALL_SPEED) vertical_speed = MAX_FALL_SPEED;
@@ -439,13 +434,13 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 						actualAnimation = SKIDDING;
 						SoundController::instance()->play(SKID);
 					}
-					
+
 
 				}
 			}
 			//APPLY MOVEMENT
 			posPlayer.x += facingDirection * actual_speed;
-			if ((facingLeft && map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (!facingLeft && map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) actual_speed = 0;
+			if ((map->collisionMoveLeft(posPlayer, collision_box_size, &posPlayer.x)) || (map->collisionMoveRight(posPlayer, collision_box_size, &posPlayer.x))) actual_speed = 0;
 
 		}
 
@@ -492,7 +487,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 
 				//APPLY CROUCHING
 				if (!leftKeyPressed && !rightKeyPressed && downKeyPressed && actualForm != SMALL) {
-					if (actualAnimation == SKIDDING ) {
+					if (actualAnimation == SKIDDING) {
 						facingDirection *= -1.f;
 						facingLeft = !facingLeft;
 					}
@@ -645,7 +640,7 @@ void Player::stopMarioFromMoving(const glm::vec2& pos)
 void Player::applyBounce()
 {
 
-	vertical_speed = 5.f; 
+	vertical_speed = 5.f;
 	posPlayer.y = ((posPlayer.y) / 16) * 16.f;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	vertical_speed = 5.f;
@@ -675,7 +670,7 @@ bool Player::isInvencible()
 }
 
 bool Player::inStarMode()
-{	
+{
 	return actualForm == STAR;
 }
 
@@ -685,14 +680,14 @@ bool Player::takeDamage()
 		invencibleFrames = I_FRAMES;
 		return false;
 	}
-	
+
 	dyingFrames = I_FRAMES;
 	return true;
 }
 
 void Player::powerUp()
 {
-	setMarioForm(std::min(2, actualForm+1));
+	setMarioForm(std::min(2, actualForm + 1));
 	SoundController::instance()->play(POWERUP);
 }
 

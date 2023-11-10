@@ -20,7 +20,7 @@ TASQUES REALITZADES PER Jorge Borrás i Duarte:
 
 
 
-TASQUES REALITZADES PER Neus Mayol Alcaraz:
+TASQUES REALITZADES PER Neus Mayol i Alcaraz:
 ------------------------------------------
 - Logica de TileMap
 - Disseny del nivell 1 & 2

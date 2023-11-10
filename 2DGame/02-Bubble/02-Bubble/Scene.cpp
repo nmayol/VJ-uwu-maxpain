@@ -184,13 +184,13 @@ void Scene::update(int deltaTime)
 	completeGameifNeeded();
 	updateBricks(brickIndex, deltaTime);
 	updateQMBlocks(qmBlockIndex, deltaTime);
-	
+
 	if (stopFrames > 0) {
 		stopFrames--;
 		return;
 	}
 	else if (dyingAnimationFrames > 0) {
-		
+
 		player->update(deltaTime, false, false, false, false);
 		if (dyingAnimationFrames == 200) {
 			SoundController::instance()->stopAll();
@@ -203,7 +203,7 @@ void Scene::update(int deltaTime)
 				SoundController::instance()->stopAll();
 				SoundController::instance()->play(GAMEOVER);
 				return;
-			}			
+			}
 			player_iface->setTimeToNone();
 			initNewLevel(numLevel, false); //RESTART LEVEL
 		}
@@ -285,7 +285,7 @@ void Scene::updateEnemies(int deltaTime) {
 	it = enemies_in_screen.begin();
 	while (it != enemies_in_screen.end()) {
 		glm::vec2 posEnemy = (*it)->getPosition();
-		if (posEnemy.x < posPlayer.x - 192 || posEnemy.x > posPlayer.x + 272 ||(*it)->isEntityDead()) it = enemies_in_screen.erase(it);
+		if (posEnemy.x < posPlayer.x - 192 || posEnemy.x > posPlayer.x + 272 || (*it)->isEntityDead()) it = enemies_in_screen.erase(it);
 		else {
 			(*it)->update(deltaTime);
 
@@ -370,7 +370,7 @@ void Scene::updateEnemies(int deltaTime) {
 			(*it)->update(deltaTime);
 			if ((*it)->getPosition().y > 280.f) it = power_ups.erase(it);
 			else if ((*it)->isEntityDead()) {
-				glm::vec2 finalPos= (*it)->getPosition() + glm::vec2(2.f, 20.f);
+				glm::vec2 finalPos = (*it)->getPosition() + glm::vec2(2.f, 20.f);
 				floating_scores.push_back(new FloatingScore(200, finalPos, texProgram)); //create Score
 				player_iface->addToScore(200);
 				it = power_ups.erase(it);
@@ -388,7 +388,7 @@ void Scene::updateEnemies(int deltaTime) {
 
 	//time runned out
 	if (player_iface->getTime() == 0 && !completed) {
-		player_iface->setTimeToNone();
+		player_iface->stopTime();
 		player->setMarioForm(0);
 		player->takeDamage();
 		amountOfLives--;
@@ -404,6 +404,9 @@ void Scene::actIfMarioHasCommitedSuicide() {
 	if (player->getPosition().y > 15.1 * 16 && player->getPosition().y < 16 * 16) {
 		//player is dead
 		dyingAnimationFrames = 200;
+		player_iface->stopTime();
+		player->setMarioForm(0);
+		player->takeDamage();
 		amountOfLives--;
 		stopFrames = 20;
 
@@ -477,7 +480,7 @@ void Scene::updateQMBlocks(vector<vector<int>>& qmBlockIndex, int deltaTime) {
 
 				if (spawn_powerup == 1) { //coin
 					Coin* coin_test = new Coin();
-					coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(i * 16.f, (j-1) * 16.f), map, texProgram);
+					coin_test->init(glm::ivec2(SCREEN_X, SCREEN_Y), glm::vec2(i * 16.f, (j - 1) * 16.f), map, texProgram);
 					power_ups.push_back(coin_test);
 					player_iface->addCoins(1);
 					SoundController::instance()->play(COIN);
@@ -506,7 +509,7 @@ void Scene::render()
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
-	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);	
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 
 	if (loading_screen_frames > 0 || timeoutFrames > 0) {
 		loading_screen->render();
@@ -521,7 +524,7 @@ void Scene::render()
 	player->render();
 	renderTubes();
 	renderBricks();
-		
+
 }
 
 void Scene::renderTubes() {
@@ -554,7 +557,7 @@ void Scene::completeGameifNeeded()
 {
 	completed = (player->getPosition().x >= 197.5f * 16.f) && !pickingFlag();
 	if (completed) {
-		
+
 		if (player->getPosition().x > 207.f * 16) {
 			player_iface->changeTickRate(1);
 			player_iface->continueTime();
@@ -600,7 +603,7 @@ void Scene::moveCameraifNeeded()
 		else if (aux > sceneStart) {
 			sceneStart = aux;
 		}
-		
+
 	}
 	else if (posPlayerX < sceneStart) {
 		// make player unable to go back to last scene
@@ -623,7 +626,7 @@ void Scene::moveCameraifNeeded()
 	}
 
 	projection = glm::ortho(left, right, down, up);
-	
+
 
 }
 
@@ -636,7 +639,7 @@ void Scene::changeWorldifNeeded() {
 		limY = 10.16f * 16.f;
 		limXInf = 57 * 16.f;
 		limXSup = limXInf + 16;
-		
+
 		if (player->getPosition().y >= limY && player->getPosition().x >= limXInf && player->getPosition().x < limXSup) {
 			SoundController::instance()->stopAll();
 			SoundController::instance()->play(WARP);
@@ -658,7 +661,7 @@ void Scene::changeWorldifNeeded() {
 			SoundController::instance()->play(WARP);
 			sceneStart = 159 * 16.f;
 			overworld = true;
-			
+
 		}
 
 	}
@@ -676,13 +679,13 @@ void Scene::initShaders()
 	Shader vShader, fShader;
 
 	vShader.initFromFile(VERTEX_SHADER, "shaders/texture.vert");
-	if(!vShader.isCompiled())
+	if (!vShader.isCompiled())
 	{
 		cout << "Vertex Shader Error" << endl;
 		cout << "" << vShader.log() << endl << endl;
 	}
 	fShader.initFromFile(FRAGMENT_SHADER, "shaders/texture.frag");
-	if(!fShader.isCompiled())
+	if (!fShader.isCompiled())
 	{
 		cout << "Fragment Shader Error" << endl;
 		cout << "" << fShader.log() << endl << endl;
@@ -691,7 +694,7 @@ void Scene::initShaders()
 	texProgram.addShader(vShader);
 	texProgram.addShader(fShader);
 	texProgram.link();
-	if(!texProgram.isLinked())
+	if (!texProgram.isLinked())
 	{
 		cout << "Shader Linking Error" << endl;
 		cout << "" << texProgram.log() << endl << endl;
