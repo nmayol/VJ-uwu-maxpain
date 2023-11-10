@@ -43,6 +43,7 @@ void Koopa::init(const glm::ivec2& tileMapPos, const glm::vec2& initial_pos, Til
 	is_collidable = true;
 	posEntity = initial_pos;
 	map = tileMap;
+	combo = 0;
 
 	//INIT SPRITES
 	entitySpritesheet.loadFromFile("images/koopa.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -106,6 +107,7 @@ int Koopa::detectPlayerCollision(glm::vec2 posPlayer, bool Falling, const glm::i
 bool Koopa::takeDamage()
 {
 	//Base koopa has base speed, shell has 0 and moving shell has shell launch speed
+	bool spawn_score = false;
 	if (horitzontal_speed == 0) {
 		frames_until_respawn = -1;
 		shell_in_movement = true;
@@ -116,8 +118,10 @@ bool Koopa::takeDamage()
 		horitzontal_speed = 0;
 		frames_until_respawn = 8 * 60;
 		sprite->changeAnimation(SHELL);
+		spawn_score = true;
+
 	}
-	return false;
+	return spawn_score;
 }
 
 bool Koopa::canKillEnemies()

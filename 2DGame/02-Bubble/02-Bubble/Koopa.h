@@ -25,6 +25,7 @@ public:
 private:
 	int frames_until_respawn;
 	bool shell_in_movement;
+	int combo;
 };
 
 

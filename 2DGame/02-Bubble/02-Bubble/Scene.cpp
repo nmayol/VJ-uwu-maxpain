@@ -297,14 +297,16 @@ void Scene::updateEnemies(int deltaTime) {
 					if (e2 != (*it) && e2->detectCollision(&posEnemy, (*it)->getFacingDirection(), (*it)->getSize())) {
 						if ((*it)->canKillEnemies()) {
 							e2->changeFacingDirection((*it)->getFacingDirection());
-							floating_scores.push_back(new FloatingScore(100, e2->getPosition(), texProgram)); //create Score
-							player_iface->addToScore(100);
+							FloatingScore* aux = new FloatingScore(100, e2->getPosition(), texProgram, (*it)->comboValue());
+							floating_scores.push_back(aux); //create Score
+							player_iface->addToScore(aux->getValueAfterCombo());
 							e2->kill();
 						}
 						else if (e2->canKillEnemies()) {
 							(*it)->changeFacingDirection(e2->getFacingDirection());
-							floating_scores.push_back(new FloatingScore(100, (*it)->getPosition(), texProgram)); //create Score
-							player_iface->addToScore(100);
+							FloatingScore* aux = new FloatingScore(100, (*it)->getPosition(), texProgram, e2->comboValue());
+							floating_scores.push_back(aux); //create Score
+							player_iface->addToScore(aux->getValueAfterCombo());
 							(*it)->kill();
 						}
 						else {
@@ -336,6 +338,8 @@ void Scene::updateEnemies(int deltaTime) {
 					else if (player_colision_result == LAUNCH_SHELL) {
 						(*it)->takeDamage();
 						(*it)->changeFacingDirection(player->getFacingDirection());
+						floating_scores.push_back(new FloatingScore(500, (*it)->getPosition(), texProgram)); //create Score
+						player_iface->addToScore(500);
 						player->applyBounce();
 					}
 					else if (player_colision_result == PLAYER_TAKES_DMG) {

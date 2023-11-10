@@ -40,6 +40,8 @@ public:
 	bool isEntityDead();
 	virtual bool canKillEnemies();
 
+	int comboValue();
+
 protected:
 	bool is_collidable;
 	bool is_dead;
@@ -49,6 +51,7 @@ protected:
 	float horitzontal_speed;
 	float facingDirection;
 	int kill_frames;
+	int combo = 0;
 
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posEntity;

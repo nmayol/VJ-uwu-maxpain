@@ -116,6 +116,7 @@ void Player::reset()
 	vertical_speed = -2.5f;
 	actualAnimation = STANDING;
 	
+	sprite->setActivated(true);
 	sprite->changeDirection(FACING_RIGHT);
 
 }
@@ -324,8 +325,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		bool facingLeft = (facingDirection == -1.f);
 		bool leftKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_LEFT);
 		bool rightKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_RIGHT);
-		bool runKeyPressed = glutGetModifiers() == GLUT_ACTIVE_SHIFT;
-		int aa = glutGetModifiers();
+		bool runKeyPressed = Game::instance().getSpecialKey(112) || Game::instance().getSpecialKey(113);;
 		bool downKeyPressed = Game::instance().getSpecialKey(GLUT_KEY_DOWN);
 		bool upKeyPressed = false;
 		if (Game::instance().getSpecialKey(GLUT_KEY_UP) || Game::instance().getKey(' ')) upKeyPressed = JumpedAndReleased;

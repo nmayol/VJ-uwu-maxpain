@@ -167,3 +167,11 @@ bool Entity::canKillEnemies()
 {
 	return false;
 }
+
+
+int Entity::comboValue()
+{
+	int cpy = combo;
+	combo = combo + 1;
+	return cpy;
+}
