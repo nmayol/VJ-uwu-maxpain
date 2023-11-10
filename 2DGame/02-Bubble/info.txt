@@ -1,0 +1,31 @@
+----------------------------------------
+------Videojoc 2D UPC Q1-2023/2024------
+----------------------------------------
+
+
+AUTHORS
+-------
+- Jorge Borrás i Duarte
+- Neus Mayol Alcaraz
+
+
+
+
+TASQUES REALITZADES PER Jorge Borrás i Duarte:
+---------------------------------------------
+- Classe Player (Mario)
+- Lógica de les classes d'Entities: Koopa, Goomba, Mushroom, Coin & Star
+- Implementació de la Main, Loading, Game-Over & Game-Completed Screens
+- Implementació del Player Interface, Coins, Time & Score (incloent score sprites per pantalla)
+
+
+
+TASQUES REALITZADES PER Neus Mayol Alcaraz:
+------------------------------------------
+- Logica de TileMap
+- Disseny del nivell 1 & 2
+- Física de les Pipes/Tubes (+ Underworld), Bricks & QuestionMarkBlocks
+- Controllador i reprodució de Música
+- Implementació de l'Animació & Lógica del final de nivells (banderes)
+- Lógica principal de la classe Scene
+- Lógica de Càmera
