@@ -298,13 +298,14 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 		else posPlayer.y += 2.f;
 	}
 	else if (wantsToGoOverworld) { // Movement into a tube OVERWORLD
-		if (posPlayer.x >= 61 * 16) {
+		if (posPlayer.x > 61. * 16) {
 			posPlayer.x = 163.5 * 16;
 			posPlayer.y = 8.f * 16;
 			actualAnimation = JUMPING;
 
 		}	
-		else posPlayer.x += 2.f;
+		else 
+			posPlayer.x += 2.f;
 	}
 	else if (pickingFlag) {
 		bJumping = false;

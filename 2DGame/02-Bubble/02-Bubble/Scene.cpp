@@ -245,7 +245,6 @@ void Scene::update(int deltaTime)
 	changeWorldifNeeded();
 	moveCameraifNeeded();
 	sumLastPoints();
-
 	actIfMarioHasCommitedSuicide();
 }
 
@@ -580,7 +579,7 @@ bool Scene::couldBeGoingUnderworld()
 
 bool Scene::wantsToGoOverworld()
 {
-	return (player->getPosition().x >= 60 * 16 && player->getPosition().x < 62 * 16. && player->getPosition().y >= 26 * 16. && player->getPosition().y <= 27 * 16.);
+	return (player->getPosition().x >= 60 * 16 && player->getPosition().x <= 63 * 16. && player->getPosition().y >= 26 * 16. && player->getPosition().y <= 27 * 16.);
 }
 
 bool Scene::pickingFlag() {
@@ -646,11 +645,8 @@ void Scene::changeWorldifNeeded() {
 		}
 	}
 	else {
-		limY = 26.f * 16.f;
-		limXInf = 61 * 16.f;
-		limXSup = limXInf + 16;
-		
-		if (player->getPosition().y >= limY && player->getPosition().x >= limXInf && player->getPosition().x < limXSup) {
+		limY = 15.f * 16.f;
+		if (player->getPosition().y < limY) {
 			SoundController::instance()->stopAll();
 			if (numLevel == 1)
 				SoundController::instance()->play(LEVEL1);
