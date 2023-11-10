@@ -540,7 +540,7 @@ void Player::update(int deltaTime, bool gameCompleted, bool couldBeGoingUnderwor
 					}
 
 					// Pressing RUN Key, Mario is Running
-					if (Game::instance().getKey('z') || Game::instance().getKey('Z')) {
+					if (runKeyPressed) {
 						if (actual_speed < MAX_RUN_SPEED) actual_speed = std::min(MAX_RUN_SPEED, actual_speed + RUN_ACCELERATION);
 
 						//At MAX_SPEED, WAIT 10 Frames before slowing down

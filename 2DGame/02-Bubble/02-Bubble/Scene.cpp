@@ -587,7 +587,7 @@ void Scene::moveCameraifNeeded()
 {
 	float posPlayerX = player->getPosition().x;
 	float directionPlayer = player->getFacingDirection();
-	if (sceneStart < 3120 && (posPlayerX - (sceneStart + float(SCREEN_WIDTH - 1)) / 3.) > 0) {
+	if (sceneStart < 3120 && (posPlayerX - sceneStart) > float(SCREEN_WIDTH - 1) / 3.f) {
 		float aux = posPlayerX - (float(SCREEN_WIDTH - 1)) / 3.f;
 		if (!overworld) {
 			sceneStart = 48 * 16.f;
@@ -597,7 +597,7 @@ void Scene::moveCameraifNeeded()
 		}
 		
 	}
-	else if (directionPlayer == -1.f && posPlayerX < sceneStart) {
+	else if (posPlayerX < sceneStart) {
 		// make player unable to go back to last scene
 		player->setPosition(glm::vec2(sceneStart, player->getPosition().y));
 
